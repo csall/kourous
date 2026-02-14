@@ -10,7 +10,7 @@ import { useClickSound } from "@/lib/hooks/useClickSound";
 import { useEffect, useState, Suspense, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { BookOpen, Settings } from "lucide-react";
+import { BookOpen, Settings, RotateCcw } from "lucide-react";
 import { FullscreenModal } from "@/components/ui/FullscreenModal";
 import { LibraryContent } from "@/components/library/LibraryContent";
 import { SettingsContent } from "@/components/settings/SettingsContent";
@@ -52,7 +52,8 @@ function SessionContent() {
     reset,
     toggleHaptics,
     toggleSound,
-    beadColor
+    beadColor,
+    totalCount
   } = useSessionStore();
 
   const progress = useSessionProgress();
@@ -120,6 +121,7 @@ function SessionContent() {
       {/* Top Right Navigation */}
       <div className="absolute top-[calc(env(safe-area-inset-top)+1rem)] right-6 z-50 flex items-center gap-2">
         <div className="flex items-center gap-2">
+
           <button
             onClick={() => setIsLibraryOpen(true)}
             className="flex items-center justify-center w-11 h-11 rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white/70 hover:text-white hover:bg-white/5 transition-all active:scale-90"
@@ -137,10 +139,10 @@ function SessionContent() {
         </div>
       </div>
 
-      {/* Top Left Counter */}
+      {/* Top Left Counter & Controls */}
       {!isComplete && (
-        <div className="absolute top-[calc(env(safe-area-inset-top)+1rem)] left-6 z-50 pointer-events-none">
-          <div className="flex items-baseline gap-1 px-4 py-2 rounded-full bg-black/20 border border-white/10 backdrop-blur-md shadow-sm">
+        <div className="absolute top-[calc(env(safe-area-inset-top)+1rem)] left-6 z-50 flex items-center gap-3 pointer-events-none">
+          <div className="flex items-baseline gap-1 px-4 py-2 rounded-full bg-black/20 border border-white/10 backdrop-blur-md shadow-sm pointer-events-auto">
             <span className="text-xl font-normal text-emerald-100 tabular-nums">
               {progress.cycleProgress}
             </span>
@@ -149,6 +151,17 @@ function SessionContent() {
               {progress.cycleTotal}
             </span>
           </div>
+
+          {/* Restart Button - specific to left side */}
+          {totalCount > 0 && (
+            <button
+              onClick={reset}
+              className="flex items-center justify-center w-11 h-11 rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white/70 hover:text-white hover:bg-white/5 transition-all active:scale-90 pointer-events-auto"
+              aria-label="Recommencer"
+            >
+              <RotateCcw size={20} />
+            </button>
+          )}
         </div>
       )}
 
