@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment, Sparkles, ContactShadows } from "@react-three/drei";
+import { Environment, Sparkles, ContactShadows, Stars, Trail } from "@react-three/drei";
 import { useRef, useState, useMemo, useEffect, useCallback } from "react";
 import * as THREE from "three";
 import { useSpring, animated, config } from "@react-spring/three";
@@ -21,7 +21,7 @@ interface PearlProps {
 const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0], tapProgress }: PearlProps) => {
     const meshRef = useRef<THREE.Mesh>(null);
 
-    const scale = activeProgress.to((p: number) => 0.52 + (0.48 * p));
+    const scale = activeProgress.to((p: number) => 0.72 + (0.68 * p));
     const roughness = activeProgress.to((p: number) => 0.25 - (0.17 * p));
     const metalness = activeProgress.to((p: number) => 0.05 + (0.10 * p));
     const transmission = activeProgress.to((p: number) => 0.4 + (0.4 * p));
@@ -133,6 +133,73 @@ const ConnectionString = memo(({ radius, spacing, windowRange }: { radius: numbe
 });
 
 ConnectionString.displayName = "ConnectionString";
+
+const ShootingStar = () => {
+    const ref = useRef<THREE.Mesh>(null);
+    const [active, setActive] = useState(false);
+
+    // Randomize start delay and position
+    const reset = useCallback(() => {
+        if (!ref.current) return;
+        const x = (Math.random() - 0.5) * 100;
+        const y = (Math.random() - 0.5) * 60 + 20; // High in the sky
+        const z = -40 - Math.random() * 40;
+        ref.current.position.set(x, y, z);
+        setActive(false);
+
+        // Random timeout before next launch 5s to 15s
+        setTimeout(() => setActive(true), Math.random() * 10000 + 5000);
+    }, []);
+
+    useEffect(() => {
+        reset();
+    }, [reset]);
+
+    useFrame((state, delta) => {
+        if (!active || !ref.current) return;
+
+        // Move across screen
+        ref.current.position.x -= delta * 60; // Fast!
+        ref.current.position.y -= delta * 20; // Downward slope
+
+        // If out of bounds, reset
+        if (ref.current.position.x < -60) {
+            reset();
+        }
+    });
+
+    if (!active) return null;
+
+    return (
+        <Trail
+            width={3}
+            length={12}
+            color={new THREE.Color("#fbbf24")}
+            attenuation={(t) => t * t}
+        >
+            <mesh ref={ref}>
+                <sphereGeometry args={[0.2, 8, 8]} />
+                <meshStandardMaterial color="#fbbf24" emissive="#fbbf24" emissiveIntensity={5} toneMapped={false} />
+            </mesh>
+        </Trail>
+    );
+};
+
+const StarryNightBackground = memo(() => {
+    return (
+        <group>
+            <color attach="background" args={['#000000']} />
+            {/* Dense star field */}
+            <Stars radius={120} depth={60} count={8000} factor={4} saturation={0} fade speed={0.5} />
+            {/* Periodic shooting stars */}
+            <ShootingStar />
+            <ShootingStar />
+            <ShootingStar />
+        </group>
+    );
+});
+StarryNightBackground.displayName = "StarryNightBackground";
+
 
 interface BeadSceneProps {
     presetId: string;
@@ -305,9 +372,8 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, o
                     tapProgress={tapProgress}
                 />
 
-                <Sparkles count={40} scale={15} size={1} speed={0.05} opacity={0.15} />
-                <ContactShadows position={[0, -8, 0]} opacity={0.3} scale={25} blur={3} far={10} color="#000" />
-                <fog attach="fog" args={['#020617', 8, 28]} />
+                <StarryNightBackground />
+                <fog attach="fog" args={['#000000', 30, 90]} />
             </Canvas>
         </div>
     );
