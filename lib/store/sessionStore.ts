@@ -33,7 +33,7 @@ export const useSessionStore = create<SessionState>()(
       isComplete: false,
       hapticsEnabled: true,
       soundEnabled: true,
-      beadColor: "#fb7185", // Default rose-400
+      beadColor: "#3b82f6", // Default Saphir blue
 
       setPreset: (preset) =>
         set({ preset, beadIndex: 0, totalCount: 0, isComplete: false }),
