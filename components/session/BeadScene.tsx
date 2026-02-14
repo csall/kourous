@@ -2,7 +2,7 @@
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Sparkles, ContactShadows } from "@react-three/drei";
-import { useRef, useState, useMemo } from "react";
+import { useRef, useState, useMemo, useEffect } from "react";
 import * as THREE from "three";
 import { useSpring, animated, config } from "@react-spring/three";
 
@@ -97,6 +97,7 @@ function ConnectionString({ radius, spacing, windowRange }: { radius: number, sp
 }
 
 interface BeadSceneProps {
+    presetId: string;
     count: number;
     total: number;
     onAdvance: () => void;
@@ -104,10 +105,18 @@ interface BeadSceneProps {
 }
 
 // Internal scene with animated state
-function SceneInternal({ count, dragAngle, beadWindow, CURVE_RADIUS, ANGLE_SPACING }: any) {
+function SceneInternal({ count, dragAngle, beadWindow, CURVE_RADIUS, ANGLE_SPACING, presetId }: any) {
+    const lastPresetId = useRef(presetId);
+    const shouldResetImmediate = lastPresetId.current !== presetId;
+
+    if (shouldResetImmediate) {
+        lastPresetId.current = presetId;
+    }
+
     // Smoothed transition for the "descend" effect
     const { smoothedCount } = useSpring({
         smoothedCount: count,
+        immediate: shouldResetImmediate,
         config: {
             mass: 4.5, // Heavy stone/glass feel
             tension: 100,
@@ -148,10 +157,17 @@ function SceneInternal({ count, dragAngle, beadWindow, CURVE_RADIUS, ANGLE_SPACI
     );
 }
 
-export function BeadScene({ count, total, onAdvance, onRewind }: BeadSceneProps) {
+export function BeadScene({ presetId, count, total, onAdvance, onRewind }: BeadSceneProps) {
     const [dragY, setDragY] = useState(0);
+    const [isReady, setIsReady] = useState(false);
     const isDragging = useRef(false);
     const startY = useRef(0);
+
+    // Ensure we only mount the SceneInternal once the browser is ready
+    useEffect(() => {
+        const timer = setTimeout(() => setIsReady(true), 200);
+        return () => clearTimeout(timer);
+    }, []);
 
     const CURVE_RADIUS = 12;
     // Dramatically wider spacing to show only ~4 pearls in the viewport
@@ -210,6 +226,10 @@ export function BeadScene({ count, total, onAdvance, onRewind }: BeadSceneProps)
         config: { mass: 1, tension: 500, friction: 35 }
     });
 
+    if (!isReady) {
+        return <div className="h-full w-full bg-[#020617]" />;
+    }
+
     return (
         <div
             className="h-full w-full cursor-ns-resize touch-none select-none"
@@ -219,14 +239,23 @@ export function BeadScene({ count, total, onAdvance, onRewind }: BeadSceneProps)
             onPointerLeave={handlePointerUp}
         >
             <Canvas
+                key="main-bead-canvas"
                 shadows
                 camera={{
-                    position: [0, 0, 11], // Pulled back slightly
-                    fov: typeof window !== 'undefined' && window.innerWidth < 768 ? 48 : 35
+                    position: [0, 0, 11],
+                    fov: 38
                 }}
-                gl={{ antialias: true, alpha: true }}
+                gl={{
+                    antialias: true,
+                    alpha: true,
+                    powerPreference: "high-performance",
+                    preserveDrawingBuffer: true
+                }}
+                onCreated={(state) => {
+                    state.gl.setClearColor('#020617');
+                }}
+                style={{ width: '100%', height: '100%' }}
             >
-                <color attach="background" args={['#020617']} />
                 <ambientLight intensity={0.25} />
                 <spotLight position={[10, 25, 15]} angle={0.3} penumbra={1} intensity={2.5} castShadow />
                 <pointLight position={[-10, 5, -10]} intensity={1.5} color="#f43f5e" />
@@ -234,6 +263,7 @@ export function BeadScene({ count, total, onAdvance, onRewind }: BeadSceneProps)
                 <Environment preset="city" />
 
                 <SceneInternal
+                    presetId={presetId}
                     count={count}
                     dragAngle={dragAngleSpring}
                     beadWindow={beadWindow}

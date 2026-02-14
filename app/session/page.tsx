@@ -1,7 +1,7 @@
 "use client";
 
 import { useSessionStore } from "@/lib/store/sessionStore";
-import { BeadScene } from "@/components/session/BeadScene";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { CompletionView } from "@/components/session/CompletionView";
 import { ProgressGauge } from "@/components/session/ProgressGauge";
@@ -15,8 +15,31 @@ import { FullscreenModal } from "@/components/ui/FullscreenModal";
 import { LibraryContent } from "@/components/library/LibraryContent";
 import { SettingsContent } from "@/components/settings/SettingsContent";
 
+const BeadScene = dynamic(
+  () => import("@/components/session/BeadScene").then((mod) => mod.BeadScene),
+  { ssr: false }
+);
+
 function SessionContent() {
   const searchParams = useSearchParams();
+  const [isMounted, setIsMounted] = useState(false);
+  const [hasHydrated, setHasHydrated] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    // Wait for Zustand hydration
+    const unsub = useSessionStore.persist.onFinishHydration(() => {
+      setHasHydrated(true);
+    });
+
+    // Fallback if already hydrated
+    if (useSessionStore.persist.hasHydrated()) {
+      setHasHydrated(true);
+    }
+
+    return () => unsub();
+  }, []);
+
   const {
     preset,
     isComplete,
@@ -72,6 +95,20 @@ function SessionContent() {
     rewind();
   };
 
+  if (!isMounted || !hasHydrated) {
+    return (
+      <div className="fixed inset-0 bg-slate-950 flex items-center justify-center">
+        <motion.div
+          animate={{ opacity: [0.3, 0.6, 0.3] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+          className="text-slate-500 font-light tracking-widest uppercase text-xs"
+        >
+          Kourous
+        </motion.div>
+      </div>
+    );
+  }
+
   if (!preset || !progress) return null;
 
   return (
@@ -81,10 +118,7 @@ function SessionContent() {
     >
       {/* Top Right Navigation */}
       <div className="absolute top-[calc(env(safe-area-inset-top)+1rem)] right-6 z-50 flex items-center gap-2">
-        <motion.div
-          animate={{ opacity: showControls ? 1 : 0, y: showControls ? 0 : -10 }}
-          className="flex items-center gap-2"
-        >
+        <div className="flex items-center gap-2">
           <button
             onClick={() => setIsLibraryOpen(true)}
             className="flex items-center justify-center w-11 h-11 rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white/70 hover:text-white hover:bg-white/5 transition-all active:scale-90"
@@ -99,7 +133,7 @@ function SessionContent() {
           >
             <Settings size={20} />
           </button>
-        </motion.div>
+        </div>
       </div>
 
       {/* Library Modal */}
@@ -126,9 +160,10 @@ function SessionContent() {
 
       {/* 3D Scene Layer */}
       <div className="absolute inset-0 z-0">
-        {!isComplete && (
+        {!isComplete && preset && progress && (
           <BeadScene
-            count={progress.cycleProgress}
+            presetId={preset.id}
+            count={progress.cycleProgress - 1}
             total={progress.cycleTotal}
             onAdvance={handleAdvance}
             onRewind={handleRewind}
