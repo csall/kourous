@@ -14,6 +14,7 @@ const navItems = [
 
 export function BottomNav() {
     const pathname = usePathname();
+    if (pathname.startsWith("/session")) return null;
 
     return (
         <nav className="fixed bottom-0 left-0 right-0 z-50 pb-[env(safe-area-inset-bottom)]">
@@ -43,8 +44,8 @@ export function BottomNav() {
                                     <Icon
                                         size={22}
                                         className={`transition-colors ${isActive
-                                                ? "text-rose-400"
-                                                : "text-slate-400 group-hover:text-slate-300"
+                                            ? "text-rose-400"
+                                            : "text-slate-400 group-hover:text-slate-300"
                                             }`}
                                     />
                                 </div>
@@ -52,8 +53,8 @@ export function BottomNav() {
                                 {/* Label */}
                                 <span
                                     className={`relative z-10 text-[10px] font-medium transition-colors ${isActive
-                                            ? "text-rose-400"
-                                            : "text-slate-500 group-hover:text-slate-400"
+                                        ? "text-rose-400"
+                                        : "text-slate-500 group-hover:text-slate-400"
                                         }`}
                                 >
                                     {item.label}

@@ -2,7 +2,7 @@
 
 import { useSessionStore } from "@/lib/store/sessionStore";
 import { BeadScene } from "@/components/session/BeadScene";
-import { SessionControls } from "@/components/session/SessionControls";
+import Link from "next/link";
 import { CompletionView } from "@/components/session/CompletionView";
 import { ProgressGauge } from "@/components/session/ProgressGauge";
 import { useSessionProgress } from "@/lib/hooks/useSessionProgress";
@@ -10,7 +10,10 @@ import { useClickSound } from "@/lib/hooks/useClickSound";
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { Settings } from "lucide-react";
+import { BookOpen, Settings } from "lucide-react";
+import { FullscreenModal } from "@/components/ui/FullscreenModal";
+import { LibraryContent } from "@/components/library/LibraryContent";
+import { SettingsContent } from "@/components/settings/SettingsContent";
 
 function SessionContent() {
   const searchParams = useSearchParams();
@@ -31,7 +34,8 @@ function SessionContent() {
   const progress = useSessionProgress();
   const { playClick } = useClickSound(soundEnabled);
   const [showControls, setShowControls] = useState(true);
-  const [showSettings, setShowSettings] = useState(false);
+  const [isLibraryOpen, setIsLibraryOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // Load group or invocation from URL parameter
   useEffect(() => {
@@ -75,82 +79,50 @@ function SessionContent() {
       className="fixed inset-0 flex flex-col bg-slate-950 text-slate-100 overflow-hidden font-sans select-none"
       onPointerMove={() => setShowControls(true)}
     >
-      {/* Floating Settings Icon */}
-      <motion.button
-        initial={{ opacity: 0 }}
-        animate={{ opacity: showControls ? 1 : 0 }}
-        className="absolute top-[calc(env(safe-area-inset-top)+1rem)] right-6 z-50 pointer-events-auto flex items-center justify-center w-12 h-12 rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white/70 hover:text-white hover:bg-white/5 transition-all active:scale-90"
-        onClick={() => setShowSettings(!showSettings)}
-        aria-label="Settings"
+      {/* Top Right Navigation */}
+      <div className="absolute top-[calc(env(safe-area-inset-top)+1rem)] right-6 z-50 flex items-center gap-2">
+        <motion.div
+          animate={{ opacity: showControls ? 1 : 0, y: showControls ? 0 : -10 }}
+          className="flex items-center gap-2"
+        >
+          <button
+            onClick={() => setIsLibraryOpen(true)}
+            className="flex items-center justify-center w-11 h-11 rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white/70 hover:text-white hover:bg-white/5 transition-all active:scale-90"
+            aria-label="Bibliothèque"
+          >
+            <BookOpen size={20} />
+          </button>
+          <button
+            onClick={() => setIsSettingsOpen(true)}
+            className="flex items-center justify-center w-11 h-11 rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white/70 hover:text-white hover:bg-white/5 transition-all active:scale-90"
+            aria-label="Réglages"
+          >
+            <Settings size={20} />
+          </button>
+        </motion.div>
+      </div>
+
+      {/* Library Modal */}
+      <FullscreenModal
+        isOpen={isLibraryOpen}
+        onClose={() => setIsLibraryOpen(false)}
+        title="Bibliothèque"
       >
-        <Settings size={20} />
-      </motion.button>
+        <LibraryContent onSessionStart={() => setIsLibraryOpen(false)} />
+      </FullscreenModal>
 
       {/* Settings Modal */}
-      <AnimatePresence>
-        {showSettings && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="absolute inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
-            onClick={() => setShowSettings(false)}
-          >
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h2 className="text-2xl font-light mb-6 text-white">Paramètres</h2>
+      <FullscreenModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        title="Réglages"
+      >
+        <SettingsContent />
+      </FullscreenModal>
 
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5">
-                  <span className="text-white/90">Son</span>
-                  <button
-                    onClick={toggleSound}
-                    className={`w-12 h-6 rounded-full transition-all ${soundEnabled ? 'bg-rose-500' : 'bg-white/20'
-                      }`}
-                  >
-                    <div className={`w-5 h-5 rounded-full bg-white shadow-lg transform transition-transform ${soundEnabled ? 'translate-x-6' : 'translate-x-0.5'
-                      }`} />
-                  </button>
-                </div>
+      {/* Session Controls removed as they are now in the settings modal */}
 
-                <div className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/5">
-                  <span className="text-white/90">Vibrations</span>
-                  <button
-                    onClick={toggleHaptics}
-                    className={`w-12 h-6 rounded-full transition-all ${hapticsEnabled ? 'bg-rose-500' : 'bg-white/20'
-                      }`}
-                  >
-                    <div className={`w-5 h-5 rounded-full bg-white shadow-lg transform transition-transform ${hapticsEnabled ? 'translate-x-6' : 'translate-x-0.5'
-                      }`} />
-                  </button>
-                </div>
 
-                <button
-                  onClick={() => {
-                    reset();
-                    setShowSettings(false);
-                  }}
-                  className="w-full p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500/20 transition-all active:scale-95"
-                >
-                  Réinitialiser la session
-                </button>
-              </div>
-
-              <button
-                onClick={() => setShowSettings(false)}
-                className="mt-6 w-full p-3 rounded-xl bg-white/5 text-white/70 hover:bg-white/10 transition-all"
-              >
-                Fermer
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* 3D Scene Layer */}
       <div className="absolute inset-0 z-0">
@@ -169,7 +141,7 @@ function SessionContent() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: showControls ? 1 : 0.3 }}
-          className="absolute bottom-[calc(env(safe-area-inset-bottom)+8rem)] left-0 right-0 z-20 text-center pointer-events-none px-6"
+          className="absolute bottom-[calc(env(safe-area-inset-bottom)+6.5rem)] left-0 right-0 z-20 text-center pointer-events-none px-6"
         >
           <motion.div
             key={`label-${progress.cycleProgress}`}
@@ -194,7 +166,7 @@ function SessionContent() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: showControls ? 1 : 0.3 }}
-          className="absolute bottom-[calc(env(safe-area-inset-bottom)+5rem)] left-0 right-0 z-20 flex justify-center pointer-events-none"
+          className="absolute bottom-[calc(env(safe-area-inset-bottom)+3.5rem)] left-0 right-0 z-20 flex justify-center pointer-events-none"
         >
           <ProgressGauge
             current={progress.cycleProgress}

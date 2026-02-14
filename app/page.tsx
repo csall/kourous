@@ -2,8 +2,12 @@
 
 import { useSessionStore } from "@/lib/store/sessionStore";
 import { motion } from "framer-motion";
-import { TrendingUp, Calendar, Flame, ArrowRight, Sparkles, BookOpen } from "lucide-react";
+import { TrendingUp, Calendar, Flame, ArrowRight, Sparkles, BookOpen, Settings } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
+import { FullscreenModal } from "@/components/ui/FullscreenModal";
+import { LibraryContent } from "@/components/library/LibraryContent";
+import { SettingsContent } from "@/components/settings/SettingsContent";
 
 const sessions = [
   {
@@ -27,9 +31,39 @@ const sessions = [
 ];
 
 export default function Dashboard() {
+  const [isLibraryOpen, setIsLibraryOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 overflow-y-auto overflow-x-hidden" style={{ WebkitOverflowScrolling: 'touch' }}>
       <div className="max-w-4xl mx-auto px-6 py-8 pb-32 space-y-8">
+        {/* Top Right Navigation */}
+        <div className="absolute top-[calc(env(safe-area-inset-top)+1rem)] right-6 z-50 flex items-center gap-2">
+          <button
+            onClick={() => setIsLibraryOpen(true)}
+            className="flex items-center justify-center w-11 h-11 rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white/70 hover:text-white hover:bg-white/5 transition-all active:scale-90"
+            aria-label="Bibliothèque"
+          >
+            <BookOpen size={20} />
+          </button>
+          <button
+            onClick={() => setIsSettingsOpen(true)}
+            className="flex items-center justify-center w-11 h-11 rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white/70 hover:text-white hover:bg-white/5 transition-all active:scale-90"
+            aria-label="Réglages"
+          >
+            <Settings size={20} />
+          </button>
+        </div>
+
+        {/* Modals */}
+        <FullscreenModal isOpen={isLibraryOpen} onClose={() => setIsLibraryOpen(false)} title="Bibliothèque">
+          <LibraryContent onSessionStart={() => setIsLibraryOpen(false)} />
+        </FullscreenModal>
+
+        <FullscreenModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} title="Réglages">
+          <SettingsContent />
+        </FullscreenModal>
+
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -81,10 +115,13 @@ export default function Dashboard() {
         >
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-light">Sessions récentes</h2>
-            <Link href="/library" className="text-sm text-slate-400 hover:text-white transition-colors flex items-center gap-1">
+            <button
+              onClick={() => setIsLibraryOpen(true)}
+              className="text-sm text-slate-400 hover:text-white transition-colors flex items-center gap-1"
+            >
               Voir tout
               <ArrowRight size={14} />
-            </Link>
+            </button>
           </div>
 
           <div className="space-y-3">
