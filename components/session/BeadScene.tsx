@@ -4,7 +4,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Sparkles, ContactShadows, Stars, Trail } from "@react-three/drei";
 import { useRef, useState, useMemo, useEffect, useCallback } from "react";
 import * as THREE from "three";
-import { useSpring, animated, config } from "@react-spring/three";
+import { useSpring, animated, config, SpringValue } from "@react-spring/three";
 import React, { memo } from "react";
 
 const AnimatedSparkles = animated(Sparkles);
@@ -21,7 +21,7 @@ interface PearlProps {
 const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0], tapProgress }: PearlProps) => {
     const meshRef = useRef<THREE.Mesh>(null);
 
-    const scale = activeProgress.to((p: number) => 0.72 + (0.68 * p));
+    const scale = useMemo(() => new SpringValue(0.75), []); // Constant size 0.75
     const roughness = activeProgress.to((p: number) => 0.25 - (0.17 * p));
     const metalness = activeProgress.to((p: number) => 0.05 + (0.10 * p));
     const transmission = activeProgress.to((p: number) => 0.4 + (0.4 * p));
