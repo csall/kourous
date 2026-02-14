@@ -5,52 +5,55 @@ import { Environment, Sparkles, ContactShadows } from "@react-three/drei";
 import { useRef, useState, useMemo, useEffect } from "react";
 import * as THREE from "three";
 import { useSpring, animated, config } from "@react-spring/three";
+import React, { memo } from "react";
+
+const AnimatedSparkles = animated(Sparkles);
 
 interface PearlProps {
     position: [number, number, number];
-    isActive: boolean;
+    activeProgress: any; // SpringValue<number>
     color: string;
+    idx: number;
     rotation?: [number, number, number];
 }
 
-function Pearl({ position, isActive, color, rotation = [0, 0, 0] }: PearlProps) {
+const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0] }: PearlProps) => {
     const meshRef = useRef<THREE.Mesh>(null);
 
-    const { scale, roughness, metalness, colorSpring, transmission, thickness } = useSpring({
-        scale: isActive ? 0.8 : 0.42,
-        roughness: isActive ? 0.08 : 0.25,
-        metalness: isActive ? 0.15 : 0.05,
-        transmission: isActive ? 0.8 : 0.4,
-        thickness: isActive ? 1.0 : 2,
-        colorSpring: isActive ? color : "#a1a1aa",
-        config: {
-            mass: 2.5,
-            tension: 120,
-            friction: 30,
-        }
+    const scale = activeProgress.to((p: number) => 0.42 + (0.38 * p));
+    const roughness = activeProgress.to((p: number) => 0.25 - (0.17 * p));
+    const metalness = activeProgress.to((p: number) => 0.05 + (0.10 * p));
+    const transmission = activeProgress.to((p: number) => 0.4 + (0.4 * p));
+    const thickness = activeProgress.to((p: number) => 2.0 - (1.0 * p));
+    const emissiveIntensity = activeProgress.to((p: number) => 0.3 * p);
+    const envMapIntensity = activeProgress.to((p: number) => 1 + (4 * p));
+
+    // Smoothly interpolate between base gray and active color
+    const interpolatedColor = activeProgress.to((p: number) => {
+        const c1 = new THREE.Color("#71717a");
+        const c2 = new THREE.Color(color);
+        return "#" + c1.lerp(c2, p).getHexString();
     });
 
-    const floatOffset = useMemo(() => Math.random() * Math.PI * 2, []);
+    const floatOffset = useMemo(() => (idx * 0.77) % (Math.PI * 2), [idx]);
 
     useFrame((state) => {
         if (!meshRef.current) return;
         const time = state.clock.getElapsedTime();
 
-        // Complex floating animation
-        const floatY = Math.sin(time * 1.2 + floatOffset) * 0.05;
-        const floatZ = Math.cos(time * 0.8 + floatOffset) * 0.03;
-        meshRef.current.position.y = position[1] + floatY;
-        meshRef.current.position.z = position[2] + floatZ;
+        // Subtle rotation only, no floating
+        meshRef.current.rotation.y += 0.003;
+        meshRef.current.rotation.z += 0.001;
 
-        // Subtle rotation
-        meshRef.current.rotation.y += 0.005;
-        meshRef.current.rotation.z += 0.002;
-
-        if (isActive) {
-            const pulse = 1 + Math.sin(time * 3) * 0.02;
-            meshRef.current.scale.set(pulse * scale.get(), pulse * scale.get(), pulse * scale.get());
+        // Pulse effect based on activeProgress
+        const p = activeProgress.get();
+        if (p > 0.01) {
+            const pulse = 1 + Math.sin(time * 2.5) * (0.015 * p);
+            const currentScale = scale.get() * pulse;
+            meshRef.current.scale.set(currentScale, currentScale, currentScale);
         } else {
-            meshRef.current.scale.set(scale.get(), scale.get(), scale.get());
+            const currentScale = scale.get();
+            meshRef.current.scale.set(currentScale, currentScale, currentScale);
         }
     });
 
@@ -64,26 +67,34 @@ function Pearl({ position, isActive, color, rotation = [0, 0, 0] }: PearlProps) 
         >
             <sphereGeometry args={[1, 64, 64]} />
             <animated.meshPhysicalMaterial
-                color={colorSpring}
+                color={interpolatedColor}
                 roughness={roughness}
                 metalness={metalness}
                 transmission={transmission}
                 thickness={thickness}
-                envMapIntensity={isActive ? 5 : 1}
+                envMapIntensity={envMapIntensity}
                 clearcoat={1}
                 clearcoatRoughness={0.1}
                 reflectivity={1}
-                emissive={colorSpring}
-                emissiveIntensity={isActive ? 0.3 : 0}
+                emissive={interpolatedColor}
+                emissiveIntensity={emissiveIntensity}
             />
-            {isActive && (
-                <Sparkles count={10} scale={2} size={1.5} speed={0.4} opacity={0.4} color="#ffffff" />
-            )}
+            {/* Sparkles intensity tied to activeProgress */}
+            <AnimatedSparkles
+                count={10}
+                scale={2}
+                size={1.5}
+                speed={0.4}
+                opacity={activeProgress.to((p: number) => p * 0.4)}
+                color="#ffffff"
+            />
         </animated.mesh>
     );
-}
+});
 
-function ConnectionString({ radius, spacing, windowRange }: { radius: number, spacing: number, windowRange: number[] }) {
+Pearl.displayName = "Pearl";
+
+const ConnectionString = memo(({ radius, spacing, windowRange }: { radius: number, spacing: number, windowRange: number[] }) => {
     const curve = useMemo(() => {
         const points = [];
         // The curve should follow the same (count - idx) logic but in local space
@@ -111,7 +122,9 @@ function ConnectionString({ radius, spacing, windowRange }: { radius: number, sp
             />
         </mesh>
     );
-}
+});
+
+ConnectionString.displayName = "ConnectionString";
 
 interface BeadSceneProps {
     presetId: string;
@@ -123,23 +136,22 @@ interface BeadSceneProps {
 }
 
 // Internal scene with animated state
-function SceneInternal({ count, dragAngle, beadWindow, CURVE_RADIUS, ANGLE_SPACING, presetId, beadColor }: any) {
+function SceneInternal({ count, beadWindow, CURVE_RADIUS, ANGLE_SPACING, presetId, beadColor }: any) {
     const lastPresetId = useRef(presetId);
     const lastCount = useRef(count);
 
     const [{ smoothedCount }, api] = useSpring(() => ({
         smoothedCount: count,
         config: {
-            mass: 5,
-            tension: 120,
-            friction: 50,
+            mass: 1.2,
+            tension: 110,
+            friction: 35,
             precision: 0.0001
         }
     }));
 
     // Handle jumps and preset changes
     useEffect(() => {
-        // A jump is defined as a change in presetId OR a sudden skip in count (> 1)
         const isJump = lastPresetId.current !== presetId || Math.abs(lastCount.current - count) > 1;
 
         api.start({
@@ -151,14 +163,8 @@ function SceneInternal({ count, dragAngle, beadWindow, CURVE_RADIUS, ANGLE_SPACI
         lastCount.current = count;
     }, [count, presetId, api]);
 
-    const { groupRotation } = useSpring({
-        groupRotation: dragAngle,
-        config: { mass: 1, tension: 200, friction: 25 }
-    });
-
     return (
-        <animated.group rotation-x={groupRotation}>
-            <ConnectionString radius={CURVE_RADIUS} spacing={ANGLE_SPACING} windowRange={beadWindow} />
+        <group>
             {beadWindow.map((idx: number) => {
                 return (
                     <animated.group
@@ -178,94 +184,63 @@ function SceneInternal({ count, dragAngle, beadWindow, CURVE_RADIUS, ANGLE_SPACI
                     >
                         <Pearl
                             position={[0, 0, 0]}
-                            isActive={idx === count}
-                            color={idx === count ? beadColor : "#71717a"}
+                            idx={idx}
+                            activeProgress={smoothedCount.to((sc: number) => {
+                                // Smooth bell curve centered at current index
+                                // Result is 1.0 when sc === idx, and falls off quickly
+                                const dist = Math.abs(idx - sc);
+                                return Math.max(0, 1 - dist * 1.2);
+                            })}
+                            color={beadColor}
                         />
                     </animated.group>
                 );
             })}
-        </animated.group>
+        </group>
     );
 }
 
-export function BeadScene({ presetId, count, total, beadColor, onAdvance, onRewind }: BeadSceneProps) {
-    const [dragY, setDragY] = useState(0);
-    const [isReady, setIsReady] = useState(false);
+export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, onRewind }: BeadSceneProps) => {
     const isDragging = useRef(false);
-    const startY = useRef(0);
+    const hasTrippedAdvance = useRef(false);
 
-    // Ensure we only mount the SceneInternal once the browser is ready
-    useEffect(() => {
-        const timer = setTimeout(() => setIsReady(true), 200);
-        return () => clearTimeout(timer);
-    }, []);
-
-    const CURVE_RADIUS = 12;
-    // Dramatically wider spacing to show only ~4 pearls in the viewport
-    const ANGLE_SPACING = 0.55;
+    const CURVE_RADIUS = 13.5;
+    const ANGLE_SPACING = 0.48;
 
     const beadWindow = useMemo(() => {
         const window: number[] = [];
-        const radius = 4; // Show exactly a few beads
+        const radius = 1; // Show exactly 3 beads (prev, current, next) for continuity
         for (let i = count - radius; i <= count + radius; i++) {
             window.push(i);
         }
         return window;
     }, [count]);
+    const startPos = useRef({ x: 0, y: 0 });
 
     const handlePointerDown = (e: React.PointerEvent) => {
         isDragging.current = true;
-        startY.current = e.clientY;
-    };
-
-    const handlePointerMove = (e: React.PointerEvent) => {
-        if (!isDragging.current) return;
-        const delta = e.clientY - startY.current;
-
-        const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-        const sensitivity = isMobile ? 0.003 : 0.002;
-        const currentDrag = delta * sensitivity;
-
-        // Note: drag logic remains the same (pull down = advance)
-        if (currentDrag > ANGLE_SPACING / 1.2) {
-            onAdvance();
-            startY.current = e.clientY - (ANGLE_SPACING / sensitivity);
-            setDragY(currentDrag - ANGLE_SPACING);
-        } else if (currentDrag < -ANGLE_SPACING / 1.2) {
-            onRewind();
-            startY.current = e.clientY + (ANGLE_SPACING / sensitivity);
-            setDragY(currentDrag + ANGLE_SPACING);
-        } else {
-            setDragY(currentDrag);
-        }
+        startPos.current = { x: e.clientX, y: e.clientY };
     };
 
     const handlePointerUp = (e: React.PointerEvent) => {
         if (!isDragging.current) return;
 
-        const deltaY = Math.abs(e.clientY - startY.current);
-        if (deltaY < 10) { // Slightly more tolerant tap
+        const deltaX = Math.abs(e.clientX - startPos.current.x);
+        const deltaY = Math.abs(e.clientY - startPos.current.y);
+        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+
+        // Default tap action (advance)
+        if (distance < 10) {
             onAdvance();
         }
 
         isDragging.current = false;
-        setDragY(0);
     };
-
-    const { dragAngleSpring } = useSpring({
-        dragAngleSpring: dragY,
-        config: { mass: 1, tension: 500, friction: 35 }
-    });
-
-    if (!isReady) {
-        return <div className="h-full w-full bg-[#020617]" />;
-    }
 
     return (
         <div
-            className="h-full w-full cursor-ns-resize touch-none select-none"
+            className="h-full w-full cursor-pointer touch-none select-none"
             onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
             onPointerLeave={handlePointerUp}
         >
@@ -273,8 +248,8 @@ export function BeadScene({ presetId, count, total, beadColor, onAdvance, onRewi
                 key="main-bead-canvas"
                 shadows
                 camera={{
-                    position: [0, 0, 11],
-                    fov: 38
+                    position: [0, 0, 8],
+                    fov: 32
                 }}
                 gl={{
                     antialias: true,
@@ -297,7 +272,6 @@ export function BeadScene({ presetId, count, total, beadColor, onAdvance, onRewi
                     presetId={presetId}
                     count={count}
                     beadColor={beadColor}
-                    dragAngle={dragAngleSpring}
                     beadWindow={beadWindow}
                     CURVE_RADIUS={CURVE_RADIUS}
                     ANGLE_SPACING={ANGLE_SPACING}
@@ -309,4 +283,6 @@ export function BeadScene({ presetId, count, total, beadColor, onAdvance, onRewi
             </Canvas>
         </div>
     );
-}
+});
+
+BeadScene.displayName = "BeadScene";

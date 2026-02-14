@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 
 export function useClickSound(enabled: boolean = true) {
     const audioContextRef = useRef<AudioContext | null>(null);
@@ -18,7 +18,7 @@ export function useClickSound(enabled: boolean = true) {
         };
     }, []);
 
-    const playClick = () => {
+    const playClick = useCallback(() => {
         if (!enabled || !audioContextRef.current) return;
 
         if (audioContextRef.current.state === 'suspended') {
@@ -67,7 +67,7 @@ export function useClickSound(enabled: boolean = true) {
         osc.start(now);
         noise.start(now);
         osc.stop(now + 0.1);
-    };
+    }, [enabled]);
 
     return { playClick };
 }

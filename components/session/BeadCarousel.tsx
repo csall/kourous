@@ -21,28 +21,10 @@ export function BeadCarousel({
     onAdvance,
     onRewind,
 }: BeadCarouselProps) {
-    const controls = useAnimation();
-    const [direction, setDirection] = useState(0); // 1 = down (advance), -1 = up (rewind)
-
     // Trigger animation when count changes
     useEffect(() => {
-        controls.start("center");
-    }, [count, controls]);
-
-    const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
-        // Threshold for swipe
-        if (info.offset.y > 50) {
-            // Dragged down -> Advance (pulling bead down to get next one? No, usually dragging content up reveals next item below, or dragging down reveals previous above?)
-            // Let's mimic a physical rosary. You pull the bead *towards* you to count it. 
-            // If you hold the rosary vertically, you pull the bead down.
-            onAdvance();
-        } else if (info.offset.y < -50 && onRewind) {
-            // Dragged up -> Rewind
-            onRewind();
-        } else {
-            controls.start("center");
-        }
-    };
+        // We could trigger animations here if needed, but AnimatePresence handles key changes
+    }, [count]);
 
     // Generate a few beads to show context
     // We only really animate the "current" key change, but we can simulate a list.
@@ -58,18 +40,15 @@ export function BeadCarousel({
 
             {/* Main Bead Area */}
             <div className="z-10 flex flex-col items-center justify-center relative h-96 w-full cursor-grab active:cursor-grabbing">
-                <AnimatePresence mode="popLayout" custom={direction}>
+                <AnimatePresence mode="popLayout">
                     <motion.div
                         key={count}
                         initial={{ y: -100, opacity: 0, scale: 0.5, filter: "blur(10px)" }}
                         animate={{ y: 0, opacity: 1, scale: 1, filter: "blur(0px)" }}
                         exit={{ y: 120, opacity: 0, scale: 0.5, filter: "blur(10px)" }} // Exit downwards as if pulled
                         transition={{ type: "spring", stiffness: 350, damping: 25, mass: 1 }}
-                        drag="y"
-                        dragConstraints={{ top: 0, bottom: 0 }}
-                        dragElastic={0.2}
-                        onDragEnd={handleDragEnd}
-                        className="relative flex h-40 w-40 items-center justify-center"
+                        onClick={onAdvance}
+                        className="relative flex h-40 w-40 items-center justify-center cursor-pointer"
                     >
                         {/* The Bead Itself */}
                         <div className="h-32 w-32 rounded-full bg-gradient-to-br from-rose-500 to-amber-600 shadow-[0_0_50px_rgba(244,63,94,0.4)] ring-1 ring-white/20 backdrop-blur-md flex items-center justify-center">

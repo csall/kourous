@@ -7,7 +7,7 @@ import { CompletionView } from "@/components/session/CompletionView";
 import { ProgressGauge } from "@/components/session/ProgressGauge";
 import { useSessionProgress } from "@/lib/hooks/useSessionProgress";
 import { useClickSound } from "@/lib/hooks/useClickSound";
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, Suspense, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, Settings } from "lucide-react";
@@ -79,22 +79,22 @@ function SessionContent() {
     return () => clearTimeout(timer);
   }, [progress?.cycleProgress]);
 
-  const handleAdvance = () => {
+  const handleAdvance = useCallback(() => {
     setShowControls(true);
     if (hapticsEnabled && typeof navigator !== "undefined" && navigator.vibrate) {
       navigator.vibrate(15);
     }
     if (soundEnabled) playClick();
     advance();
-  };
+  }, [hapticsEnabled, soundEnabled, playClick, advance]);
 
-  const handleRewind = () => {
+  const handleRewind = useCallback(() => {
     setShowControls(true);
     if (hapticsEnabled && typeof navigator !== "undefined" && navigator.vibrate) {
       navigator.vibrate(8);
     }
     rewind();
-  };
+  }, [hapticsEnabled, rewind]);
 
   if (!isMounted || !hasHydrated) {
     return (
