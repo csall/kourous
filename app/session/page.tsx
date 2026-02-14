@@ -180,21 +180,33 @@ function SessionContent() {
           animate={{ opacity: showControls ? 1 : 0.3 }}
           className="absolute bottom-[calc(env(safe-area-inset-bottom)+6.5rem)] left-0 right-0 z-20 text-center pointer-events-none px-6"
         >
-          <motion.div
-            key={`label-${progress.cycleProgress}`}
-            initial={{ opacity: 0, y: 15, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            className="space-y-2 bg-gradient-to-b from-transparent via-slate-950/40 to-slate-950/80 pb-6 pt-12"
-          >
-            <h2 className="text-3xl md:text-4xl font-light tracking-wide text-white/95 drop-shadow-2xl">
-              {progress.label}
-            </h2>
-            {progress.sublabel && (
-              <p className="text-xs md:text-sm uppercase tracking-[0.3em] text-white/50">
-                {progress.sublabel}
-              </p>
-            )}
-          </motion.div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={`${progress.label}-${progress.cycleProgress}`}
+              initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -20, filter: "blur(10px)" }}
+              transition={{
+                duration: 0.6,
+                ease: [0.22, 1, 0.36, 1] // Custom ease-out expo
+              }}
+              className="space-y-2 bg-gradient-to-b from-transparent via-slate-950/40 to-slate-950/80 pb-6 pt-12"
+            >
+              <h2 className="text-3xl md:text-4xl font-light tracking-wide text-white/95 drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+                {progress.label}
+              </h2>
+              {progress.sublabel && (
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.2 }}
+                  className="text-xs md:text-sm uppercase tracking-[0.3em] text-white/50"
+                >
+                  {progress.sublabel}
+                </motion.p>
+              )}
+            </motion.div>
+          </AnimatePresence>
         </motion.div>
       )}
 
@@ -220,12 +232,13 @@ function SessionContent() {
         {isComplete && (
           <motion.div
             key="complete"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="flex h-full items-center justify-center bg-slate-950 z-40 relative w-full"
+            initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
+            animate={{ opacity: 1, backdropFilter: "blur(20px)" }}
+            exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
+            transition={{ duration: 0.8, ease: "circOut" }}
+            className="fixed inset-0 flex items-center justify-center bg-slate-950/80 z-40 w-full"
           >
-            <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/20 to-transparent pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/40 to-transparent pointer-events-none" />
             <CompletionView onReset={reset} presetName={preset.name} />
           </motion.div>
         )}

@@ -30,12 +30,27 @@ function Pearl({ position, isActive, color, rotation = [0, 0, 0] }: PearlProps) 
         }
     });
 
+    const floatOffset = useMemo(() => Math.random() * Math.PI * 2, []);
+
     useFrame((state) => {
-        if (isActive && meshRef.current) {
-            const time = state.clock.getElapsedTime();
-            meshRef.current.position.y = position[1] + Math.sin(time * 2) * 0.04;
-            const pulse = 1 + Math.sin(time * 2.5) * 0.015;
+        if (!meshRef.current) return;
+        const time = state.clock.getElapsedTime();
+
+        // Complex floating animation
+        const floatY = Math.sin(time * 1.2 + floatOffset) * 0.05;
+        const floatZ = Math.cos(time * 0.8 + floatOffset) * 0.03;
+        meshRef.current.position.y = position[1] + floatY;
+        meshRef.current.position.z = position[2] + floatZ;
+
+        // Subtle rotation
+        meshRef.current.rotation.y += 0.005;
+        meshRef.current.rotation.z += 0.002;
+
+        if (isActive) {
+            const pulse = 1 + Math.sin(time * 3) * 0.02;
             meshRef.current.scale.set(pulse * scale.get(), pulse * scale.get(), pulse * scale.get());
+        } else {
+            meshRef.current.scale.set(scale.get(), scale.get(), scale.get());
         }
     });
 
@@ -54,10 +69,12 @@ function Pearl({ position, isActive, color, rotation = [0, 0, 0] }: PearlProps) 
                 metalness={metalness}
                 transmission={transmission}
                 thickness={thickness}
-                envMapIntensity={isActive ? 3 : 1}
+                envMapIntensity={isActive ? 5 : 1}
                 clearcoat={1}
                 clearcoatRoughness={0.1}
                 reflectivity={1}
+                emissive={colorSpring}
+                emissiveIntensity={isActive ? 0.3 : 0}
             />
             {isActive && (
                 <Sparkles count={10} scale={2} size={1.5} speed={0.4} opacity={0.4} color="#ffffff" />
@@ -108,26 +125,39 @@ interface BeadSceneProps {
 // Internal scene with animated state
 function SceneInternal({ count, dragAngle, beadWindow, CURVE_RADIUS, ANGLE_SPACING, presetId, beadColor }: any) {
     const lastPresetId = useRef(presetId);
-    const shouldResetImmediate = lastPresetId.current !== presetId;
+    const lastCount = useRef(count);
 
-    if (shouldResetImmediate) {
-        lastPresetId.current = presetId;
-    }
-
-    // Smoothed transition for the "descend" effect
-    const { smoothedCount } = useSpring({
+    const [{ smoothedCount }, api] = useSpring(() => ({
         smoothedCount: count,
-        immediate: shouldResetImmediate,
         config: {
-            mass: 4.5, // Heavy stone/glass feel
-            tension: 100,
-            friction: 40,
+            mass: 5,
+            tension: 120,
+            friction: 50,
             precision: 0.0001
         }
+    }));
+
+    // Handle jumps and preset changes
+    useEffect(() => {
+        // A jump is defined as a change in presetId OR a sudden skip in count (> 1)
+        const isJump = lastPresetId.current !== presetId || Math.abs(lastCount.current - count) > 1;
+
+        api.start({
+            smoothedCount: count,
+            immediate: isJump
+        });
+
+        lastPresetId.current = presetId;
+        lastCount.current = count;
+    }, [count, presetId, api]);
+
+    const { groupRotation } = useSpring({
+        groupRotation: dragAngle,
+        config: { mass: 1, tension: 200, friction: 25 }
     });
 
     return (
-        <animated.group rotation-x={dragAngle}>
+        <animated.group rotation-x={groupRotation}>
             <ConnectionString radius={CURVE_RADIUS} spacing={ANGLE_SPACING} windowRange={beadWindow} />
             {beadWindow.map((idx: number) => {
                 return (
