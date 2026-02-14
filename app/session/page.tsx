@@ -155,7 +155,10 @@ function SessionContent() {
           {/* Restart Button - specific to left side */}
           {totalCount > 0 && (
             <button
-              onClick={reset}
+              onClick={(e) => {
+                e.stopPropagation();
+                reset();
+              }}
               className="flex items-center justify-center w-11 h-11 rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white/70 hover:text-white hover:bg-white/5 transition-all active:scale-90 pointer-events-auto"
               aria-label="Recommencer"
             >
