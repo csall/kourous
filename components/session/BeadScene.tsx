@@ -2,7 +2,7 @@
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Sparkles, ContactShadows } from "@react-three/drei";
-import { useRef, useState, useMemo, useEffect } from "react";
+import { useRef, useState, useMemo, useEffect, useCallback } from "react";
 import * as THREE from "three";
 import { useSpring, animated, config } from "@react-spring/three";
 import React, { memo } from "react";
@@ -15,9 +15,10 @@ interface PearlProps {
     color: string;
     idx: number;
     rotation?: [number, number, number];
+    tapProgress: any; // SpringValue<number>
 }
 
-const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0] }: PearlProps) => {
+const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0], tapProgress }: PearlProps) => {
     const meshRef = useRef<THREE.Mesh>(null);
 
     const scale = activeProgress.to((p: number) => 0.42 + (0.38 * p));
@@ -25,8 +26,16 @@ const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0]
     const metalness = activeProgress.to((p: number) => 0.05 + (0.10 * p));
     const transmission = activeProgress.to((p: number) => 0.4 + (0.4 * p));
     const thickness = activeProgress.to((p: number) => 2.0 - (1.0 * p));
-    const emissiveIntensity = activeProgress.to((p: number) => 0.3 * p);
+
+    // Combine activeProgress and tapProgress for emissive and zoom effect
+    const emissiveIntensity = tapProgress.to((t: number) => {
+        const base = activeProgress.get() * 0.3;
+        return base + (t * 2.5); // High flash on tap
+    });
+
     const envMapIntensity = activeProgress.to((p: number) => 1 + (4 * p));
+
+    const tapScale = tapProgress.to((t: number) => 1 + (t * 0.15)); // Punch up effect
 
     // Smoothly interpolate between base gray and active color
     const interpolatedColor = activeProgress.to((p: number) => {
@@ -45,16 +54,12 @@ const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0]
         meshRef.current.rotation.y += 0.003;
         meshRef.current.rotation.z += 0.001;
 
-        // Pulse effect based on activeProgress
+        // Pulse effect based on activeProgress + tap impact
         const p = activeProgress.get();
-        if (p > 0.01) {
-            const pulse = 1 + Math.sin(time * 2.5) * (0.015 * p);
-            const currentScale = scale.get() * pulse;
-            meshRef.current.scale.set(currentScale, currentScale, currentScale);
-        } else {
-            const currentScale = scale.get();
-            meshRef.current.scale.set(currentScale, currentScale, currentScale);
-        }
+        const t = tapProgress.get();
+        const pulse = 1 + (Math.sin(time * 2.5) * (0.015 * p));
+        const currentScale = scale.get() * pulse * tapScale.get();
+        meshRef.current.scale.set(currentScale, currentScale, currentScale);
     });
 
     return (
@@ -85,7 +90,11 @@ const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0]
                 scale={2}
                 size={1.5}
                 speed={0.4}
-                opacity={activeProgress.to((p: number) => p * 0.4)}
+                opacity={activeProgress.to((p: number) => {
+                    const base = p * 0.4;
+                    const tapBurst = tapProgress.get() * 0.6;
+                    return Math.min(1, base + tapBurst);
+                })}
                 color="#ffffff"
             />
         </animated.mesh>
@@ -136,7 +145,7 @@ interface BeadSceneProps {
 }
 
 // Internal scene with animated state
-function SceneInternal({ count, beadWindow, CURVE_RADIUS, ANGLE_SPACING, presetId, beadColor }: any) {
+function SceneInternal({ count, beadWindow, CURVE_RADIUS, ANGLE_SPACING, presetId, beadColor, tapProgress }: any) {
     const lastPresetId = useRef(presetId);
     const lastCount = useRef(count);
 
@@ -185,6 +194,7 @@ function SceneInternal({ count, beadWindow, CURVE_RADIUS, ANGLE_SPACING, presetI
                         <Pearl
                             position={[0, 0, 0]}
                             idx={idx}
+                            tapProgress={tapProgress}
                             activeProgress={smoothedCount.to((sc: number) => {
                                 // Smooth bell curve centered at current index
                                 // Result is 1.0 when sc === idx, and falls off quickly
@@ -203,6 +213,23 @@ function SceneInternal({ count, beadWindow, CURVE_RADIUS, ANGLE_SPACING, presetI
 export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, onRewind }: BeadSceneProps) => {
     const isDragging = useRef(false);
     const hasTrippedAdvance = useRef(false);
+
+    const [{ tapProgress }, tapApi] = useSpring(() => ({
+        tapProgress: 0,
+        config: config.stiff
+    }));
+
+    const triggerTapAnimation = useCallback(() => {
+        tapApi.start({
+            from: { tapProgress: 1 },
+            to: { tapProgress: 0 },
+            config: {
+                mass: 1,
+                tension: 400,
+                friction: 20
+            }
+        });
+    }, [tapApi]);
 
     const CURVE_RADIUS = 13.5;
     const ANGLE_SPACING = 0.48;
@@ -231,6 +258,7 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, o
 
         // Default tap action (advance)
         if (distance < 10) {
+            triggerTapAnimation();
             onAdvance();
         }
 
@@ -275,6 +303,7 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, o
                     beadWindow={beadWindow}
                     CURVE_RADIUS={CURVE_RADIUS}
                     ANGLE_SPACING={ANGLE_SPACING}
+                    tapProgress={tapProgress}
                 />
 
                 <Sparkles count={40} scale={15} size={1} speed={0.05} opacity={0.15} />
