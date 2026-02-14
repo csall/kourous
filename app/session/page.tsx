@@ -4,18 +4,23 @@ import { useSessionStore } from "@/lib/store/sessionStore";
 import { BeadScene } from "@/components/session/BeadScene";
 import { SessionControls } from "@/components/session/SessionControls";
 import { CompletionView } from "@/components/session/CompletionView";
+import { ProgressGauge } from "@/components/session/ProgressGauge";
 import { useSessionProgress } from "@/lib/hooks/useSessionProgress";
 import { useClickSound } from "@/lib/hooks/useClickSound";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { Settings } from "lucide-react";
 
-export default function Home() {
+function SessionContent() {
+  const searchParams = useSearchParams();
   const {
     preset,
     isComplete,
     hapticsEnabled,
     soundEnabled,
+    setPresetByGroupId,
+    setPresetByInvocationId,
     advance,
     rewind,
     reset,
@@ -27,6 +32,18 @@ export default function Home() {
   const { playClick } = useClickSound(soundEnabled);
   const [showControls, setShowControls] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
+
+  // Load group or invocation from URL parameter
+  useEffect(() => {
+    const groupId = searchParams.get("group");
+    const invocationId = searchParams.get("invocation");
+
+    if (groupId) {
+      setPresetByGroupId(groupId);
+    } else if (invocationId) {
+      setPresetByInvocationId(invocationId);
+    }
+  }, [searchParams, setPresetByGroupId, setPresetByInvocationId]);
 
   // Auto-hide controls after 3 seconds of inactivity
   useEffect(() => {
@@ -152,7 +169,7 @@ export default function Home() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: showControls ? 1 : 0.3 }}
-          className="absolute bottom-[calc(env(safe-area-inset-bottom)+5rem)] left-0 right-0 z-20 text-center pointer-events-none px-6"
+          className="absolute bottom-[calc(env(safe-area-inset-bottom)+8rem)] left-0 right-0 z-20 text-center pointer-events-none px-6"
         >
           <motion.div
             key={`label-${progress.cycleProgress}`}
@@ -172,26 +189,20 @@ export default function Home() {
         </motion.div>
       )}
 
-      {/* Minimal Progress Bar */}
+      {/* Progress Gauge */}
       {!isComplete && (
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: showControls ? 1 : 0.2 }}
-          className="absolute bottom-[calc(env(safe-area-inset-bottom)+1rem)] left-0 right-0 z-20 px-6"
+          animate={{ opacity: showControls ? 1 : 0.3 }}
+          className="absolute bottom-[calc(env(safe-area-inset-bottom)+5rem)] left-0 right-0 z-20 flex justify-center pointer-events-none"
         >
-          <div className="flex items-center justify-center gap-3">
-            <div className="flex-1 max-w-xs h-1 bg-white/10 rounded-full overflow-hidden backdrop-blur-sm">
-              <motion.div
-                className="h-full bg-gradient-to-r from-rose-500 to-rose-400"
-                initial={{ width: 0 }}
-                animate={{ width: `${(progress.cycleProgress / progress.cycleTotal) * 100}%` }}
-                transition={{ duration: 0.3 }}
-              />
-            </div>
-            <span className="text-[10px] text-white/40 font-mono tracking-tighter min-w-[3rem] text-right">
-              {progress.cycleProgress} / {progress.cycleTotal}
-            </span>
-          </div>
+          <ProgressGauge
+            current={progress.cycleProgress}
+            total={progress.cycleTotal}
+            size={70}
+            strokeWidth={4}
+            color="#fb7185" // rose-400
+          />
         </motion.div>
       )}
 
@@ -211,5 +222,13 @@ export default function Home() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="fixed inset-0 bg-slate-950" />}>
+      <SessionContent />
+    </Suspense>
   );
 }

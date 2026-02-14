@@ -12,6 +12,8 @@ export type SessionState = {
 
   setPreset: (preset: PrayerPreset) => void;
   setPresetById: (id: string) => void;
+  setPresetByGroupId: (groupId: string) => void;
+  setPresetByInvocationId: (invocationId: string) => void;
   advance: () => void;
   rewind: () => void;
   reset: () => void;
@@ -34,7 +36,7 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     // First check default presets
     let found = prayerPresets.find((p) => p.id === id);
 
-    // If not found, check custom prayers
+    // If not found, check custom prayers (legacy)
     if (!found) {
       const customPrayer = usePrayerStore.getState().customPrayers.find((p) => p.id === id);
       if (customPrayer) {
@@ -42,11 +44,13 @@ export const useSessionStore = create<SessionState>((set, get) => ({
         found = {
           id: customPrayer.id,
           name: customPrayer.name,
+          description: `${customPrayer.goal} répétitions`,
           totalBeads: customPrayer.goal,
-          prayers: [
+          cycles: 1,
+          sequence: [
             {
-              text: customPrayer.name,
-              count: customPrayer.goal,
+              label: customPrayer.name,
+              repetitions: customPrayer.goal,
             },
           ],
         };
@@ -56,6 +60,63 @@ export const useSessionStore = create<SessionState>((set, get) => ({
     if (found) {
       set({ preset: found, beadIndex: 0, totalCount: 0, isComplete: false });
     }
+  },
+
+  setPresetByGroupId: (groupId: string) => {
+    // Import at runtime to avoid circular dependencies
+    const { useInvocationStore } = require("./invocationStore");
+    const { groups, getInvocationById } = useInvocationStore.getState();
+
+    const group = groups.find((g: any) => g.id === groupId);
+    if (!group) return;
+
+    // Build sequence from group invocations
+    const sequence = group.invocations.map((inv: any) => {
+      const invocation = getInvocationById(inv.invocationId);
+      return {
+        label: invocation?.name || "Invocation",
+        repetitions: inv.repetitions,
+      };
+    });
+
+    const totalBeads = group.invocations.reduce((sum: number, inv: any) => sum + inv.repetitions, 0);
+
+    const preset: PrayerPreset = {
+      id: group.id,
+      name: group.name,
+      description: group.description || `${group.invocations.length} invocations`,
+      totalBeads,
+      cycles: group.invocations.length,
+      sequence,
+    };
+
+    set({ preset, beadIndex: 0, totalCount: 0, isComplete: false });
+  },
+
+  setPresetByInvocationId: (invocationId: string) => {
+    // Import at runtime to avoid circular dependencies
+    const { useInvocationStore } = require("./invocationStore");
+    const { getInvocationById } = useInvocationStore.getState();
+
+    const invocation = getInvocationById(invocationId);
+    if (!invocation) return;
+
+    // Create a preset from a single invocation
+    const preset: PrayerPreset = {
+      id: invocation.id,
+      name: invocation.name,
+      description: `${invocation.repetitions} répétitions`,
+      totalBeads: invocation.repetitions,
+      cycles: 1,
+      sequence: [
+        {
+          label: invocation.name,
+          repetitions: invocation.repetitions,
+        },
+      ],
+    };
+
+    set({ preset, beadIndex: 0, totalCount: 0, isComplete: false });
   },
 
   advance: () => {

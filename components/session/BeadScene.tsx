@@ -130,7 +130,7 @@ function SceneInternal({ count, dragAngle, beadWindow, CURVE_RADIUS, ANGLE_SPACI
                             const zPos = (Math.cos(angle) * CURVE_RADIUS) - CURVE_RADIUS;
                             return [0, yPos, zPos];
                         })}
-                        rotation={smoothedCount.to(sc => [
+                        rotation={smoothedCount.to((sc: number) => [
                             idx * 0.8 + (idx - sc) * 1.5,
                             idx * 0.4,
                             0
