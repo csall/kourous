@@ -1,0 +1,14 @@
+# Fichiers et dossiers à ignorer par Git
+.next/
+node_modules/
+.env
+.DS_Store
+*.log
+
+# Ignorer les fichiers de build
+out/
+build/
+dist/
+
+# Ignorer les fichiers système
+Thumbs.db

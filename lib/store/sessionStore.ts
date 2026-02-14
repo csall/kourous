@@ -1,0 +1,89 @@
+import { create } from "zustand";
+import { prayerPresets, type PrayerPreset } from "@/lib/data/prayerPresets";
+import { usePrayerStore } from "./prayerStore";
+
+export type SessionState = {
+  preset: PrayerPreset | null;
+  beadIndex: number; // Current bead in the cycle (0 to totalBeads - 1)
+  totalCount: number; // Cumulative count
+  isComplete: boolean;
+  hapticsEnabled: boolean;
+  soundEnabled: boolean;
+
+  setPreset: (preset: PrayerPreset) => void;
+  setPresetById: (id: string) => void;
+  advance: () => void;
+  rewind: () => void;
+  reset: () => void;
+  toggleHaptics: () => void;
+  toggleSound: () => void;
+};
+
+export const useSessionStore = create<SessionState>((set, get) => ({
+  preset: prayerPresets[0], // Default to first preset
+  beadIndex: 0,
+  totalCount: 0,
+  isComplete: false,
+  hapticsEnabled: true,
+  soundEnabled: true,
+
+  setPreset: (preset) =>
+    set({ preset, beadIndex: 0, totalCount: 0, isComplete: false }),
+
+  setPresetById: (id) => {
+    // First check default presets
+    let found = prayerPresets.find((p) => p.id === id);
+
+    // If not found, check custom prayers
+    if (!found) {
+      const customPrayer = usePrayerStore.getState().customPrayers.find((p) => p.id === id);
+      if (customPrayer) {
+        // Create a dynamic preset from custom prayer
+        found = {
+          id: customPrayer.id,
+          name: customPrayer.name,
+          totalBeads: customPrayer.goal,
+          prayers: [
+            {
+              text: customPrayer.name,
+              count: customPrayer.goal,
+            },
+          ],
+        };
+      }
+    }
+
+    if (found) {
+      set({ preset: found, beadIndex: 0, totalCount: 0, isComplete: false });
+    }
+  },
+
+  advance: () => {
+    const { preset, totalCount, isComplete } = get();
+    if (!preset || isComplete) return;
+
+    const nextTotal = totalCount + 1;
+    const completed = nextTotal >= preset.totalBeads;
+
+    set({
+      totalCount: nextTotal,
+      beadIndex: nextTotal % preset.totalBeads, // Simplified for now, can be complex for multi-cycle
+      isComplete: completed,
+    });
+  },
+
+  rewind: () => {
+    const { totalCount } = get();
+    if (totalCount <= 0) return;
+
+    set({
+      totalCount: totalCount - 1,
+      isComplete: false, // If we rewind, we are not complete
+    });
+  },
+
+  reset: () => set({ totalCount: 0, beadIndex: 0, isComplete: false }),
+
+  toggleHaptics: () => set((state) => ({ hapticsEnabled: !state.hapticsEnabled })),
+  toggleSound: () => set((state) => ({ soundEnabled: !state.soundEnabled })),
+}));

@@ -1,0 +1,44 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f8f4ef;
+  --foreground: #111322;
+  --surface: rgba(255, 255, 255, 0.92);
+  --card-border: rgba(255, 255, 255, 0.7);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #05070c;
+    --foreground: #f7f9ff;
+    --surface: rgba(10, 15, 35, 0.85);
+    --card-border: rgba(255, 255, 255, 0.08);
+  }
+}
+
+body {
+  background: radial-gradient(circle at 15% 20%, rgba(248, 191, 181, 0.35), transparent 55%),
+    radial-gradient(circle at 80% 0%, rgba(227, 219, 173, 0.4), transparent 45%),
+    linear-gradient(135deg, #fdfbf8, #f4f0eb 60%, #f0e6dd);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  min-height: 100vh;
+  overscroll-behavior: none; /* Prevent bounce on mobile */
+}
+
+/* 3D Canvas container overrides */
+canvas {
+    touch-action: none;
+}
+
+::selection {
+  background: rgba(244, 114, 182, 0.25);
+  color: var(--foreground);
+}
