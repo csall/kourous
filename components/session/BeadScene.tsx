@@ -1,13 +1,14 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment, Sparkles, ContactShadows, Stars, Trail } from "@react-three/drei";
+import { Environment, Sparkles, ContactShadows, Stars, Trail, Text, Billboard } from "@react-three/drei";
 import { useRef, useState, useMemo, useEffect, useCallback } from "react";
 import * as THREE from "three";
 import { useSpring, animated, config, SpringValue } from "@react-spring/three";
 import React, { memo } from "react";
 
 const AnimatedSparkles = animated(Sparkles);
+const AnimatedText = animated(Text);
 
 interface PearlProps {
     position: [number, number, number];
@@ -21,7 +22,7 @@ interface PearlProps {
 const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0], tapProgress }: PearlProps) => {
     const meshRef = useRef<THREE.Mesh>(null);
 
-    const scale = useMemo(() => new SpringValue(0.75), []); // Constant size 0.75
+    const scale = useMemo(() => new SpringValue(0.5), []); // Constant size 0.5
     const roughness = activeProgress.to((p: number) => 0.25 - (0.17 * p));
     const metalness = activeProgress.to((p: number) => 0.05 + (0.10 * p));
     const transmission = activeProgress.to((p: number) => 0.4 + (0.4 * p));
@@ -61,42 +62,43 @@ const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0]
         meshRef.current.scale.set(currentScale, currentScale, currentScale);
     });
 
+    // Text removed from Pearl for better ergonomics (moved to fixed HUD)
     return (
-        <animated.mesh
-            ref={meshRef}
-            position={position}
-            rotation={rotation}
-            castShadow
-            receiveShadow
-        >
-            <sphereGeometry args={[1, 64, 64]} />
-            <animated.meshPhysicalMaterial
-                color={interpolatedColor}
-                roughness={roughness}
-                metalness={metalness}
-                transmission={transmission}
-                thickness={thickness}
-                envMapIntensity={envMapIntensity}
-                clearcoat={1}
-                clearcoatRoughness={0.1}
-                reflectivity={1}
-                emissive={interpolatedColor}
-                emissiveIntensity={emissiveIntensity}
-            />
-            {/* Sparkles intensity tied to activeProgress */}
-            <AnimatedSparkles
-                count={10}
-                scale={2}
-                size={1.5}
-                speed={0.4}
-                opacity={activeProgress.to((p: number) => {
-                    const base = p * 0.4;
-                    const tapBurst = tapProgress.get() * 0.6;
-                    return Math.min(1, base + tapBurst);
-                })}
-                color="#ffffff"
-            />
-        </animated.mesh>
+        <group position={position} rotation={rotation}>
+            <animated.mesh
+                ref={meshRef}
+                castShadow
+                receiveShadow
+            >
+                <sphereGeometry args={[1, 64, 64]} />
+                <animated.meshPhysicalMaterial
+                    color={interpolatedColor}
+                    roughness={roughness}
+                    metalness={metalness}
+                    transmission={transmission}
+                    thickness={thickness}
+                    envMapIntensity={envMapIntensity}
+                    clearcoat={1}
+                    clearcoatRoughness={0.1}
+                    reflectivity={1}
+                    emissive={interpolatedColor}
+                    emissiveIntensity={emissiveIntensity}
+                />
+                {/* Sparkles intensity tied to activeProgress */}
+                <AnimatedSparkles
+                    count={10}
+                    scale={2}
+                    size={1.5}
+                    speed={0.4}
+                    opacity={activeProgress.to((p: number) => {
+                        const base = p * 0.4;
+                        const tapBurst = tapProgress.get() * 0.6;
+                        return Math.min(1, base + tapBurst);
+                    })}
+                    color="#ffffff"
+                />
+            </animated.mesh>
+        </group>
     );
 });
 
@@ -209,6 +211,37 @@ interface BeadSceneProps {
     onAdvance: () => void;
     onRewind: () => void;
 }
+
+const ActiveBeadCounter = ({ countSpring }: { countSpring: any }) => {
+    const textRef = useRef<any>(null);
+    const [lastVal, setLastVal] = useState(0);
+
+    useFrame(() => {
+        if (!textRef.current) return;
+        const current = Math.round(countSpring.get() + 1);
+        if (current !== lastVal) {
+            textRef.current.text = current.toString();
+            setLastVal(current);
+        }
+    });
+
+    return (
+        <group position={[0, 1.6, -1.0]}>
+            {/* Minimalist Counter */}
+            <Text
+                ref={textRef}
+                fontSize={0.35}
+                color="white"
+                anchorX="center"
+                anchorY="middle"
+                fillOpacity={0.4}
+                letterSpacing={0.15}
+            >
+                0
+            </Text>
+        </group>
+    );
+};
 
 // Internal scene with animated state
 function SceneInternal({ count, beadWindow, CURVE_RADIUS, ANGLE_SPACING, presetId, beadColor, tapProgress }: any) {

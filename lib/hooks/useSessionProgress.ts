@@ -34,7 +34,7 @@ export function useSessionProgress() {
             label: currentItem.label,
             sublabel: currentItem.transliteration,
             cycleTotal: currentItem.repetitions,
-            cycleProgress: beadsInCurrentCycle + 1, // 1-indexed for display
+            cycleProgress: beadsInCurrentCycle, // Start at 0
             cycleIndex: currentCycleIndex,
             totalCycles: preset.sequence.length
         };

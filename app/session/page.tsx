@@ -137,6 +137,21 @@ function SessionContent() {
         </div>
       </div>
 
+      {/* Top Left Counter */}
+      {!isComplete && (
+        <div className="absolute top-[calc(env(safe-area-inset-top)+1rem)] left-6 z-50 pointer-events-none">
+          <div className="flex items-baseline gap-1 px-4 py-2 rounded-full bg-black/20 border border-white/10 backdrop-blur-md shadow-sm">
+            <span className="text-xl font-normal text-emerald-100 tabular-nums">
+              {progress.cycleProgress}
+            </span>
+            <span className="text-sm text-white/20 font-light mx-0.5">/</span>
+            <span className="text-sm font-light text-white/40 tabular-nums">
+              {progress.cycleTotal}
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Library Modal */}
       <FullscreenModal
         isOpen={isLibraryOpen}
@@ -210,22 +225,7 @@ function SessionContent() {
         </motion.div>
       )}
 
-      {/* Progress Gauge */}
-      {!isComplete && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: showControls ? 1 : 0.3 }}
-          className="absolute bottom-[calc(env(safe-area-inset-bottom)+3.5rem)] left-0 right-0 z-20 flex justify-center pointer-events-none"
-        >
-          <ProgressGauge
-            current={progress.cycleProgress}
-            total={progress.cycleTotal}
-            size={70}
-            strokeWidth={4}
-            color={beadColor}
-          />
-        </motion.div>
-      )}
+
 
       {/* Completion View */}
       <AnimatePresence mode="wait">
