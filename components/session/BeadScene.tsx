@@ -21,7 +21,7 @@ interface PearlProps {
 const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0], tapProgress }: PearlProps) => {
     const meshRef = useRef<THREE.Mesh>(null);
 
-    const scale = activeProgress.to((p: number) => 0.42 + (0.38 * p));
+    const scale = activeProgress.to((p: number) => 0.52 + (0.48 * p));
     const roughness = activeProgress.to((p: number) => 0.25 - (0.17 * p));
     const metalness = activeProgress.to((p: number) => 0.05 + (0.10 * p));
     const transmission = activeProgress.to((p: number) => 0.4 + (0.4 * p));
@@ -35,7 +35,7 @@ const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0]
 
     const envMapIntensity = activeProgress.to((p: number) => 1 + (4 * p));
 
-    const tapScale = tapProgress.to((t: number) => 1 + (t * 0.15)); // Punch up effect
+    const tapScale = tapProgress.to((t: number) => 1 - (t * 0.50)); // Moderate shrink effect on tap (50%)
 
     // Smoothly interpolate between base gray and active color
     const interpolatedColor = activeProgress.to((p: number) => {
@@ -54,9 +54,8 @@ const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0]
         meshRef.current.rotation.y += 0.003;
         meshRef.current.rotation.z += 0.001;
 
-        // Pulse effect based on activeProgress + tap impact
+        // Pulse effect based on activeProgress + tap impact (shrink)
         const p = activeProgress.get();
-        const t = tapProgress.get();
         const pulse = 1 + (Math.sin(time * 2.5) * (0.015 * p));
         const currentScale = scale.get() * pulse * tapScale.get();
         meshRef.current.scale.set(currentScale, currentScale, currentScale);
