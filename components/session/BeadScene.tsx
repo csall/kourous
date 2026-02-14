@@ -22,7 +22,7 @@ function Pearl({ position, isActive, color, rotation = [0, 0, 0] }: PearlProps) 
         metalness: isActive ? 0.15 : 0.05,
         transmission: isActive ? 0.8 : 0.4,
         thickness: isActive ? 1.0 : 2,
-        colorSpring: isActive ? "#fb7185" : "#a1a1aa",
+        colorSpring: isActive ? color : "#a1a1aa",
         config: {
             mass: 2.5,
             tension: 120,
@@ -88,8 +88,8 @@ function ConnectionString({ radius, spacing, windowRange }: { radius: number, sp
                 color="#1a1a1e"
                 roughness={0.7}
                 metalness={0.2}
-                emissive="#fb7185"
-                emissiveIntensity={0.03}
+                emissive="#ffffff"
+                emissiveIntensity={0.01}
                 clearcoat={0.2}
             />
         </mesh>
@@ -100,12 +100,13 @@ interface BeadSceneProps {
     presetId: string;
     count: number;
     total: number;
+    beadColor: string;
     onAdvance: () => void;
     onRewind: () => void;
 }
 
 // Internal scene with animated state
-function SceneInternal({ count, dragAngle, beadWindow, CURVE_RADIUS, ANGLE_SPACING, presetId }: any) {
+function SceneInternal({ count, dragAngle, beadWindow, CURVE_RADIUS, ANGLE_SPACING, presetId, beadColor }: any) {
     const lastPresetId = useRef(presetId);
     const shouldResetImmediate = lastPresetId.current !== presetId;
 
@@ -148,7 +149,7 @@ function SceneInternal({ count, dragAngle, beadWindow, CURVE_RADIUS, ANGLE_SPACI
                         <Pearl
                             position={[0, 0, 0]}
                             isActive={idx === count}
-                            color={idx === count ? "#fb7185" : "#71717a"}
+                            color={idx === count ? beadColor : "#71717a"}
                         />
                     </animated.group>
                 );
@@ -157,7 +158,7 @@ function SceneInternal({ count, dragAngle, beadWindow, CURVE_RADIUS, ANGLE_SPACI
     );
 }
 
-export function BeadScene({ presetId, count, total, onAdvance, onRewind }: BeadSceneProps) {
+export function BeadScene({ presetId, count, total, beadColor, onAdvance, onRewind }: BeadSceneProps) {
     const [dragY, setDragY] = useState(0);
     const [isReady, setIsReady] = useState(false);
     const isDragging = useRef(false);
@@ -265,6 +266,7 @@ export function BeadScene({ presetId, count, total, onAdvance, onRewind }: BeadS
                 <SceneInternal
                     presetId={presetId}
                     count={count}
+                    beadColor={beadColor}
                     dragAngle={dragAngleSpring}
                     beadWindow={beadWindow}
                     CURVE_RADIUS={CURVE_RADIUS}

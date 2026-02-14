@@ -51,7 +51,8 @@ function SessionContent() {
     rewind,
     reset,
     toggleHaptics,
-    toggleSound
+    toggleSound,
+    beadColor
   } = useSessionStore();
 
   const progress = useSessionProgress();
@@ -165,6 +166,7 @@ function SessionContent() {
             presetId={preset.id}
             count={progress.cycleProgress - 1}
             total={progress.cycleTotal}
+            beadColor={beadColor}
             onAdvance={handleAdvance}
             onRewind={handleRewind}
           />
@@ -208,7 +210,7 @@ function SessionContent() {
             total={progress.cycleTotal}
             size={70}
             strokeWidth={4}
-            color="#fb7185" // rose-400
+            color={beadColor}
           />
         </motion.div>
       )}

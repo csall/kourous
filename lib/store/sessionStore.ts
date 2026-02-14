@@ -10,6 +10,7 @@ export type SessionState = {
   isComplete: boolean;
   hapticsEnabled: boolean;
   soundEnabled: boolean;
+  beadColor: string;
 
   setPreset: (preset: PrayerPreset) => void;
   setPresetById: (id: string) => void;
@@ -20,6 +21,7 @@ export type SessionState = {
   reset: () => void;
   toggleHaptics: () => void;
   toggleSound: () => void;
+  setBeadColor: (color: string) => void;
 };
 
 export const useSessionStore = create<SessionState>()(
@@ -31,6 +33,7 @@ export const useSessionStore = create<SessionState>()(
       isComplete: false,
       hapticsEnabled: true,
       soundEnabled: true,
+      beadColor: "#fb7185", // Default rose-400
 
       setPreset: (preset) =>
         set({ preset, beadIndex: 0, totalCount: 0, isComplete: false }),
@@ -150,6 +153,7 @@ export const useSessionStore = create<SessionState>()(
 
       toggleHaptics: () => set((state) => ({ hapticsEnabled: !state.hapticsEnabled })),
       toggleSound: () => set((state) => ({ soundEnabled: !state.soundEnabled })),
+      setBeadColor: (color: string) => set({ beadColor: color }),
     }),
     {
       name: "kourous-session-storage",
