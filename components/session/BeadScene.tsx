@@ -191,9 +191,15 @@ const ShootingStar = () => {
 const StarryNightBackground = memo(() => {
     return (
         <group>
-            <color attach="background" args={['#000000']} />
-            {/* Dense star field */}
-            <Stars radius={120} depth={60} count={8000} factor={4} saturation={0} fade speed={0.5} />
+            <color attach="background" args={['#020617']} />
+            {/* Deep Universe background */}
+            <Stars radius={250} depth={100} count={5000} factor={4} saturation={1} fade speed={0.3} />
+            <Stars radius={100} depth={50} count={3000} factor={3} saturation={0} fade speed={1} />
+
+            {/* Floating spiritual dust - Gold & Blue */}
+            <Sparkles count={80} scale={25} size={2} speed={0.4} opacity={0.2} color="#fbbf24" />
+            <Sparkles count={150} scale={35} size={4} speed={0.2} opacity={0.1} color="#6366f1" />
+
             {/* Periodic shooting stars */}
             <ShootingStar />
             <ShootingStar />

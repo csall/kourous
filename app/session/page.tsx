@@ -141,30 +141,47 @@ function SessionContent() {
       </div>
 
       {/* Top Left Counter & Controls */}
+
       {!isComplete && (
-        <div className="absolute top-[calc(env(safe-area-inset-top)+1rem)] left-6 z-50 flex items-center gap-3 pointer-events-none">
-          <div className="flex items-baseline gap-1 px-4 py-2 rounded-full bg-black/20 border border-white/10 backdrop-blur-md shadow-sm pointer-events-auto">
-            <span className="text-xl font-normal text-emerald-100 tabular-nums">
-              {progress.cycleProgress}
-            </span>
-            <span className="text-sm text-white/20 font-light mx-0.5">/</span>
-            <span className="text-sm font-light text-white/40 tabular-nums">
-              {progress.cycleTotal}
-            </span>
+        <div className="absolute top-[calc(env(safe-area-inset-top)+1rem)] left-6 z-50 flex flex-col items-start gap-2 pointer-events-none">
+          <div className="flex items-center gap-3">
+            <div className="flex items-baseline gap-1 px-4 py-2 rounded-full bg-black/20 border border-white/10 backdrop-blur-md shadow-sm pointer-events-auto">
+              <span className="text-xl font-normal text-emerald-100 tabular-nums">
+                {progress.cycleProgress}
+              </span>
+              <span className="text-sm text-white/20 font-light mx-0.5">/</span>
+              <span className="text-sm font-light text-white/40 tabular-nums">
+                {progress.cycleTotal}
+              </span>
+            </div>
+
+            {/* Restart Button - specific to left side */}
+            {totalCount > 0 && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  reset();
+                }}
+                className="flex items-center justify-center w-11 h-11 rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white/70 hover:text-white hover:bg-white/5 transition-all active:scale-90 pointer-events-auto"
+                aria-label="Recommencer"
+              >
+                <RotateCcw size={20} />
+              </button>
+            )}
           </div>
 
-          {/* Restart Button - specific to left side */}
-          {totalCount > 0 && (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                reset();
-              }}
-              className="flex items-center justify-center w-11 h-11 rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white/70 hover:text-white hover:bg-white/5 transition-all active:scale-90 pointer-events-auto"
-              aria-label="Recommencer"
-            >
-              <RotateCcw size={20} />
-            </button>
+          {/* Miniature Title under counter */}
+          {showTitle && (
+            <div className="px-1 max-w-[220px]">
+              <p className="text-[10px] uppercase tracking-widest text-white/40 font-medium truncate">
+                {progress.label}
+              </p>
+              {progress.sublabel && (
+                <p className="text-[9px] text-white/20 font-light truncate mt-0.5">
+                  {progress.sublabel}
+                </p>
+              )}
+            </div>
           )}
         </div>
       )}
@@ -206,44 +223,46 @@ function SessionContent() {
       </div>
 
       {/* Prayer Text Overlay - Independent Pulse per Increment */}
-      {!isComplete && showTitle && totalCount > 0 && (
-        <div
-          className="absolute top-1/2 right-[max(1rem,env(safe-area-inset-right))] -translate-y-1/2 z-20 text-right pointer-events-none w-[35%] min-w-[120px]"
-        >
-          <AnimatePresence mode="popLayout">
-            <motion.div
-              key={totalCount}
-              initial={{ y: 50, opacity: 0, filter: "blur(5px)" }}
-              animate={{
-                y: -100, // Continuous upward movement
-                opacity: [0, 1, 1, 0], // Fade in, stay, fade out
-                filter: "blur(0px)"
-              }}
-              transition={{
-                y: { duration: 0.8, ease: "linear" }, // Constant speed up
-                opacity: { duration: 0.8, times: [0, 0.2, 0.7, 1] }, // Visibility curve
-                filter: { duration: 0.4 }
-              }}
-              exit={{ opacity: 0, transition: { duration: 0.1 } }}
-              className="space-y-1"
-            >
-              <h2 className="text-lg md:text-2xl font-medium tracking-wide text-white/95 drop-shadow-md leading-tight">
-                {progress.label}
-              </h2>
-              {progress.sublabel && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.1 }}
-                  className="text-[11px] md:text-sm text-white/70 font-light leading-snug"
-                >
-                  {progress.sublabel}
-                </motion.p>
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      )}
+      {
+        !isComplete && showTitle && totalCount > 0 && (
+          <div
+            className="absolute top-1/2 right-[max(1rem,env(safe-area-inset-right))] -translate-y-1/2 z-20 text-right pointer-events-none w-[35%] min-w-[120px]"
+          >
+            <AnimatePresence mode="popLayout">
+              <motion.div
+                key={totalCount}
+                initial={{ y: 50, opacity: 0, filter: "blur(5px)" }}
+                animate={{
+                  y: -100, // Continuous upward movement
+                  opacity: [0, 1, 1, 0], // Fade in, stay, fade out
+                  filter: "blur(0px)"
+                }}
+                transition={{
+                  y: { duration: 0.8, ease: "linear" }, // Constant speed up
+                  opacity: { duration: 0.8, times: [0, 0.2, 0.7, 1] }, // Visibility curve
+                  filter: { duration: 0.4 }
+                }}
+                exit={{ opacity: 0, transition: { duration: 0.1 } }}
+                className="space-y-1"
+              >
+                <h2 className="text-lg md:text-2xl font-medium tracking-wide text-white/95 drop-shadow-md leading-tight">
+                  {progress.label}
+                </h2>
+                {progress.sublabel && (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                    className="text-[11px] md:text-sm text-white/70 font-light leading-snug"
+                  >
+                    {progress.sublabel}
+                  </motion.p>
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        )
+      }
 
 
 
@@ -263,7 +282,7 @@ function SessionContent() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </div >
   );
 }
 
