@@ -4,7 +4,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Environment, Sparkles, ContactShadows, Stars, Trail, Text, Billboard, Image as DreiImage } from "@react-three/drei";
 import { useRef, useState, useMemo, useEffect, useCallback } from "react";
 import * as THREE from "three";
-import { useSpring, animated, config, SpringValue } from "@react-spring/three";
+import { useSpring, animated, config, SpringValue, to } from "@react-spring/three";
 import React, { memo } from "react";
 
 const AnimatedSparkles = animated(Sparkles);
@@ -21,6 +21,7 @@ interface PearlProps {
 
 const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0], tapProgress }: PearlProps) => {
     const meshRef = useRef<THREE.Mesh>(null);
+    const groupRef = useRef<THREE.Group>(null);
 
     // Constant base size
     const BASE_SCALE = 0.3;
@@ -31,18 +32,16 @@ const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0]
     const thickness = activeProgress.to((p: number) => 2.0 - (1.0 * p));
 
     // Combine activeProgress and tapProgress for emissive and zoom effect
-    const emissiveIntensity = tapProgress.to((t: number) => {
-        const base = activeProgress.get() * 0.3;
-        return base + (t * 2.5); // High flash on tap
+    const emissivePulse = activeProgress.to((p: number) => {
+        // Soft ebb and flow of light from the core
+        return p * 0.8;
     });
 
-    const envMapIntensity = activeProgress.to((p: number) => 1 + (4 * p));
-
-    const tapScale = tapProgress.to((t: number) => 1 - (Math.max(0, t) * 0.50)); // Moderate shrink effect on tap (50%)
+    const envMapIntensity = activeProgress.to((p: number) => 1 + (6 * p)); // High reflection on active
 
     // Smoothly interpolate between base gray and active color
     const interpolatedColor = activeProgress.to((p: number) => {
-        const c1 = new THREE.Color("#71717a");
+        const c1 = new THREE.Color("#52525b");
         const c2 = new THREE.Color(color);
         return "#" + c1.lerp(c2, p).getHexString();
     });
@@ -50,25 +49,48 @@ const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0]
     const floatOffset = useMemo(() => (idx * 0.77) % (Math.PI * 2), [idx]);
 
     useFrame((state) => {
-        if (!meshRef.current) return;
+        if (!meshRef.current || !groupRef.current) return;
 
-        // Subtle rotation only, no floating
-        meshRef.current.rotation.y += 0.003;
-        meshRef.current.rotation.z += 0.001;
+        const time = state.clock.getElapsedTime();
+        const p = activeProgress.get();
+
+        // 1. Dynamic rotation speed
+        const rotationSpeed = 1 + (p * 4.0); // Spin faster and more elegantly when active
+        meshRef.current.rotation.y += 0.005 * rotationSpeed;
+        meshRef.current.rotation.z += 0.002 * rotationSpeed;
+
+        // 2. Weightless Float (Modern replacement for physical enlargement)
+        if (p > 0.01) {
+            // Subtle Y-axis bobbing
+            const bob = Math.sin(time * 2.5 + floatOffset) * 0.15 * p;
+            meshRef.current.position.y = bob;
+
+            // Subtle "wobble" to show it's energized
+            meshRef.current.rotation.x = Math.sin(time * 1.5) * 0.1 * p;
+        } else {
+            meshRef.current.position.y = THREE.MathUtils.lerp(meshRef.current.position.y, 0, 0.1);
+        }
     });
 
-    // Bind scale directly to the spring for rock-solid consistency
-    const animatedScale = tapProgress.to((t: number) => {
-        const s = BASE_SCALE * (1 - (Math.max(0, t) * 0.5));
+    // Tap effects (shrink and flash) are now isolated to the active bead using activeProgress as a mask
+    const animatedScale = to([activeProgress, tapProgress], (ap, tp) => {
+        const tapImpact = tp * Math.pow(ap, 3); // Sharp falloff
+        const s = BASE_SCALE * (1 - (Math.max(0, tapImpact) * 0.35));
         return [s, s, s];
     });
 
-    // Text removed from Pearl for better ergonomics (moved to fixed HUD)
     return (
-        <group position={position} rotation={rotation}>
+        <group ref={groupRef} position={position} rotation={rotation}>
+            {/* Soft Pointlight ONLY for the active bead - Creates a localized aura */}
+            <animated.pointLight
+                intensity={activeProgress.to((p: number) => p * 2.0)}
+                distance={2}
+                color={color}
+            />
+
             <animated.mesh
                 ref={meshRef}
-                scale={animatedScale}
+                scale={animatedScale as any}
                 castShadow
                 receiveShadow
             >
@@ -81,30 +103,29 @@ const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0]
                     thickness={thickness}
                     envMapIntensity={envMapIntensity}
                     clearcoat={1}
-                    clearcoatRoughness={0.1}
+                    clearcoatRoughness={0.05}
                     reflectivity={1}
                     emissive={interpolatedColor}
-                    emissiveIntensity={emissiveIntensity}
-                />
-                {/* Sparkles intensity tied to activeProgress */}
-                <AnimatedSparkles
-                    count={8}
-                    scale={1.2}
-                    size={1.5}
-                    speed={0.4}
-                    opacity={activeProgress.to((p: number) => {
-                        const base = p * 0.3; // Subtle base glow
-                        const tapBurst = tapProgress.get() * 0.5;
-                        return Math.min(1, base + tapBurst);
+                    emissiveIntensity={to([activeProgress, tapProgress], (ap, tp) => {
+                        // Base core light + Tap flash (masked for active only)
+                        return ap * 0.5 + (tp * 5.0 * Math.pow(ap, 3));
                     })}
-                    color="#ffffff"
+                />
+
+                {/* Concentrated Spiritual Particles for active bead */}
+                <AnimatedSparkles
+                    count={activeProgress.to((p: number) => Math.floor(p * 20) + 4)}
+                    scale={activeProgress.to((p: number) => 0.8 + p * 0.5)}
+                    size={activeProgress.to((p: number) => 1.5 + p * 1.5)}
+                    speed={activeProgress.to((p: number) => 0.4 + p * 0.8)}
+                    opacity={activeProgress.to((p: number) => 0.2 + p * 0.6)}
+                    color={color}
                 />
 
             </animated.mesh>
         </group>
     );
 });
-
 Pearl.displayName = "Pearl";
 
 const ConnectionString = memo(({ radius }: { radius: number }) => {
@@ -279,7 +300,7 @@ function SceneInternal({ count, beadWindow, total, presetId, beadColor, tapProgr
     }, [count, presetId, api]);
 
     const radius = 8; // Tighter radius for closer look
-    const angleStep = 0.25; // Condensed spacing as requested
+    const angleStep = 0.1; // Maximum condensation for a dense holy look
 
     return (
         <group>
@@ -362,7 +383,7 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, o
     // User requested "non moins" -> Reduced to 9 beads (Balanced)
     const beadWindow = useMemo(() => {
         const window: number[] = [];
-        const range = 4; // Render 4 before and 4 after (Total 9)
+        const range = 8; // Render 8 before and 8 after (Total 17) for better coverage
         for (let i = count - range; i <= count + range; i++) {
             window.push(i);
         }
@@ -388,11 +409,17 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, o
             triggerTapAnimation();
             onAdvance();
         }
-        // Swipe Detection (Vertical) - Only Down (Pull) allowed
-        else if (Math.abs(deltaY) > 30 && Math.abs(deltaY) > Math.abs(deltaX) && deltaY > 0) {
-            // Swipe Down (Pulling bead towards you) -> Advance
-            triggerTapAnimation();
-            onAdvance();
+        // Swipe Detection (Vertical)
+        else if (Math.abs(deltaY) > 30 && Math.abs(deltaY) > Math.abs(deltaX)) {
+            if (deltaY > 0) {
+                // Swipe Down -> Advance
+                triggerTapAnimation();
+                onAdvance();
+            } else {
+                // Swipe Up -> Rewind
+                triggerTapAnimation();
+                onRewind();
+            }
         }
 
         isDragging.current = false;
