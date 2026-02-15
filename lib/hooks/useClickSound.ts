@@ -28,45 +28,42 @@ export function useClickSound(enabled: boolean = true) {
         const ctx = audioContextRef.current;
         const now = ctx.currentTime;
 
-        // Primary percussive oscillator
-        const osc = ctx.createOscillator();
-        const gainNode = ctx.createGain();
+        // 1. Low-Frequency Haptic Hum (The "Vibration" base)
+        const hum = ctx.createOscillator();
+        const humGain = ctx.createGain();
+        hum.type = "sine";
+        hum.frequency.setValueAtTime(160, now); // Low frequency pulse
 
-        osc.type = "triangle"; // Softer than sine for this use case
-        osc.frequency.setValueAtTime(600, now);
-        osc.frequency.exponentialRampToValueAtTime(100, now + 0.04);
+        humGain.gain.setValueAtTime(0, now);
+        humGain.gain.linearRampToValueAtTime(0.2, now + 0.005);
+        humGain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
 
-        gainNode.gain.setValueAtTime(0.4, now);
-        gainNode.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+        hum.connect(humGain);
+        humGain.connect(ctx.destination);
 
-        osc.connect(gainNode);
-        gainNode.connect(ctx.destination);
-
-        // Add a "click" noise transient for wood-like texture
+        // 2. Tactile Texture (Subtle motor noise)
         const noise = ctx.createBufferSource();
-        const bufferSize = ctx.sampleRate * 0.01; // 10ms of noise
+        const bufferSize = ctx.sampleRate * 0.02;
         const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
         const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) {
-            data[i] = Math.random() * 2 - 1;
-        }
+        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
         noise.buffer = buffer;
 
+        const noiseFilter = ctx.createBiquadFilter();
+        noiseFilter.type = "lowpass";
+        noiseFilter.frequency.value = 400; // Keep it deep and muffled
+
         const noiseGain = ctx.createGain();
-        noiseGain.gain.setValueAtTime(0.3, now);
-        noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.01);
+        noiseGain.gain.setValueAtTime(0.1, now);
+        noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
 
-        const filter = ctx.createBiquadFilter();
-        filter.type = "highpass";
-        filter.frequency.value = 1500;
-
-        noise.connect(filter);
-        filter.connect(noiseGain);
+        noise.connect(noiseFilter);
+        noiseFilter.connect(noiseGain);
         noiseGain.connect(ctx.destination);
 
-        osc.start(now);
+        hum.start(now);
         noise.start(now);
-        osc.stop(now + 0.1);
+        hum.stop(now + 0.05);
     }, [enabled]);
 
     const playSuccess = useCallback(() => {
