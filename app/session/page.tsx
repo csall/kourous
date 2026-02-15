@@ -38,29 +38,46 @@ const SessionHeader = memo(({
   const reset = useSessionStore(state => state.reset);
   const progress = useSessionProgress();
 
+  const showTitle = useSessionStore(state => state.showTitle);
+
   return (
-    <div className="absolute top-0 left-0 right-0 z-50 h-24 flex items-center justify-between px-6 pointer-events-none">
-      {/* Top Left: Counter & Reset */}
+    <div className="absolute top-0 left-0 right-0 z-50 flex items-start justify-between px-6 pt-4 pointer-events-none">
+      {/* Top Left: Counter, Title & Reset */}
       {!isComplete && progress && (
-        <div className="flex items-center gap-3 pointer-events-auto">
-          <div className="flex items-baseline gap-1 px-4 py-2 rounded-full bg-black/60 border border-white/10 backdrop-blur-xl shadow-lg">
-            <span className="text-xl font-normal text-emerald-100 tabular-nums">
-              {progress.cycleProgress}
-            </span>
-            <span className="text-sm text-white/20 font-light mx-0.5">/</span>
-            <span className="text-sm font-light text-white/40 tabular-nums">
-              {progress.cycleTotal}
-            </span>
+        <div className="flex flex-col gap-1.5 pointer-events-auto">
+          <div className="flex items-center gap-3">
+            <div className="flex items-baseline gap-1 px-4 py-2 rounded-full bg-black/60 border border-white/10 backdrop-blur-xl shadow-lg">
+              <span className="text-xl font-normal text-emerald-100 tabular-nums">
+                {progress.cycleProgress}
+              </span>
+              <span className="text-sm text-white/20 font-light mx-0.5">/</span>
+              <span className="text-sm font-light text-white/40 tabular-nums">
+                {progress.cycleTotal}
+              </span>
+            </div>
+
+            {totalCount > 0 && (
+              <button
+                onClick={reset}
+                className="flex items-center justify-center w-11 h-11 rounded-full bg-rose-500/80 backdrop-blur-xl border border-white/20 text-white shadow-lg transition-all active:scale-90"
+                aria-label="Recommencer"
+              >
+                <RotateCcw size={18} />
+              </button>
+            )}
           </div>
 
-          {totalCount > 0 && (
-            <button
-              onClick={reset}
-              className="flex items-center justify-center w-11 h-11 rounded-full bg-rose-500/80 backdrop-blur-xl border border-white/20 text-white shadow-lg transition-all active:scale-90"
-              aria-label="Recommencer"
-            >
-              <RotateCcw size={18} />
-            </button>
+          {showTitle && (
+            <div className="pl-1">
+              <p className="text-xs uppercase tracking-[0.15em] text-white/50 font-medium">
+                {progress.label}
+              </p>
+              {progress.sublabel && (
+                <p className="text-[10px] text-white/20 font-light mt-0.5 max-w-[220px]">
+                  {progress.sublabel}
+                </p>
+              )}
+            </div>
           )}
         </div>
       )}
@@ -108,7 +125,6 @@ SessionHeader.displayName = "SessionHeader";
 // ─────────────────────────────────────────────────────────────
 const BeadLayer = memo(() => {
   const preset = useSessionStore(state => state.preset);
-  const beadColor = useSessionStore(state => state.beadColor);
   const isComplete = useSessionStore(state => state.isComplete);
   const advance = useSessionStore(state => state.advance);
   const hapticsEnabled = useSessionStore(state => state.hapticsEnabled);
@@ -138,7 +154,6 @@ const BeadLayer = memo(() => {
       presetId={preset?.id || "none"}
       count={count}
       total={total}
-      beadColor={beadColor}
       onAdvance={handleAdvance}
       interactive={!isComplete}
     />
@@ -147,31 +162,7 @@ const BeadLayer = memo(() => {
 
 BeadLayer.displayName = "BeadLayer";
 
-// ─────────────────────────────────────────────────────────────
-// LAYER 3: Bottom Title — Read-only, pointer-events-none
-// ─────────────────────────────────────────────────────────────
-const BottomTitle = memo(() => {
-  const showTitle = useSessionStore(state => state.showTitle);
-  const isComplete = useSessionStore(state => state.isComplete);
-  const progress = useSessionProgress();
-
-  if (!showTitle || isComplete || !progress) return null;
-
-  return (
-    <div className="absolute bottom-[calc(env(safe-area-inset-bottom)+2rem)] left-0 right-0 z-20 flex flex-col items-center pointer-events-none text-center px-6">
-      <p className="text-xs uppercase tracking-[0.2em] text-white/50 font-medium">
-        {progress.label}
-      </p>
-      {progress.sublabel && (
-        <p className="text-[10px] text-white/20 font-light mt-1 max-w-[280px]">
-          {progress.sublabel}
-        </p>
-      )}
-    </div>
-  );
-});
-
-BottomTitle.displayName = "BottomTitle";
+// BottomTitle removed — title is now inside SessionHeader below the counter
 
 // ─────────────────────────────────────────────────────────────
 // MAIN CONTAINER — Orchestrates layers, manages modals only.
@@ -195,6 +186,7 @@ function SessionContent() {
 
   const preset = useSessionStore(state => state.preset);
   const isComplete = useSessionStore(state => state.isComplete);
+  const reset = useSessionStore(state => state.reset);
   const setPresetByGroupId = useSessionStore(state => state.setPresetByGroupId);
   const setPresetByInvocationId = useSessionStore(state => state.setPresetByInvocationId);
 
@@ -242,9 +234,6 @@ function SessionContent() {
         <BeadLayer />
       </div>
 
-      {/* ── Z-LAYER 20: Bottom title overlay (no interaction) ── */}
-      <BottomTitle />
-
       {/* ── Z-LAYER 50: Header controls (isolated, pointer-events on buttons only) ── */}
       <SessionHeader
         onOpenLibrary={openLibrary}
@@ -280,7 +269,10 @@ function SessionContent() {
             transition={{ duration: 0.8, ease: "circOut" }}
             className="fixed inset-0 flex items-center justify-center bg-slate-950/80 z-[70] w-full"
           >
-            <CompletionView />
+            <CompletionView 
+              onReset={reset}
+              presetName={preset?.name || "Session"}
+            />
           </motion.div>
         )}
       </AnimatePresence>

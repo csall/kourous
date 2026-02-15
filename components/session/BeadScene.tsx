@@ -1,11 +1,12 @@
 "use client";
 
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment, Sparkles, ContactShadows, Stars, Trail, Text, Billboard, Image as DreiImage } from "@react-three/drei";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { Environment, Sparkles, Stars, Trail, Text } from "@react-three/drei";
 import { useRef, useState, useMemo, useEffect, useCallback } from "react";
 import * as THREE from "three";
-import { useSpring, animated, config, SpringValue, to } from "@react-spring/three";
-import React, { memo } from "react";
+import { useSpring, animated, to } from "@react-spring/three";
+import { memo } from "react";
+import { useSessionStore } from "@/lib/store/sessionStore";
 
 const AnimatedSparkles = animated(Sparkles);
 const AnimatedText = animated(Text);
@@ -13,29 +14,31 @@ const AnimatedText = animated(Text);
 interface PearlProps {
     position: [number, number, number];
     activeProgress: any; // SpringValue<number>
-    color: string;
     idx: number;
     rotation?: [number, number, number];
     tapProgress: any; // SpringValue<number>
 }
 
-const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0], tapProgress }: PearlProps) => {
+const Pearl = memo(({ position, activeProgress, idx, rotation = [0, 0, 0], tapProgress }: PearlProps) => {
+    // Read color directly from the store — changes are picked up in useFrame
+    // without causing a re-render of the Pearl or parent components.
+    const colorRef = useRef(useSessionStore.getState().beadColor);
+    useEffect(() => {
+        return useSessionStore.subscribe((state) => {
+            colorRef.current = state.beadColor;
+        });
+    }, []);
+    const color = colorRef.current;
     const meshRef = useRef<THREE.Mesh>(null);
     const groupRef = useRef<THREE.Group>(null);
 
     // Constant base size
     const BASE_SCALE = 0.3;
 
-    const roughness = activeProgress.to((p: number) => 0.15 - (0.10 * p));
-    const metalness = activeProgress.to((p: number) => 0.10 + (0.05 * p));
+    const roughness = activeProgress.to((p: number) => 0.15 - (0.1 * p));
+    const metalness = activeProgress.to((p: number) => 0.1 + (0.05 * p));
     const transmission = activeProgress.to((p: number) => 0.15 + (0.15 * p));
-    const thickness = activeProgress.to((p: number) => 2.0 - (1.0 * p));
-
-    // Combine activeProgress and tapProgress for emissive and zoom effect
-    const emissivePulse = activeProgress.to((p: number) => {
-        // Soft ebb and flow of light from the core
-        return p * 0.8;
-    });
+    const thickness = activeProgress.to((p: number) => 2 - (1 * p));
 
     const envMapIntensity = activeProgress.to((p: number) => 1 + (6 * p)); // High reflection on active
 
@@ -55,7 +58,7 @@ const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0]
         const p = activeProgress.get();
 
         // 1. Dynamic rotation speed
-        const rotationSpeed = 1 + (p * 4.0); // Spin faster and more elegantly when active
+        const rotationSpeed = 1 + (p * 4); // Spin faster and more elegantly when active
         meshRef.current.rotation.y += 0.005 * rotationSpeed;
         meshRef.current.rotation.z += 0.002 * rotationSpeed;
 
@@ -83,7 +86,7 @@ const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0]
         <group ref={groupRef} position={position} rotation={rotation}>
             {/* Soft Pointlight ONLY for the active bead - Creates a localized aura */}
             <animated.pointLight
-                intensity={activeProgress.to((p: number) => p * 2.0)}
+                intensity={activeProgress.to((p: number) => p * 2)}
                 distance={2}
                 color={color}
             />
@@ -108,7 +111,7 @@ const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0]
                     emissive={interpolatedColor}
                     emissiveIntensity={to([activeProgress, tapProgress], (ap, tp) => {
                         // Base core light + Tap flash (masked for active only)
-                        return ap * 0.5 + (tp * 5.0 * Math.pow(ap, 3));
+                        return ap * 0.5 + (tp * 5 * Math.pow(ap, 3));
                     })}
                 />
 
@@ -235,7 +238,6 @@ interface BeadSceneProps {
     presetId: string;
     count: number;
     total: number;
-    beadColor: string;
     onAdvance: () => void;
     interactive?: boolean;
 }
@@ -254,7 +256,7 @@ const ActiveBeadCounter = ({ countSpring }: { countSpring: any }) => {
     });
 
     return (
-        <group position={[0, 1.6, -1.0]}>
+        <group position={[0, 1.6, -1]}>
             {/* Minimalist Counter */}
             <Text
                 ref={textRef}
@@ -272,7 +274,7 @@ const ActiveBeadCounter = ({ countSpring }: { countSpring: any }) => {
 };
 
 // Internal scene with animated state
-function SceneInternal({ count, beadWindow, total, presetId, beadColor, tapProgress }: any) {
+function SceneInternal({ count, beadWindow, total, presetId, tapProgress }: any) {
     const lastPresetId = useRef(presetId);
     const lastCount = useRef(count);
 
@@ -316,16 +318,6 @@ function SceneInternal({ count, beadWindow, total, presetId, beadColor, tapProgr
                         position={smoothedCount.to((sc: number) => {
                             // Position on vertical wheel
                             const angle = (idx - sc) * angleStep;
-
-                            const yPos = Math.sin(angle + Math.PI / 2) * radius - radius;
-                            // Simplify to standard vertical wheel:
-                            // angle 0 (active) -> y=0, z=0.
-                            // angle > 0 (future) -> y>0
-                            // angle < 0 (past) -> y<0
-                            // Let's use standard trigonometric circle adapted:
-                            // y = sin(angle) * radius
-                            // z = (cos(angle) * radius) - radius
-
                             const z = (Math.cos(angle) * radius) - radius;
                             const y = Math.sin(angle) * radius;
 
@@ -344,7 +336,6 @@ function SceneInternal({ count, beadWindow, total, presetId, beadColor, tapProgr
                                 let dist = Math.abs(idx - sc);
                                 return Math.max(0, 1 - dist * 0.8);
                             })}
-                            color={beadColor}
                         />
                     </animated.group>
                 );
@@ -353,7 +344,7 @@ function SceneInternal({ count, beadWindow, total, presetId, beadColor, tapProgr
     );
 }
 
-export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, interactive = true }: BeadSceneProps) => {
+export const BeadScene = memo(({ presetId, count, total, onAdvance, interactive = true }: BeadSceneProps) => {
     const isDragging = useRef(false);
 
     const [{ tapProgress }, tapApi] = useSpring(() => ({
@@ -409,7 +400,7 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, i
 
         const deltaX = e.clientX - startPos.current.x;
         const deltaY = e.clientY - startPos.current.y;
-        const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+        const distance = Math.hypot(deltaX, deltaY);
 
         // Action detection: Tap or Swipe Down only
         if (distance < 10 || (deltaY > 30 && deltaY > Math.abs(deltaX))) {
@@ -453,7 +444,6 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, i
                 <SceneInternal
                     presetId={presetId}
                     count={count}
-                    beadColor={beadColor}
                     beadWindow={beadWindow}
                     total={total}
                     tapProgress={tapProgress}
