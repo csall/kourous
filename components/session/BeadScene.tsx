@@ -363,7 +363,7 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, o
     // This reduces visual clutter and ensures performance
     const beadWindow = useMemo(() => {
         const window: number[] = [];
-        const range = 9; // Render 9 before and 9 after
+        const range = 6; // Render 6 before and 6 after
         for (let i = count - range; i <= count + range; i++) {
             window.push(i);
         }
@@ -410,8 +410,8 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, o
                 key="main-bead-canvas"
                 shadows
                 camera={{
-                    position: [0, 0, 6],
-                    fov: 45
+                    position: [0, 0, 5],
+                    fov: 60
                 }}
                 gl={{
                     antialias: true,
@@ -440,7 +440,7 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, o
                 />
 
                 <StarryNightBackground />
-                <fog attach="fog" args={['#000000', 8, 45]} />
+                <fog attach="fog" args={['#0f172a', 3, 20]} />
             </Canvas>
         </div>
     );
