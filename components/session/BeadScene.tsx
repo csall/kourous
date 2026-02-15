@@ -248,7 +248,7 @@ const ActiveBeadCounter = ({ countSpring }: { countSpring: any }) => {
 
     useFrame(() => {
         if (!textRef.current) return;
-        const current = Math.round(countSpring.get() + 1);
+        const current = Math.round(countSpring.get());
         if (current !== lastVal) {
             textRef.current.text = current.toString();
             setLastVal(current);

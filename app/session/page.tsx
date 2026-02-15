@@ -91,6 +91,8 @@ const SessionHeader = memo(({
                   reset();
                 }}
                 onPointerDown={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
+                onMouseUp={(e) => e.stopPropagation()}
                 className="flex items-center justify-center w-14 h-14 rounded-[1.75rem] bg-white/5 text-white/60 md:hover:bg-white/10 active:scale-90 transition-all"
                 aria-label="Recommencer"
               >
@@ -104,6 +106,8 @@ const SessionHeader = memo(({
                 toggleSound();
               }}
               onPointerDown={(e) => e.stopPropagation()}
+              onMouseDown={(e) => e.stopPropagation()}
+              onMouseUp={(e) => e.stopPropagation()}
               className={`flex items-center justify-center w-14 h-14 rounded-[1.75rem] transition-all duration-300 ${soundEnabled
                 ? 'bg-emerald-500/15 text-emerald-400'
                 : 'bg-white/5 text-white/20'
@@ -118,6 +122,8 @@ const SessionHeader = memo(({
                 onOpenLibrary();
               }}
               onPointerDown={(e) => e.stopPropagation()}
+              onMouseDown={(e) => e.stopPropagation()}
+              onMouseUp={(e) => e.stopPropagation()}
               className="flex items-center justify-center w-14 h-14 rounded-[1.75rem] bg-white/5 text-white/60 md:hover:bg-white/10 active:scale-95 transition-all"
             >
               <BookOpen size={20} />
@@ -129,6 +135,8 @@ const SessionHeader = memo(({
                 onOpenSettings();
               }}
               onPointerDown={(e) => e.stopPropagation()}
+              onMouseDown={(e) => e.stopPropagation()}
+              onMouseUp={(e) => e.stopPropagation()}
               className="flex items-center justify-center w-14 h-14 rounded-[1.75rem] bg-white/5 text-white/60 md:hover:bg-white/10 active:scale-95 transition-all"
             >
               <SlidersHorizontal size={20} />
@@ -169,7 +177,7 @@ SessionHeader.displayName = "SessionHeader";
 // ─────────────────────────────────────────────────────────────
 // LAYER 2: Bead Scene
 // ─────────────────────────────────────────────────────────────
-const BeadLayer = memo(() => {
+const BeadLayer = memo(({ active }: { active: boolean }) => {
   const preset = useSessionStore(state => state.preset);
   const isComplete = useSessionStore(state => state.isComplete);
   const advance = useSessionStore(state => state.advance);
@@ -185,11 +193,12 @@ const BeadLayer = memo(() => {
   }, [hapticsEnabled, soundEnabled, playClick, advance]);
 
   const handleAdvance = useCallback(() => {
+    if (!active) return;
     const { hapticsEnabled: h, soundEnabled: s, playClick: p, advance: a } = refs.current;
     if (h && typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(15);
     if (s) p();
     a();
-  }, []);
+  }, [active]);
 
   const count = progress ? progress.cycleProgress : 0;
   const total = progress?.cycleTotal || 100;
@@ -200,7 +209,7 @@ const BeadLayer = memo(() => {
       count={count}
       total={total}
       onAdvance={handleAdvance}
-      interactive={!isComplete}
+      interactive={!isComplete && active}
     />
   );
 });
@@ -259,6 +268,8 @@ function SessionContent() {
     );
   }
 
+  const isAnyUIOpen = isLibraryOpen || isSettingsOpen || isComplete;
+
   return (
     <div className="fixed inset-0 h-[100dvh] bg-slate-950 text-slate-100 overflow-hidden font-sans select-none">
       <SessionHeader
@@ -267,8 +278,8 @@ function SessionContent() {
         isComplete={isComplete}
       />
 
-      <div className="absolute inset-0 z-0 pt-48 sm:pt-56">
-        <BeadLayer />
+      <div className={`absolute inset-0 z-0 pt-48 sm:pt-56 transition-all duration-500 ${isAnyUIOpen ? 'pointer-events-none opacity-40 blur-sm grayscale' : 'opacity-100'}`}>
+        <BeadLayer active={!isAnyUIOpen} />
       </div>
 
       <FullscreenModal isOpen={isLibraryOpen} onClose={closeLibrary} title="Bibliothèque">
