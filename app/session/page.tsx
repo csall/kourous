@@ -271,6 +271,7 @@ function SessionContent() {
           >
             <CompletionView 
               onReset={reset}
+              onOpenLibrary={openLibrary}
               presetName={preset?.name || "Session"}
             />
           </motion.div>

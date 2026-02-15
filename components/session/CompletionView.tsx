@@ -1,14 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CheckCircle2, RotateCcw } from "lucide-react";
+import { CheckCircle2, RotateCcw, BookOpen } from "lucide-react";
 
 interface CompletionViewProps {
     onReset: () => void;
+    onOpenLibrary: () => void;
     presetName: string;
 }
 
-export function CompletionView({ onReset, presetName }: CompletionViewProps) {
+export function CompletionView({ onReset, onOpenLibrary, presetName }: CompletionViewProps) {
     return (
         <div className="flex flex-col items-center justify-center space-y-8 p-8 text-center text-white relative">
             <motion.div
@@ -44,16 +45,29 @@ export function CompletionView({ onReset, presetName }: CompletionViewProps) {
                 </motion.p>
             </div>
 
-            <motion.button
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7 }}
-                onClick={onReset}
-                className="group flex items-center gap-3 rounded-2xl bg-white/10 px-8 py-5 text-white hover:bg-white/20 active:scale-95 transition-all backdrop-blur-md border border-white/10"
-            >
-                <RotateCcw size={18} className="group-hover:-rotate-180 transition-transform duration-700 ease-in-out" />
-                <span className="font-medium tracking-wide">Recommencer</span>
-            </motion.button>
+            <div className="flex items-center gap-4 relative z-10">
+                <motion.button
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.7 }}
+                    onClick={onReset}
+                    className="group flex items-center gap-3 rounded-2xl bg-white/10 px-6 py-4 text-white hover:bg-white/20 active:scale-95 transition-all backdrop-blur-md border border-white/10"
+                >
+                    <RotateCcw size={18} className="group-hover:-rotate-180 transition-transform duration-700 ease-in-out" />
+                    <span className="font-medium tracking-wide">Recommencer</span>
+                </motion.button>
+
+                <motion.button
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8 }}
+                    onClick={onOpenLibrary}
+                    className="group flex items-center gap-3 rounded-2xl bg-emerald-500/20 px-6 py-4 text-white hover:bg-emerald-500/30 active:scale-95 transition-all backdrop-blur-md border border-emerald-500/30"
+                >
+                    <BookOpen size={18} />
+                    <span className="font-medium tracking-wide">Bibliothèque</span>
+                </motion.button>
+            </div>
         </div>
     );
 }
