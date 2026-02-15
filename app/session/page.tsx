@@ -19,7 +19,7 @@ const BeadScene = dynamic(
 );
 
 // ─────────────────────────────────────────────────────────────
-// LAYER 1: Header (Controls) — Mobile First & Centered
+// LAYER 1: Header (Controls) — Mobile First, Dynamic Spacing
 // ─────────────────────────────────────────────────────────────
 const SessionHeader = memo(({
   onOpenLibrary,
@@ -41,91 +41,118 @@ const SessionHeader = memo(({
   const handleReset = useCallback((e: React.MouseEvent | React.TouchEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    e.nativeEvent?.stopImmediatePropagation?.();
     setTimeout(() => reset(), 0);
   }, [reset]);
 
+  // Calculate dynamic gap based on number of active elements
+  // Elements: Counter (1) + Reset (0-1) + Sound (1) + Library (1) + Settings (1)
+  const buttonCount = 4 + (totalCount > 0 ? 1 : 0);
+
+  // Rule: Fewer buttons = more space, More buttons = tighter gap to fit small screens
+  const dynamicGap = buttonCount <= 4 ? "gap-4 sm:gap-6" : "gap-2.5 sm:gap-4";
+  const dynamicPadding = buttonCount <= 4 ? "px-3" : "px-2";
+
   return (
     <div className="absolute top-0 left-0 right-0 z-50 pointer-events-none flex flex-col items-center">
-      {/* 1. Main Action Menu Centered */}
-      <div className="w-full max-w-md px-4 pt-safe pt-6 flex justify-center">
-        <div className="mobile-action-bar flex items-center gap-2.5 pointer-events-auto px-1.5 py-1.5 bg-white/10 rounded-[2rem] shadow-lg backdrop-blur-2xl ring-1 ring-white/10">
+      {/* 1. Main Action Menu Centered with Dynamic Spacing */}
+      <div className="w-full max-w-full px-4 pt-safe pt-6 flex justify-center">
+        <motion.div
+          layout
+          className={`mobile-action-bar flex items-center ${dynamicGap} ${dynamicPadding} pointer-events-auto py-2 bg-white/10 rounded-[2.5rem] shadow-2xl backdrop-blur-3xl ring-1 ring-white/10 transition-all duration-300 ease-out`}
+        >
+          {/* 1.1 Counter (Constant) */}
           {!isComplete && progress && (
-            <div
-              className="flex flex-col items-center justify-center w-14 h-14 rounded-2xl backdrop-blur-2xl border transition-all duration-200"
+            <motion.div
+              layout
+              className="flex flex-col items-center justify-center w-14 h-14 rounded-[1.25rem] backdrop-blur-md border border-white/10 shadow-sm transition-all"
               style={{
-                backgroundColor: `${beadColor}20`,
+                backgroundColor: `${beadColor}25`,
                 borderColor: `${beadColor}40`
               }}
             >
               <span
-                className="text-xl font-semibold tabular-nums leading-none"
+                className="text-xl font-bold tabular-nums leading-none tracking-tight"
                 style={{ color: beadColor }}
               >
                 {progress.cycleProgress}
               </span>
-              <span className="text-[10px] font-medium text-white/40 tabular-nums mt-0.5">
+              <span className="text-[10px] font-semibold text-white/30 tabular-nums mt-0.5">
                 {progress.cycleTotal}
               </span>
-            </div>
+            </motion.div>
           )}
 
-          {totalCount > 0 && (
-            <button
-              onClick={handleReset}
-              className="flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 text-white/80 hover:bg-white/20 active:scale-90 transition-all"
-              aria-label="Recommencer"
-            >
-              <RefreshCw size={22} className="stroke-[1.5]" />
-            </button>
-          )}
+          {/* 1.2 Reset (Conditional) */}
+          <AnimatePresence>
+            {totalCount > 0 && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.8, width: 0 }}
+                animate={{ opacity: 1, scale: 1, width: "auto" }}
+                exit={{ opacity: 0, scale: 0.8, width: 0 }}
+                onClick={handleReset}
+                className="flex items-center justify-center w-14 h-14 rounded-2xl bg-white/5 text-white/70 hover:bg-white/15 active:scale-90 transition-all overflow-hidden"
+              >
+                <RefreshCw size={22} className="stroke-[1.5]" />
+              </motion.button>
+            )}
+          </AnimatePresence>
 
+          {/* 1.3 Sound Toggle */}
           <button
             onClick={toggleSound}
-            className={`flex items-center justify-center w-14 h-14 rounded-2xl transition-all ${soundEnabled
-                ? 'bg-emerald-500/20 text-emerald-400'
-                : 'bg-white/10 text-white/40'
+            className={`flex items-center justify-center w-14 h-14 rounded-2xl transition-all active:scale-95 ${soundEnabled
+                ? 'bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/30'
+                : 'bg-white/5 text-white/30'
               }`}
           >
             {soundEnabled ? <Volume2 size={22} /> : <VolumeX size={22} />}
           </button>
 
+          {/* 1.4 Library */}
           <button
             onClick={onOpenLibrary}
-            className="flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 text-white/80"
+            className="flex items-center justify-center w-14 h-14 rounded-2xl bg-white/5 text-white/70 active:scale-95 transition-all"
           >
             <BookOpen size={22} />
           </button>
 
+          {/* 1.5 Settings */}
           <button
             onClick={onOpenSettings}
-            className="flex items-center justify-center w-14 h-14 rounded-2xl bg-white/10 text-white/80"
+            className="flex items-center justify-center w-14 h-14 rounded-2xl bg-white/5 text-white/70 active:scale-95 transition-all"
           >
             <SlidersHorizontal size={22} />
           </button>
-        </div>
+        </motion.div>
       </div>
 
-      {/* 2. Title Section - Placed BELOW the menu as requested */}
-      {!isComplete && progress && showTitle && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-4 px-6 text-center pointer-events-none"
-        >
-          <p
-            className="text-base font-semibold tracking-wide uppercase opacity-90"
-            style={{ color: beadColor }}
+      {/* 2. Centered Title Section BELOW the Menu */}
+      <AnimatePresence>
+        {!isComplete && progress && showTitle && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="mt-6 px-6 text-center pointer-events-none flex flex-col items-center"
           >
-            {progress.label}
-          </p>
-          {progress.sublabel && (
-            <p className="text-sm text-white/40 font-light mt-1 max-w-[280px]">
-              {progress.sublabel}
-            </p>
-          )}
-        </motion.div>
-      )}
+            <div
+              className="h-1 w-12 rounded-full mb-3 opacity-30"
+              style={{ backgroundColor: beadColor }}
+            />
+            <h1
+              className="text-lg font-bold tracking-[0.15em] uppercase drop-shadow-sm"
+              style={{ color: beadColor }}
+            >
+              {progress.label}
+            </h1>
+            {progress.sublabel && (
+              <p className="text-sm text-white/40 font-light mt-1.5 max-w-[300px] leading-relaxed italic">
+                {progress.sublabel}
+              </p>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 });
@@ -133,7 +160,7 @@ const SessionHeader = memo(({
 SessionHeader.displayName = "SessionHeader";
 
 // ─────────────────────────────────────────────────────────────
-// LAYER 2: Bead Scene (Same logic, position adjusted)
+// LAYER 2: Bead Scene — Visuals
 // ─────────────────────────────────────────────────────────────
 const BeadLayer = memo(() => {
   const preset = useSessionStore(state => state.preset);
@@ -233,7 +260,7 @@ function SessionContent() {
         isComplete={isComplete}
       />
 
-      <div className="absolute inset-0 z-0 pt-32 sm:pt-40">
+      <div className="absolute inset-0 z-0 pt-40 sm:pt-48">
         <BeadLayer />
       </div>
 
