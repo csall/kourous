@@ -2,24 +2,181 @@
 
 import { useSessionStore } from "@/lib/store/sessionStore";
 import dynamic from "next/dynamic";
-import Link from "next/link";
-import { CompletionView } from "@/components/session/CompletionView";
-import { ProgressGauge } from "@/components/session/ProgressGauge";
 import { useSessionProgress } from "@/lib/hooks/useSessionProgress";
 import { useClickSound } from "@/lib/hooks/useClickSound";
-import { useEffect, useState, Suspense, useCallback } from "react";
+import { useEffect, useState, Suspense, useCallback, useRef, memo } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, Settings, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { FullscreenModal } from "@/components/ui/FullscreenModal";
 import { LibraryContent } from "@/components/library/LibraryContent";
 import { SettingsContent } from "@/components/settings/SettingsContent";
+import { CompletionView } from "@/components/session/CompletionView";
 
 const BeadScene = dynamic(
   () => import("@/components/session/BeadScene").then((mod) => mod.BeadScene),
   { ssr: false }
 );
 
+// ─────────────────────────────────────────────────────────────
+// LAYER 1: Header (Controls) — Completely isolated from beads.
+// Only subscribes to what it needs. Never affects BeadScene.
+// ─────────────────────────────────────────────────────────────
+const SessionHeader = memo(({
+  onOpenLibrary,
+  onOpenSettings,
+  isComplete,
+}: {
+  onOpenLibrary: () => void;
+  onOpenSettings: () => void;
+  isComplete: boolean;
+}) => {
+  const soundEnabled = useSessionStore(state => state.soundEnabled);
+  const toggleSound = useSessionStore(state => state.toggleSound);
+  const beadColor = useSessionStore(state => state.beadColor);
+  const totalCount = useSessionStore(state => state.totalCount);
+  const reset = useSessionStore(state => state.reset);
+  const progress = useSessionProgress();
+
+  return (
+    <div className="absolute top-0 left-0 right-0 z-50 h-24 flex items-center justify-between px-6 pointer-events-none">
+      {/* Top Left: Counter & Reset */}
+      {!isComplete && progress && (
+        <div className="flex items-center gap-3 pointer-events-auto">
+          <div className="flex items-baseline gap-1 px-4 py-2 rounded-full bg-black/60 border border-white/10 backdrop-blur-xl shadow-lg">
+            <span className="text-xl font-normal text-emerald-100 tabular-nums">
+              {progress.cycleProgress}
+            </span>
+            <span className="text-sm text-white/20 font-light mx-0.5">/</span>
+            <span className="text-sm font-light text-white/40 tabular-nums">
+              {progress.cycleTotal}
+            </span>
+          </div>
+
+          {totalCount > 0 && (
+            <button
+              onClick={reset}
+              className="flex items-center justify-center w-11 h-11 rounded-full bg-rose-500/80 backdrop-blur-xl border border-white/20 text-white shadow-lg transition-all active:scale-90"
+              aria-label="Recommencer"
+            >
+              <RotateCcw size={18} />
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Top Right: Controls */}
+      <div className="flex items-center gap-2 pointer-events-auto">
+        <button
+          onClick={toggleSound}
+          className="flex items-center justify-center w-11 h-11 rounded-full backdrop-blur-xl border text-white shadow-lg transition-all active:scale-90"
+          style={{
+            backgroundColor: soundEnabled ? `${beadColor}99` : 'rgba(0,0,0,0.6)',
+            borderColor: soundEnabled ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.1)'
+          }}
+          aria-label={soundEnabled ? "Couper le son" : "Activer le son"}
+        >
+          {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} className="text-white/40" />}
+        </button>
+
+        <button
+          onClick={onOpenLibrary}
+          className="flex items-center justify-center w-11 h-11 rounded-full bg-black/60 backdrop-blur-xl border border-white/10 text-white transition-all active:scale-90 shadow-lg"
+          aria-label="Bibliothèque"
+        >
+          <BookOpen size={18} />
+        </button>
+
+        <button
+          onClick={onOpenSettings}
+          className="flex items-center justify-center w-11 h-11 rounded-full bg-black/60 backdrop-blur-xl border border-white/10 text-white transition-all active:scale-90 shadow-lg"
+          aria-label="Réglages"
+        >
+          <Settings size={18} />
+        </button>
+      </div>
+    </div>
+  );
+});
+
+SessionHeader.displayName = "SessionHeader";
+
+// ─────────────────────────────────────────────────────────────
+// LAYER 2: Bead Scene — Pure visual, isolated state.
+// Only re-renders when count, preset, or beadColor changes.
+// Uses refs for callbacks so identity is ALWAYS stable.
+// ─────────────────────────────────────────────────────────────
+const BeadLayer = memo(() => {
+  const preset = useSessionStore(state => state.preset);
+  const beadColor = useSessionStore(state => state.beadColor);
+  const isComplete = useSessionStore(state => state.isComplete);
+  const advance = useSessionStore(state => state.advance);
+  const hapticsEnabled = useSessionStore(state => state.hapticsEnabled);
+  const soundEnabled = useSessionStore(state => state.soundEnabled);
+  const progress = useSessionProgress();
+  const { playClick } = useClickSound(soundEnabled);
+
+  // Store mutable values in refs so the callback never changes identity
+  const refs = useRef({ hapticsEnabled, soundEnabled, playClick, advance });
+  refs.current = { hapticsEnabled, soundEnabled, playClick, advance };
+
+  // STABLE callback — never changes identity, never triggers BeadScene re-render
+  const handleAdvance = useCallback(() => {
+    const { hapticsEnabled: h, soundEnabled: s, playClick: p, advance: a } = refs.current;
+    if (h && typeof navigator !== "undefined" && navigator.vibrate) {
+      navigator.vibrate(15);
+    }
+    if (s) p();
+    a();
+  }, []); // Empty deps = stable forever
+
+  const count = progress ? progress.cycleProgress - 1 : 0;
+  const total = progress?.cycleTotal || 100;
+
+  return (
+    <BeadScene
+      presetId={preset?.id || "none"}
+      count={count}
+      total={total}
+      beadColor={beadColor}
+      onAdvance={handleAdvance}
+      interactive={!isComplete}
+    />
+  );
+});
+
+BeadLayer.displayName = "BeadLayer";
+
+// ─────────────────────────────────────────────────────────────
+// LAYER 3: Bottom Title — Read-only, pointer-events-none
+// ─────────────────────────────────────────────────────────────
+const BottomTitle = memo(() => {
+  const showTitle = useSessionStore(state => state.showTitle);
+  const isComplete = useSessionStore(state => state.isComplete);
+  const progress = useSessionProgress();
+
+  if (!showTitle || isComplete || !progress) return null;
+
+  return (
+    <div className="absolute bottom-[calc(env(safe-area-inset-bottom)+2rem)] left-0 right-0 z-20 flex flex-col items-center pointer-events-none text-center px-6">
+      <p className="text-xs uppercase tracking-[0.2em] text-white/50 font-medium">
+        {progress.label}
+      </p>
+      {progress.sublabel && (
+        <p className="text-[10px] text-white/20 font-light mt-1 max-w-[280px]">
+          {progress.sublabel}
+        </p>
+      )}
+    </div>
+  );
+});
+
+BottomTitle.displayName = "BottomTitle";
+
+// ─────────────────────────────────────────────────────────────
+// MAIN CONTAINER — Orchestrates layers, manages modals only.
+// Does NOT subscribe to sound/haptics/beadColor.
+// ─────────────────────────────────────────────────────────────
 function SessionContent() {
   const searchParams = useSearchParams();
   const [isMounted, setIsMounted] = useState(false);
@@ -27,76 +184,42 @@ function SessionContent() {
 
   useEffect(() => {
     setIsMounted(true);
-    // Wait for Zustand hydration
-    const unsub = useSessionStore.persist.onFinishHydration(() => {
-      setHasHydrated(true);
-    });
-
-    // Fallback if already hydrated
-    if (useSessionStore.persist.hasHydrated()) {
-      setHasHydrated(true);
-    }
-
-    return () => unsub();
+    const checkHydration = () => {
+      if (useSessionStore.persist.hasHydrated()) {
+        setHasHydrated(true);
+      }
+    };
+    checkHydration();
+    return useSessionStore.persist.onFinishHydration(checkHydration);
   }, []);
 
-  const {
-    preset,
-    isComplete,
-    hapticsEnabled,
-    soundEnabled,
-    setPresetByGroupId,
-    setPresetByInvocationId,
-    advance,
-    rewind,
-    reset,
-    toggleHaptics,
-    toggleSound,
-    beadColor,
-    totalCount,
-    showTitle
-  } = useSessionStore();
+  const preset = useSessionStore(state => state.preset);
+  const isComplete = useSessionStore(state => state.isComplete);
+  const setPresetByGroupId = useSessionStore(state => state.setPresetByGroupId);
+  const setPresetByInvocationId = useSessionStore(state => state.setPresetByInvocationId);
 
-  const progress = useSessionProgress();
-  const { playClick } = useClickSound(soundEnabled);
-  const [showControls, setShowControls] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // Load group or invocation from URL parameter
   useEffect(() => {
+    if (!hasHydrated) return;
+
     const groupId = searchParams.get("group");
     const invocationId = searchParams.get("invocation");
 
-    if (groupId) {
+    if (groupId && preset?.id !== groupId) {
       setPresetByGroupId(groupId);
-    } else if (invocationId) {
+    } else if (invocationId && preset?.id !== invocationId) {
       setPresetByInvocationId(invocationId);
     }
-  }, [searchParams, setPresetByGroupId, setPresetByInvocationId]);
+  }, [searchParams, setPresetByGroupId, setPresetByInvocationId, preset?.id, hasHydrated]);
 
-  // Auto-hide controls after inactivity
-  useEffect(() => {
-    const timer = setTimeout(() => setShowControls(false), 1000);
-    return () => clearTimeout(timer);
-  }, [progress?.cycleProgress, showControls]);
-
-  const handleAdvance = useCallback(() => {
-    setShowControls(true);
-    if (hapticsEnabled && typeof navigator !== "undefined" && navigator.vibrate) {
-      navigator.vibrate(15);
-    }
-    if (soundEnabled) playClick();
-    advance();
-  }, [hapticsEnabled, soundEnabled, playClick, advance]);
-
-  const handleRewind = useCallback(() => {
-    setShowControls(true);
-    if (hapticsEnabled && typeof navigator !== "undefined" && navigator.vibrate) {
-      navigator.vibrate(8);
-    }
-    rewind();
-  }, [hapticsEnabled, rewind]);
+  // Stable callbacks for header — never change identity
+  const openLibrary = useCallback(() => setIsLibraryOpen(true), []);
+  const openSettings = useCallback(() => setIsSettingsOpen(true), []);
+  const closeLibrary = useCallback(() => setIsLibraryOpen(false), []);
+  const closeSettings = useCallback(() => setIsSettingsOpen(false), []);
 
   if (!isMounted || !hasHydrated) {
     return (
@@ -112,149 +235,41 @@ function SessionContent() {
     );
   }
 
-  if (!preset || !progress) return null;
-
   return (
-    <div
-      className="fixed inset-0 h-[100dvh] flex flex-col bg-slate-950 text-slate-100 overflow-hidden font-sans select-none"
-      onPointerMove={() => setShowControls(true)}
-    >
-      {/* Top Right Navigation */}
-      <div className="absolute top-[calc(env(safe-area-inset-top)+1rem)] right-6 z-50 flex items-center gap-2">
-        <div className="flex items-center gap-2">
-
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleSound();
-            }}
-            onPointerDown={(e) => e.stopPropagation()}
-            onPointerUp={(e) => e.stopPropagation()}
-            className="flex items-center justify-center w-11 h-11 rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white/70 hover:text-white hover:bg-white/5 transition-all active:scale-90"
-            aria-label={soundEnabled ? "Couper le son" : "Activer le son"}
-          >
-            {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} className="text-white/40" />}
-          </button>
-
-          <button
-            onClick={() => setIsLibraryOpen(true)}
-            onPointerDown={(e) => e.stopPropagation()}
-            onPointerUp={(e) => e.stopPropagation()}
-            className="flex items-center justify-center w-11 h-11 rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white/70 hover:text-white hover:bg-white/5 transition-all active:scale-90"
-            aria-label="Bibliothèque"
-          >
-            <BookOpen size={20} />
-          </button>
-          <button
-            onClick={() => setIsSettingsOpen(true)}
-            onPointerDown={(e) => e.stopPropagation()}
-            onPointerUp={(e) => e.stopPropagation()}
-            className="flex items-center justify-center w-11 h-11 rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white/70 hover:text-white hover:bg-white/5 transition-all active:scale-90"
-            aria-label="Réglages"
-          >
-            <Settings size={20} />
-          </button>
-        </div>
+    <div className="fixed inset-0 h-[100dvh] bg-slate-950 text-slate-100 overflow-hidden font-sans select-none">
+      {/* ── Z-LAYER 0: 3D Bead Scene (fills entire screen, captures taps) ── */}
+      <div className="absolute inset-0 z-0">
+        <BeadLayer />
       </div>
 
-      {/* Top Left Counter & Controls */}
+      {/* ── Z-LAYER 20: Bottom title overlay (no interaction) ── */}
+      <BottomTitle />
 
-      {!isComplete && (
-        <div className="absolute top-[calc(env(safe-area-inset-top)+1rem)] left-6 z-50 flex flex-col items-start gap-2 pointer-events-none">
-          <div className="flex items-center gap-3">
-            <div
-              onPointerDown={(e) => e.stopPropagation()}
-              onPointerUp={(e) => e.stopPropagation()}
-              className="flex items-baseline gap-1 px-4 py-2 rounded-full bg-black/20 border border-white/10 backdrop-blur-md shadow-sm pointer-events-auto"
-            >
-              <span className="text-xl font-normal text-emerald-100 tabular-nums">
-                {progress.cycleProgress}
-              </span>
-              <span className="text-sm text-white/20 font-light mx-0.5">/</span>
-              <span className="text-sm font-light text-white/40 tabular-nums">
-                {progress.cycleTotal}
-              </span>
-            </div>
+      {/* ── Z-LAYER 50: Header controls (isolated, pointer-events on buttons only) ── */}
+      <SessionHeader
+        onOpenLibrary={openLibrary}
+        onOpenSettings={openSettings}
+        isComplete={isComplete}
+      />
 
-            {/* Restart Button - specific to left side */}
-            {totalCount > 0 && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  reset();
-                }}
-                onPointerDown={(e) => e.stopPropagation()}
-                onPointerUp={(e) => e.stopPropagation()}
-                className="flex items-center justify-center w-11 h-11 rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white/70 hover:text-white hover:bg-white/5 transition-all active:scale-90 pointer-events-auto"
-                aria-label="Recommencer"
-              >
-                <RotateCcw size={20} />
-              </button>
-            )}
-          </div>
-
-          {/* Miniature Title under counter */}
-          {showTitle && (
-            <div className="px-1 max-w-[220px]">
-              <p className="text-[10px] uppercase tracking-widest text-white/40 font-medium truncate">
-                {progress.label}
-              </p>
-              {progress.sublabel && (
-                <p className="text-[9px] text-white/20 font-light truncate mt-0.5">
-                  {progress.sublabel}
-                </p>
-              )}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Library Modal */}
+      {/* ── Z-LAYER 60: Modals ── */}
       <FullscreenModal
         isOpen={isLibraryOpen}
-        onClose={() => setIsLibraryOpen(false)}
+        onClose={closeLibrary}
         title="Bibliothèque"
       >
-        <div onPointerDown={(e) => e.stopPropagation()} onPointerUp={(e) => e.stopPropagation()} className="h-full">
-          <LibraryContent onSessionStart={() => setIsLibraryOpen(false)} />
-        </div>
+        <LibraryContent onSessionStart={closeLibrary} />
       </FullscreenModal>
 
-      {/* Settings Modal */}
       <FullscreenModal
         isOpen={isSettingsOpen}
-        onClose={() => setIsSettingsOpen(false)}
+        onClose={closeSettings}
         title="Réglages"
       >
-        <div onPointerDown={(e) => e.stopPropagation()} onPointerUp={(e) => e.stopPropagation()} className="h-full">
-          <SettingsContent />
-        </div>
+        <SettingsContent />
       </FullscreenModal>
 
-      {/* Session Controls removed as they are now in the settings modal */}
-
-
-
-      {/* 3D Scene Layer */}
-      <div className="absolute inset-0 z-0">
-        {!isComplete && preset && progress && (
-          <BeadScene
-            presetId={preset.id}
-            count={progress.cycleProgress - 1}
-            total={progress.cycleTotal}
-            beadColor={beadColor}
-            onAdvance={handleAdvance}
-            onRewind={handleRewind}
-            interactive={!isLibraryOpen && !isSettingsOpen}
-          />
-        )}
-      </div>
-
-
-
-
-
-      {/* Completion View */}
+      {/* ── Z-LAYER 70: Completion overlay ── */}
       <AnimatePresence mode="wait">
         {isComplete && (
           <motion.div
@@ -263,22 +278,19 @@ function SessionContent() {
             animate={{ opacity: 1, backdropFilter: "blur(20px)" }}
             exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
             transition={{ duration: 0.8, ease: "circOut" }}
-            onPointerDown={(e) => e.stopPropagation()}
-            onPointerUp={(e) => e.stopPropagation()}
-            className="fixed inset-0 flex items-center justify-center bg-slate-950/80 z-40 w-full"
+            className="fixed inset-0 flex items-center justify-center bg-slate-950/80 z-[70] w-full"
           >
-            <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/40 to-transparent pointer-events-none" />
-            <CompletionView onReset={reset} presetName={preset.name} />
+            <CompletionView />
           </motion.div>
         )}
       </AnimatePresence>
-    </div >
+    </div>
   );
 }
 
-export default function Home() {
+export default function SessionPage() {
   return (
-    <Suspense fallback={<div className="fixed inset-0 bg-slate-950" />}>
+    <Suspense fallback={null}>
       <SessionContent />
     </Suspense>
   );

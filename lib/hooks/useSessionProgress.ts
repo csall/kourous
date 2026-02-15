@@ -2,7 +2,11 @@ import { useSessionStore } from "@/lib/store/sessionStore";
 import { useMemo } from "react";
 
 export function useSessionProgress() {
-    const { preset, totalCount } = useSessionStore();
+    // GRANULAR selectors: only re-render when these specific values change.
+    // Previously used useSessionStore() without selector → subscribed to ENTIRE store
+    // → toggling sound/haptics/color caused unnecessary re-renders here.
+    const preset = useSessionStore(state => state.preset);
+    const totalCount = useSessionStore(state => state.totalCount);
 
     const progress = useMemo(() => {
         if (!preset) return null;

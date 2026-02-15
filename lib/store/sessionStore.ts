@@ -18,7 +18,6 @@ export type SessionState = {
   setPresetByGroupId: (groupId: string) => void;
   setPresetByInvocationId: (invocationId: string) => void;
   advance: () => void;
-  rewind: () => void;
   reset: () => void;
   toggleHaptics: () => void;
   toggleSound: () => void;
@@ -71,6 +70,9 @@ export const useSessionStore = create<SessionState>()(
       },
 
       setPresetByGroupId: (groupId: string) => {
+        const { preset: currentPreset } = get();
+        if (currentPreset?.id === groupId) return;
+
         // Import at runtime to avoid circular dependencies
         const { useInvocationStore } = require("./invocationStore");
         const { groups, getInvocationById } = useInvocationStore.getState();
@@ -102,6 +104,9 @@ export const useSessionStore = create<SessionState>()(
       },
 
       setPresetByInvocationId: (invocationId: string) => {
+        const { preset: currentPreset } = get();
+        if (currentPreset?.id === invocationId) return;
+
         // Import at runtime to avoid circular dependencies
         const { useInvocationStore } = require("./invocationStore");
         const { getInvocationById } = useInvocationStore.getState();
@@ -138,16 +143,6 @@ export const useSessionStore = create<SessionState>()(
           totalCount: nextTotal,
           beadIndex: nextTotal % preset.totalBeads, // Simplified for now, can be complex for multi-cycle
           isComplete: completed,
-        });
-      },
-
-      rewind: () => {
-        const { totalCount } = get();
-        if (totalCount <= 0) return;
-
-        set({
-          totalCount: totalCount - 1,
-          isComplete: false, // If we rewind, we are not complete
         });
       },
 

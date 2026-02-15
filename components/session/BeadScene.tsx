@@ -237,8 +237,7 @@ interface BeadSceneProps {
     total: number;
     beadColor: string;
     onAdvance: () => void;
-    onRewind: () => void;
-    interactive?: boolean; // New prop
+    interactive?: boolean;
 }
 
 const ActiveBeadCounter = ({ countSpring }: { countSpring: any }) => {
@@ -290,10 +289,11 @@ function SceneInternal({ count, beadWindow, total, presetId, beadColor, tapProgr
     // Handle jumps and preset changes
     useEffect(() => {
         const isJump = lastPresetId.current !== presetId || Math.abs(lastCount.current - count) > 1;
+        const isBackward = count < lastCount.current && lastPresetId.current === presetId;
 
         api.start({
             smoothedCount: count,
-            immediate: isJump
+            immediate: isJump || isBackward
         });
 
         lastPresetId.current = presetId;
@@ -353,9 +353,8 @@ function SceneInternal({ count, beadWindow, total, presetId, beadColor, tapProgr
     );
 }
 
-export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, onRewind, interactive = true }: BeadSceneProps) => {
+export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, interactive = true }: BeadSceneProps) => {
     const isDragging = useRef(false);
-    const hasTrippedAdvance = useRef(false);
 
     const [{ tapProgress }, tapApi] = useSpring(() => ({
         tapProgress: 0,
@@ -380,11 +379,9 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, o
         });
     }, [tapApi]);
 
-    // Visually limit rendered beads to a window around current count
-    // User requested "non moins" -> Reduced to 9 beads (Balanced)
     const beadWindow = useMemo(() => {
         const window: number[] = [];
-        const range = 8; // Render 8 before and 8 after (Total 17) for better coverage
+        const range = 8;
         for (let i = count - range; i <= count + range; i++) {
             window.push(i);
         }
@@ -393,53 +390,41 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, o
 
     const startPos = useRef({ x: 0, y: 0 });
 
-    const handlePointerDown = (e: React.PointerEvent) => {
-        if (!interactive) return; // Block all interaction if not interactive
-        // Safety check: Don't start interaction if we clicked a UI button or control
-        if ((e.target as HTMLElement).closest('button')) return;
-
+    // Simple pointer handlers — no hacks needed because the header is
+    // on a separate z-layer with pointer-events-none on its container.
+    // Buttons have pointer-events-auto but they are NOT children of this div,
+    // so events never bubble here.
+    const handlePointerDown = useCallback((e: React.PointerEvent) => {
+        if (!interactive) return;
         isDragging.current = true;
         startPos.current = { x: e.clientX, y: e.clientY };
-    };
+    }, [interactive]);
 
-    const handlePointerUp = (e: React.PointerEvent) => {
+    const onAdvanceRef = useRef(onAdvance);
+    onAdvanceRef.current = onAdvance;
+
+    const handlePointerUp = useCallback((e: React.PointerEvent) => {
         if (!interactive || !isDragging.current) return;
         isDragging.current = false;
-
-        // Safety check: If we're releasing on a UI element, don't trigger bead actions
-        if ((e.target as HTMLElement).closest('button')) return;
 
         const deltaX = e.clientX - startPos.current.x;
         const deltaY = e.clientY - startPos.current.y;
         const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
-        // Tap action
-        if (distance < 10) {
+        // Action detection: Tap or Swipe Down only
+        if (distance < 10 || (deltaY > 30 && deltaY > Math.abs(deltaX))) {
             triggerTapAnimation();
-            onAdvance();
+            onAdvanceRef.current();
         }
-        // Swipe Detection (Vertical)
-        else if (Math.abs(deltaY) > 30 && Math.abs(deltaY) > Math.abs(deltaX)) {
-            if (deltaY > 0) {
-                // Swipe Down -> Advance
-                triggerTapAnimation();
-                onAdvance();
-            } else {
-                // Swipe Up -> Rewind
-                triggerTapAnimation();
-                onRewind();
-            }
-        }
+    }, [interactive, triggerTapAnimation]);
 
-        isDragging.current = false;
-    };
+    if (presetId === "none") return <div className="h-full w-full bg-slate-950" />;
 
     return (
         <div
             className={`h-full w-full cursor-pointer touch-none select-none ${interactive ? '' : 'pointer-events-none'}`}
             onPointerDown={handlePointerDown}
             onPointerUp={handlePointerUp}
-            onPointerLeave={handlePointerUp}
         >
             <Canvas
                 key="main-bead-canvas"
