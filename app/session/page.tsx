@@ -76,7 +76,7 @@ function SessionContent() {
 
   // Auto-hide controls after inactivity
   useEffect(() => {
-    const timer = setTimeout(() => setShowControls(false), 2000);
+    const timer = setTimeout(() => setShowControls(false), 1000);
     return () => clearTimeout(timer);
   }, [progress?.cycleProgress, showControls]);
 
@@ -212,18 +212,18 @@ function SessionContent() {
             opacity: showControls ? 1 : 0,
             y: showControls ? 0 : -100
           }}
-          transition={{ duration: 0.5, ease: "easeInOut" }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
           className="absolute top-1/2 right-4 -translate-y-1/2 z-20 text-right pointer-events-none w-[35%] min-w-[120px]"
         >
           <AnimatePresence mode="popLayout">
             <motion.div
               key={totalCount}
-              initial={{ opacity: 0, y: 50, filter: "blur(5px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -50, filter: "blur(5px)" }}
+              initial={{ opacity: 0, y: 30, filter: "blur(5px)" }}
+              animate={{ opacity: 1, y: -15, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -60, filter: "blur(5px)" }}
               transition={{
-                duration: 0.3,
-                ease: "easeOut"
+                duration: 1.2,
+                ease: "easeOut" // Smooth deceleration but keeps moving
               }}
               className="space-y-1"
             >
