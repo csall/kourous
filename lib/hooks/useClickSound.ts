@@ -28,21 +28,36 @@ export function useClickSound(enabled: boolean = true) {
         const ctx = audioContextRef.current;
         const now = ctx.currentTime;
 
-        // Subliminal Pulse (The absolute minimum sensation)
+        // 1. Mobile-friendly Zen Core
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = "sine";
-        osc.frequency.setValueAtTime(100, now); // Pure sub-bass pulse
+        osc.frequency.setValueAtTime(380, now); // Higher frequency to be heard on iPhone
 
         gain.gain.setValueAtTime(0, now);
-        gain.gain.linearRampToValueAtTime(0.02, now + 0.05); // 50ms attack - virtually no click edge
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+        gain.gain.linearRampToValueAtTime(0.12, now + 0.02); // 20ms attack for softness
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
 
         osc.connect(gain);
         gain.connect(ctx.destination);
 
+        // 2. Tiny definition spark (helps iPhone speakers cut through)
+        const spark = ctx.createOscillator();
+        const sparkGain = ctx.createGain();
+        spark.type = "sine";
+        spark.frequency.setValueAtTime(1500, now);
+
+        sparkGain.gain.setValueAtTime(0, now);
+        sparkGain.gain.linearRampToValueAtTime(0.015, now + 0.005);
+        sparkGain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
+
+        spark.connect(sparkGain);
+        sparkGain.connect(ctx.destination);
+
         osc.start(now);
+        spark.start(now);
         osc.stop(now + 0.15);
+        spark.stop(now + 0.15);
     }, [enabled]);
 
     const playSuccess = useCallback(() => {
