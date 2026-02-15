@@ -71,54 +71,23 @@ const SessionHeader = memo(({
           onTouchEnd={stopAllBubbles}
           className="flex items-center gap-1.5 pointer-events-auto p-1.5 bg-slate-900/40 backdrop-blur-2xl rounded-[2.5rem] shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] transition-all duration-500 ease-out"
         >
-          {/* Counter Button - Always Visible */}
-          {!isComplete && progress && (
-            <motion.div
-              layout
+
+
+          {/* Action Buttons Group */}
+          <div className="flex items-center gap-1 px-1">
+            <button
+              onClick={(e) => { stopAllBubbles(e); reset(); }}
               onPointerDown={stopAllBubbles}
               onPointerUp={stopAllBubbles}
               onMouseDown={stopAllBubbles}
               onMouseUp={stopAllBubbles}
               onTouchStart={stopAllBubbles}
               onTouchEnd={stopAllBubbles}
-              className="group relative flex flex-col items-center justify-center w-[64px] h-[64px] rounded-[2rem] bg-white/5 transition-all duration-300"
-              style={{
-                backgroundColor: `${beadColor}15`,
-              }}
+              className="flex items-center justify-center w-14 h-14 rounded-[1.75rem] transition-all duration-300 bg-white/5 text-white/60 md:hover:bg-white/10 active:scale-90"
+              aria-label="Recommencer"
             >
-              <div
-                className="absolute inset-0 rounded-[2rem] opacity-20 blur-xl"
-                style={{ backgroundColor: beadColor }}
-              />
-              <span
-                className="relative text-2xl font-bold tabular-nums leading-none tracking-tight"
-                style={{ color: beadColor }}
-              >
-                {progress.cycleProgress}
-              </span>
-              <span className="relative text-[10px] font-medium text-white/30 tabular-nums mt-0.5">
-                {progress.cycleTotal}
-              </span>
-            </motion.div>
-          )}
-
-          {/* Action Buttons Group */}
-          <div className="flex items-center gap-1 px-1">
-            {totalCount > 0 && (
-              <button
-                onClick={(e) => { stopAllBubbles(e); reset(); }}
-                onPointerDown={stopAllBubbles}
-                onPointerUp={stopAllBubbles}
-                onMouseDown={stopAllBubbles}
-                onMouseUp={stopAllBubbles}
-                onTouchStart={stopAllBubbles}
-                onTouchEnd={stopAllBubbles}
-                className="flex items-center justify-center w-14 h-14 rounded-[1.75rem] bg-white/5 text-white/60 md:hover:bg-white/10 active:scale-90 transition-all"
-                aria-label="Recommencer"
-              >
-                <RefreshCw size={20} className="stroke-[1.5]" />
-              </button>
-            )}
+              <RefreshCw size={20} className="stroke-[1.5]" />
+            </button>
 
             <button
               onClick={(e) => { stopAllBubbles(e); toggleSound(); }}
@@ -169,22 +138,95 @@ const SessionHeader = memo(({
       <AnimatePresence>
         {!isComplete && progress && showTitle && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, y: -15 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="mt-8 px-6 text-center pointer-events-none"
+            exit={{ opacity: 0, y: -15 }}
+            className="w-full mt-4 px-8 flex flex-col items-center text-center pointer-events-none"
           >
             <h1
-              className="text-sm font-bold tracking-[0.25em] uppercase opacity-40 mb-1"
+              className="text-sm font-bold tracking-[0.25em] uppercase opacity-50 mb-0 leading-none"
               style={{ color: beadColor }}
             >
-              {progress.label}
+              <span className="tabular-nums">{progress.cycleTotal}</span> x {progress.label}
             </h1>
+
             {progress.sublabel && (
-              <p className="text-xs text-white/20 font-light tracking-wide max-w-[260px] leading-relaxed">
+              <p className="text-xs text-white/20 font-light tracking-wide max-w-[260px] mx-auto leading-none mb-0 uppercase">
                 {progress.sublabel}
               </p>
             )}
+
+            <div className="flex flex-col items-center mt-2">
+              <div className="relative flex items-center justify-center h-16 w-16">
+                {/* Circular Progress Halo */}
+                <svg className="absolute inset-0 w-full h-full -rotate-90">
+                  {/* Background Track */}
+                  {/* Background Track (Full Colored Contour) */}
+                  <circle
+                    cx="50%"
+                    cy="50%"
+                    r="46%"
+                    fill={beadColor}
+                    fillOpacity="0.05"
+                    stroke={beadColor}
+                    strokeWidth="1.5"
+                    className="opacity-30"
+                  />
+                  {/* Active Progress Ring */}
+                  <motion.circle
+                    cx="50%"
+                    cy="50%"
+                    r="46%"
+                    fill="none"
+                    stroke={beadColor}
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeDasharray="100 100"
+                    pathLength="100"
+                    initial={{ strokeDashoffset: 100 }}
+                    animate={{
+                      strokeDashoffset: 100 - (progress.cycleProgress / progress.cycleTotal * 100)
+                    }}
+                    transition={{ type: "spring", stiffness: 60, damping: 15 }}
+                    className="opacity-80"
+                    style={{
+                      filter: `drop-shadow(0 0 6px ${beadColor}60)`
+                    }}
+                  />
+                </svg>
+
+                {/* Pulsing Core */}
+                <motion.div
+                  animate={{
+                    scale: [1, 1.05, 1],
+                    opacity: [0.03, 0.08, 0.03]
+                  }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                  className="absolute inset-2 rounded-full"
+                  style={{ backgroundColor: beadColor }}
+                />
+
+                <AnimatePresence mode="popLayout">
+                  <motion.div
+                    key={progress.cycleProgress}
+                    initial={{ opacity: 0, scale: 0.8, y: 3 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 1.2, y: -3 }}
+                    className="relative flex flex-col items-center"
+                  >
+                    <span
+                      className="text-2xl font-black tabular-nums tracking-tight leading-none"
+                      style={{
+                        color: beadColor,
+                        textShadow: `0 0 15px ${beadColor}40`
+                      }}
+                    >
+                      {progress.cycleProgress}
+                    </span>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

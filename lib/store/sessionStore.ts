@@ -141,11 +141,13 @@ export const useSessionStore = create<SessionState>()(
         if (!preset || isComplete) return;
 
         const nextTotal = totalCount + 1;
-        const completed = nextTotal >= preset.totalBeads;
+        // Total steps = Sum of repetitions + (number of items - 1) for transitions
+        const totalSteps = preset.totalBeads + (preset.sequence.length - 1);
+        const completed = nextTotal >= totalSteps;
 
         set({
           totalCount: nextTotal,
-          beadIndex: nextTotal % preset.totalBeads, // Simplified for now, can be complex for multi-cycle
+          beadIndex: nextTotal, // Let 3D scene handle wrapping/interpolation
           isComplete: completed,
         });
       },
