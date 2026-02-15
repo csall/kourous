@@ -28,42 +28,21 @@ export function useClickSound(enabled: boolean = true) {
         const ctx = audioContextRef.current;
         const now = ctx.currentTime;
 
-        // 1. Low-Frequency Haptic Hum (The "Vibration" base)
-        const hum = ctx.createOscillator();
-        const humGain = ctx.createGain();
-        hum.type = "sine";
-        hum.frequency.setValueAtTime(160, now); // Low frequency pulse
+        // Subliminal Pulse (The absolute minimum sensation)
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(100, now); // Pure sub-bass pulse
 
-        humGain.gain.setValueAtTime(0, now);
-        humGain.gain.linearRampToValueAtTime(0.2, now + 0.005);
-        humGain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(0.02, now + 0.05); // 50ms attack - virtually no click edge
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
 
-        hum.connect(humGain);
-        humGain.connect(ctx.destination);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
 
-        // 2. Tactile Texture (Subtle motor noise)
-        const noise = ctx.createBufferSource();
-        const bufferSize = ctx.sampleRate * 0.02;
-        const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-        noise.buffer = buffer;
-
-        const noiseFilter = ctx.createBiquadFilter();
-        noiseFilter.type = "lowpass";
-        noiseFilter.frequency.value = 400; // Keep it deep and muffled
-
-        const noiseGain = ctx.createGain();
-        noiseGain.gain.setValueAtTime(0.1, now);
-        noiseGain.gain.exponentialRampToValueAtTime(0.001, now + 0.02);
-
-        noise.connect(noiseFilter);
-        noiseFilter.connect(noiseGain);
-        noiseGain.connect(ctx.destination);
-
-        hum.start(now);
-        noise.start(now);
-        hum.stop(now + 0.05);
+        osc.start(now);
+        osc.stop(now + 0.15);
     }, [enabled]);
 
     const playSuccess = useCallback(() => {
