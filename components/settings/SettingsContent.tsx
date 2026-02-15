@@ -5,7 +5,7 @@ import { Volume2, VolumeX, Vibrate, Moon, Info, Palette } from "lucide-react";
 import { useSessionStore } from "@/lib/store/sessionStore";
 
 export function SettingsContent() {
-    const { soundEnabled, hapticsEnabled, toggleSound, toggleHaptics, beadColor, setBeadColor } = useSessionStore();
+    const { soundEnabled, hapticsEnabled, toggleSound, toggleHaptics, beadColor, setBeadColor, showTitle, toggleShowTitle } = useSessionStore();
 
     const colors = [
         { name: "Rose", value: "#fb7185" },
@@ -74,6 +74,27 @@ export function SettingsContent() {
                     </div>
                 </div>
 
+                {/* Show Title Toggle */}
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <Info size={20} style={{ color: showTitle ? beadColor : '#94a3b8' }} />
+                            <div>
+                                <div className="text-sm font-medium text-white">Afficher le titre</div>
+                                <div className="text-xs text-slate-400">Voir l'invocation à chaque perle</div>
+                            </div>
+                        </div>
+                        <button
+                            onClick={toggleShowTitle}
+                            className="w-12 h-6 rounded-full transition-all"
+                            style={{ backgroundColor: showTitle ? beadColor : '#334155' }}
+                        >
+                            <div className={`w-5 h-5 rounded-full bg-white shadow-lg transform transition-transform ${showTitle ? 'translate-x-6' : 'translate-x-0.5'
+                                }`} />
+                        </button>
+                    </div>
+                </div>
+
                 {/* Color Selection */}
                 <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
                     <div className="space-y-4">
@@ -106,19 +127,7 @@ export function SettingsContent() {
                     </div>
                 </div>
 
-                {/* Theme (Coming Soon) */}
-                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4 opacity-50">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <Moon size={20} className="text-slate-400" />
-                            <div>
-                                <div className="text-sm font-medium text-white">Thème</div>
-                                <div className="text-xs text-slate-400">Mode sombre (bientôt disponible)</div>
-                            </div>
-                        </div>
-                        <div className="text-xs text-slate-500">Sombre</div>
-                    </div>
-                </div>
+
             </motion.div>
 
             {/* About Section */}

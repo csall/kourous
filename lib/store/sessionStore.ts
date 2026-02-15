@@ -11,6 +11,7 @@ export type SessionState = {
   hapticsEnabled: boolean;
   soundEnabled: boolean;
   beadColor: string;
+  showTitle: boolean;
 
   setPreset: (preset: PrayerPreset) => void;
   setPresetById: (id: string) => void;
@@ -21,6 +22,7 @@ export type SessionState = {
   reset: () => void;
   toggleHaptics: () => void;
   toggleSound: () => void;
+  toggleShowTitle: () => void;
   setBeadColor: (color: string) => void;
 };
 
@@ -154,6 +156,9 @@ export const useSessionStore = create<SessionState>()(
       toggleHaptics: () => set((state) => ({ hapticsEnabled: !state.hapticsEnabled })),
       toggleSound: () => set((state) => ({ soundEnabled: !state.soundEnabled })),
       setBeadColor: (color: string) => set({ beadColor: color }),
+
+      showTitle: true,
+      toggleShowTitle: () => set((state) => ({ showTitle: !state.showTitle })),
     }),
     {
       name: "kourous-session-storage",
