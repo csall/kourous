@@ -75,7 +75,10 @@ const Pearl = memo(({ position, activeProgress, idx, rotation = [0, 0, 0], tapPr
         if (p > 0.01) {
             // Subtle Y-axis bobbing - use our STABLE animTime
             const bob = Math.sin(time * 2.5 + floatOffset) * 0.15 * p;
-            meshRef.current.position.y = bob;
+
+            // TAP IMPACT: Pull downward (simulating user pulling the bead)
+            const tapOffset = tapProgress.get() * 0.7 * Math.pow(p, 3);
+            meshRef.current.position.y = bob - tapOffset;
 
             // Subtle "wobble"
             meshRef.current.rotation.x = Math.sin(time * 1.5) * 0.1 * p;
@@ -377,15 +380,12 @@ export const BeadScene = memo(({ presetId, count, total, onAdvance }: BeadSceneP
     }));
 
     const triggerTapAnimation = useCallback(() => {
+        // Create a "pulse" effect: dive down then spring back
         tapApi.start({
-            from: { tapProgress: 1 },
-            to: { tapProgress: 0 },
-            config: {
-                mass: 1,
-                tension: 400,
-                friction: 20,
-                clamp: true
-            }
+            to: [
+                { tapProgress: 1, config: { tension: 800, friction: 20 } },
+                { tapProgress: 0, config: { tension: 150, friction: 12 } }
+            ]
         });
     }, [tapApi]);
 
