@@ -116,7 +116,7 @@ function SessionContent() {
 
   return (
     <div
-      className="fixed inset-0 flex flex-col bg-slate-950 text-slate-100 overflow-hidden font-sans select-none"
+      className="fixed inset-0 h-[100dvh] flex flex-col bg-slate-950 text-slate-100 overflow-hidden font-sans select-none"
       onPointerMove={() => setShowControls(true)}
     >
       {/* Top Right Navigation */}
@@ -208,7 +208,7 @@ function SessionContent() {
       {/* Prayer Text Overlay - Independent Pulse per Increment */}
       {!isComplete && showTitle && totalCount > 0 && (
         <div
-          className="absolute top-1/2 right-4 -translate-y-1/2 z-20 text-right pointer-events-none w-[35%] min-w-[120px]"
+          className="absolute top-1/2 right-[max(1rem,env(safe-area-inset-right))] -translate-y-1/2 z-20 text-right pointer-events-none w-[35%] min-w-[120px]"
         >
           <AnimatePresence mode="popLayout">
             <motion.div
