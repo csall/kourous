@@ -198,33 +198,30 @@ SessionHeader.displayName = "SessionHeader";
 // LAYER 2: Bead Scene
 // ─────────────────────────────────────────────────────────────
 const BeadLayer = memo(() => {
-  // Select strictly what is needed for the 3D scene identity and completion state
+  // Select strictly structural identity state (Preset)
   const presetId = useSessionStore(state => state.preset?.id || "none");
-  const isComplete = useSessionStore(state => state.isComplete);
   const advance = useSessionStore(state => state.advance);
-  const isUiOpen = useSessionStore(state => state.isUiOpen);
-
-  // progress depends on totalCount, so it will only cause re-render when a bead is clicked
   const progress = useSessionProgress();
 
-  // Use internal refs for non-structural state to avoid re-rendering the 3D layer
+  // Use internal refs for interactive state to avoid re-rendering the 3D layer
   const hapticRef = useRef(useSessionStore.getState().hapticsEnabled);
   const soundRef = useRef(useSessionStore.getState().soundEnabled);
+  const isUiOpenRef = useRef(useSessionStore.getState().isUiOpen);
+  const isCompleteRef = useRef(useSessionStore.getState().isComplete);
 
   useEffect(() => {
     return useSessionStore.subscribe((state) => {
       hapticRef.current = state.hapticsEnabled;
       soundRef.current = state.soundEnabled;
+      isUiOpenRef.current = state.isUiOpen;
+      isCompleteRef.current = state.isComplete;
     });
   }, []);
 
-  const { playClick } = useClickSound(true); // Control manually inside callback
+  const { playClick } = useClickSound(true);
 
-  // ULTIMATE GUARD: Direct check of store state inside callback
   const handleAdvance = useCallback(() => {
-    // Read fresh state just in case of race conditions
-    const state = useSessionStore.getState();
-    if (state.isUiOpen || state.isComplete) return;
+    if (isUiOpenRef.current || isCompleteRef.current) return;
 
     if (hapticRef.current && typeof navigator !== "undefined" && navigator.vibrate) {
       navigator.vibrate(15);
@@ -244,7 +241,7 @@ const BeadLayer = memo(() => {
       count={count}
       total={total}
       onAdvance={handleAdvance}
-      interactive={!isUiOpen && !isComplete}
+    // Note: BeadScene now handles its own internal isUiOpen subscription for animation freezing
     />
   );
 });

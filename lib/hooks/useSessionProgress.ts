@@ -18,27 +18,35 @@ export function useSessionProgress() {
         // Find which sequence item we are currently in
         for (let i = 0; i < preset.sequence.length; i++) {
             const item = preset.sequence[i];
-            if (totalCount < accumulatedBeads + item.repetitions) {
+            const nextAccumulated = accumulatedBeads + item.repetitions;
+
+            // If totalCount is within this item's range OR exactly matches its end
+            if (totalCount <= nextAccumulated) {
                 currentItem = item;
                 currentCycleIndex = i;
                 break;
             }
-            accumulatedBeads += item.repetitions;
+
+            accumulatedBeads = nextAccumulated;
 
             // Handle case where we are at the very end (completed)
-            if (i === preset.sequence.length - 1 && totalCount >= accumulatedBeads) {
-                currentItem = item; // Stick to last item
+            if (i === preset.sequence.length - 1) {
+                currentItem = item;
                 currentCycleIndex = i;
             }
         }
 
         const beadsInCurrentCycle = totalCount - accumulatedBeads;
+        const isActuallyComplete = useSessionStore.getState().isComplete;
 
         return {
             label: currentItem.label,
             sublabel: currentItem.transliteration,
             cycleTotal: currentItem.repetitions,
-            cycleProgress: beadsInCurrentCycle, // Start at 0
+            // If complete, show the full total of the last item. 
+            // Also, if we just finished a cycle and haven't clicked to the next, 
+            // we should probably see the full count of that cycle.
+            cycleProgress: isActuallyComplete ? currentItem.repetitions : beadsInCurrentCycle,
             cycleIndex: currentCycleIndex,
             totalCycles: preset.sequence.length
         };
