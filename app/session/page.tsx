@@ -207,18 +207,22 @@ function SessionContent() {
       {/* Prayer Text Overlay */}
       {!isComplete && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: showControls ? 1 : 0 }}
+          initial={{ opacity: 0, y: 0 }}
+          animate={{
+            opacity: showControls ? 1 : 0,
+            y: showControls ? 0 : -100
+          }}
+          transition={{ duration: 0.5, ease: "easeInOut" }}
           className="absolute top-1/2 right-4 -translate-y-1/2 z-20 text-right pointer-events-none w-[35%] min-w-[120px]"
         >
-          <AnimatePresence mode="wait">
+          <AnimatePresence mode="popLayout">
             <motion.div
-              key={progress.label}
-              initial={{ opacity: 0, y: 20, filter: "blur(5px)" }}
+              key={totalCount}
+              initial={{ opacity: 0, y: 50, filter: "blur(5px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -30, filter: "blur(5px)" }}
+              exit={{ opacity: 0, y: -50, filter: "blur(5px)" }}
               transition={{
-                duration: 0.4,
+                duration: 0.3,
                 ease: "easeOut"
               }}
               className="space-y-1"
