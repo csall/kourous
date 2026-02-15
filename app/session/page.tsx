@@ -222,47 +222,7 @@ function SessionContent() {
         )}
       </div>
 
-      {/* Prayer Text Overlay - Independent Pulse per Increment */}
-      {
-        !isComplete && showTitle && totalCount > 0 && (
-          <div
-            className="absolute top-1/2 right-[max(1rem,env(safe-area-inset-right))] -translate-y-1/2 z-20 text-right pointer-events-none w-[35%] min-w-[120px]"
-          >
-            <AnimatePresence mode="popLayout">
-              <motion.div
-                key={totalCount}
-                initial={{ y: 50, opacity: 0, filter: "blur(5px)" }}
-                animate={{
-                  y: -100, // Continuous upward movement
-                  opacity: [0, 1, 1, 0], // Fade in, stay, fade out
-                  filter: "blur(0px)"
-                }}
-                transition={{
-                  y: { duration: 0.8, ease: "linear" }, // Constant speed up
-                  opacity: { duration: 0.8, times: [0, 0.2, 0.7, 1] }, // Visibility curve
-                  filter: { duration: 0.4 }
-                }}
-                exit={{ opacity: 0, transition: { duration: 0.1 } }}
-                className="space-y-1"
-              >
-                <h2 className="text-lg md:text-2xl font-medium tracking-wide text-white/95 drop-shadow-md leading-tight">
-                  {progress.label}
-                </h2>
-                {progress.sublabel && (
-                  <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.1 }}
-                    className="text-[11px] md:text-sm text-white/70 font-light leading-snug"
-                  >
-                    {progress.sublabel}
-                  </motion.p>
-                )}
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        )
-      }
+
 
 
 
