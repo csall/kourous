@@ -22,10 +22,12 @@ interface PearlProps {
 const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0], tapProgress }: PearlProps) => {
     const meshRef = useRef<THREE.Mesh>(null);
 
-    const scale = useMemo(() => new SpringValue(0.5), []); // Constant size 0.5
-    const roughness = activeProgress.to((p: number) => 0.25 - (0.17 * p));
-    const metalness = activeProgress.to((p: number) => 0.05 + (0.10 * p));
-    const transmission = activeProgress.to((p: number) => 0.4 + (0.4 * p));
+    // Constant base size
+    const BASE_SCALE = 0.3;
+
+    const roughness = activeProgress.to((p: number) => 0.15 - (0.10 * p));
+    const metalness = activeProgress.to((p: number) => 0.10 + (0.05 * p));
+    const transmission = activeProgress.to((p: number) => 0.15 + (0.15 * p));
     const thickness = activeProgress.to((p: number) => 2.0 - (1.0 * p));
 
     // Combine activeProgress and tapProgress for emissive and zoom effect
@@ -36,7 +38,7 @@ const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0]
 
     const envMapIntensity = activeProgress.to((p: number) => 1 + (4 * p));
 
-    const tapScale = tapProgress.to((t: number) => 1 - (t * 0.50)); // Moderate shrink effect on tap (50%)
+    const tapScale = tapProgress.to((t: number) => 1 - (Math.max(0, t) * 0.50)); // Moderate shrink effect on tap (50%)
 
     // Smoothly interpolate between base gray and active color
     const interpolatedColor = activeProgress.to((p: number) => {
@@ -49,17 +51,16 @@ const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0]
 
     useFrame((state) => {
         if (!meshRef.current) return;
-        const time = state.clock.getElapsedTime();
 
         // Subtle rotation only, no floating
         meshRef.current.rotation.y += 0.003;
         meshRef.current.rotation.z += 0.001;
+    });
 
-        // Pulse effect based on activeProgress + tap impact (shrink)
-        const p = activeProgress.get();
-        const pulse = 1 + (Math.sin(time * 2.5) * (0.015 * p));
-        const currentScale = scale.get() * pulse * tapScale.get();
-        meshRef.current.scale.set(currentScale, currentScale, currentScale);
+    // Bind scale directly to the spring for rock-solid consistency
+    const animatedScale = tapProgress.to((t: number) => {
+        const s = BASE_SCALE * (1 - (Math.max(0, t) * 0.5));
+        return [s, s, s];
     });
 
     // Text removed from Pearl for better ergonomics (moved to fixed HUD)
@@ -67,6 +68,7 @@ const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0]
         <group position={position} rotation={rotation}>
             <animated.mesh
                 ref={meshRef}
+                scale={animatedScale}
                 castShadow
                 receiveShadow
             >
@@ -86,17 +88,18 @@ const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0]
                 />
                 {/* Sparkles intensity tied to activeProgress */}
                 <AnimatedSparkles
-                    count={10}
-                    scale={2}
+                    count={8}
+                    scale={1.2}
                     size={1.5}
                     speed={0.4}
                     opacity={activeProgress.to((p: number) => {
-                        const base = p * 0.4;
-                        const tapBurst = tapProgress.get() * 0.6;
+                        const base = p * 0.3; // Subtle base glow
+                        const tapBurst = tapProgress.get() * 0.5;
                         return Math.min(1, base + tapBurst);
                     })}
                     color="#ffffff"
                 />
+
             </animated.mesh>
         </group>
     );
@@ -104,31 +107,29 @@ const Pearl = memo(({ position, activeProgress, color, idx, rotation = [0, 0, 0]
 
 Pearl.displayName = "Pearl";
 
-const ConnectionString = memo(({ radius, spacing, windowRange }: { radius: number, spacing: number, windowRange: number[] }) => {
+const ConnectionString = memo(({ radius }: { radius: number }) => {
     const curve = useMemo(() => {
         const points = [];
-        // The curve should follow the same (count - idx) logic but in local space
-        // We'll just define a static arc that covers the visible window
-        // Longer string to allow for the wider spacing
-        for (let r = -15; r <= 15; r++) {
-            const angle = r * spacing;
+        const segments = 128;
+        for (let i = 0; i < segments; i++) {
+            const angle = (i / segments) * Math.PI * 2;
             const y = Math.sin(angle) * radius;
             const z = (Math.cos(angle) * radius) - radius;
-            points.push(new THREE.Vector3(0, -y, z));
+            points.push(new THREE.Vector3(0, y, z));
         }
-        return new THREE.CatmullRomCurve3(points);
-    }, [radius, spacing]);
+        const c = new THREE.CatmullRomCurve3(points);
+        c.closed = true;
+        return c;
+    }, [radius]);
 
     return (
         <mesh castShadow>
-            <tubeGeometry args={[curve, 100, 0.035, 12, false]} />
+            <tubeGeometry args={[curve, 128, 0.02, 8, true]} />
             <meshPhysicalMaterial
-                color="#1a1a1e"
-                roughness={0.7}
-                metalness={0.2}
-                emissive="#ffffff"
-                emissiveIntensity={0.01}
-                clearcoat={0.2}
+                color="#64748b"
+                roughness={0.8}
+                metalness={0.1}
+                clearcoat={0}
             />
         </mesh>
     );
@@ -244,7 +245,7 @@ const ActiveBeadCounter = ({ countSpring }: { countSpring: any }) => {
 };
 
 // Internal scene with animated state
-function SceneInternal({ count, beadWindow, CURVE_RADIUS, ANGLE_SPACING, presetId, beadColor, tapProgress }: any) {
+function SceneInternal({ count, beadWindow, total, presetId, beadColor, tapProgress }: any) {
     const lastPresetId = useRef(presetId);
     const lastCount = useRef(count);
 
@@ -252,8 +253,8 @@ function SceneInternal({ count, beadWindow, CURVE_RADIUS, ANGLE_SPACING, presetI
         smoothedCount: count,
         config: {
             mass: 1.2,
-            tension: 110,
-            friction: 35,
+            tension: 80,
+            friction: 20,
             precision: 0.0001
         }
     }));
@@ -271,36 +272,69 @@ function SceneInternal({ count, beadWindow, CURVE_RADIUS, ANGLE_SPACING, presetI
         lastCount.current = count;
     }, [count, presetId, api]);
 
+    const radius = Math.max(8, (total * 0.5) / (2 * Math.PI)); // Calculate radius to fit all beads
+    const angleStep = (Math.PI * 2) / total;
+
     return (
         <group>
+            {/* The Rosary String */}
+            <ConnectionString radius={radius} />
+
             {beadWindow.map((idx: number) => {
                 return (
                     <animated.group
                         key={idx}
-                        // Position AND Rotation based on smoothedCount for physical "turning" descent
                         position={smoothedCount.to((sc: number) => {
-                            const angle = (idx - sc) * ANGLE_SPACING;
-                            const yPos = Math.sin(angle) * CURVE_RADIUS;
-                            const zPos = (Math.cos(angle) * CURVE_RADIUS) - CURVE_RADIUS;
-                            return [0, yPos, zPos];
+                            // Circular positioning
+                            const angle = (idx - sc) * angleStep;
+                            // Shift phase so active (angle=0) is at bottom/center.
+                            // cos(0) = 1. z = 0. This puts it at front.
+                            // sin(0) = 0. y = 0.
+                            const yPos = Math.sin(angle + Math.PI / 2) * radius - radius; // Shift y to generally be lower? No let's keep it centered on Y?
+                            // Let's stick to the previous feeling: Active at (0, 0, 0).
+                            // Loop goes 'back' into Z.
+                            // Previous: z = (cos - 1) * R. At 0: z=0. At PI: z=-2R.
+                            // y = sin * R.
+                            // But we want "top" of loop or "bottom"?
+                            // Usually we hold the "bottom" of the loop.
+                            // Let's behave as if looking at the bead in hand.
+                            // angle 0 -> y=0, z=0.
+                            const zPos = (Math.cos(angle) * -1 * radius) + radius; // Invert to circle back
+                            // Wait, if angle=0, cos=1. -R + R = 0.
+                            // if angle=PI, cos=-1. R + R = 2R. That's closer? No z is depth. positive is Closer.
+                            // Standard: Camera at +8.
+                            // We want active at 0.
+                            // Loop behind: z < 0.
+                            // So: z = (Math.cos(angle) * radius) - radius;
+                            // angle 0 => z = 1*R - R = 0.
+                            // angle PI => z = -1*R - R = -2R. (Far away). Perfect.
+                            const z = (Math.cos(angle) * radius) - radius;
+                            const y = Math.sin(angle) * radius;
+
+                            // Slight spiral offset for realism vs overlap? 
+                            // With sufficient radius, no overlap.
+                            return [0, y, z];
                         })}
-                        rotation={smoothedCount.to((sc: number) => [
-                            idx * 0.8 + (idx - sc) * 1.5,
-                            idx * 0.4,
-                            0
-                        ])}
+                        rotation={smoothedCount.to((sc: number) => {
+                            const angle = (idx - sc) * angleStep;
+                            return [angle, 0, 0];
+                        })}
                     >
                         <Pearl
                             position={[0, 0, 0]}
                             idx={idx}
                             tapProgress={tapProgress}
                             activeProgress={smoothedCount.to((sc: number) => {
-                                // Smooth bell curve centered at current index
-                                // Result is 1.0 when sc === idx, and falls off quickly
-                                const dist = Math.abs(idx - sc);
-                                return Math.max(0, 1 - dist * 1.2);
+                                // Circular distance for loop wrapping
+                                let dist = Math.abs(idx - sc);
+                                // The visual loop connects 0 and total-1.
+                                // But `sc` and `idx` are distinct integers.
+                                // If sc=0, idx=99 (total=100), distance should be 1.
+                                const loopDist = Math.min(dist, Math.abs(total - dist));
+                                return Math.max(0, 1 - loopDist * 0.8);
                             })}
                             color={beadColor}
+                        // rotation={[0, 0, 0]} 
                         />
                     </animated.group>
                 );
@@ -325,22 +359,17 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, o
             config: {
                 mass: 1,
                 tension: 400,
-                friction: 20
+                friction: 20,
+                clamp: true
             }
         });
     }, [tapApi]);
 
-    const CURVE_RADIUS = 13.5;
-    const ANGLE_SPACING = 0.48;
-
+    // Generate ALL beads for the full loop
     const beadWindow = useMemo(() => {
-        const window: number[] = [];
-        const radius = 1; // Show exactly 3 beads (prev, current, next) for continuity
-        for (let i = count - radius; i <= count + radius; i++) {
-            window.push(i);
-        }
-        return window;
-    }, [count]);
+        return Array.from({ length: total }, (_, i) => i);
+    }, [total]);
+
     const startPos = useRef({ x: 0, y: 0 });
 
     const handlePointerDown = (e: React.PointerEvent) => {
@@ -351,12 +380,18 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, o
     const handlePointerUp = (e: React.PointerEvent) => {
         if (!isDragging.current) return;
 
-        const deltaX = Math.abs(e.clientX - startPos.current.x);
-        const deltaY = Math.abs(e.clientY - startPos.current.y);
+        const deltaX = e.clientX - startPos.current.x;
+        const deltaY = e.clientY - startPos.current.y;
         const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
-        // Default tap action (advance)
+        // Tap action
         if (distance < 10) {
+            triggerTapAnimation();
+            onAdvance();
+        }
+        // Swipe Detection (Vertical) - Only Down (Pull) allowed
+        else if (Math.abs(deltaY) > 30 && Math.abs(deltaY) > Math.abs(deltaX) && deltaY > 0) {
+            // Swipe Down (Pulling bead towards you) -> Advance
             triggerTapAnimation();
             onAdvance();
         }
@@ -375,8 +410,8 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, o
                 key="main-bead-canvas"
                 shadows
                 camera={{
-                    position: [0, 0, 8],
-                    fov: 32
+                    position: [0, 0, 6],
+                    fov: 45
                 }}
                 gl={{
                     antialias: true,
@@ -400,13 +435,12 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, o
                     count={count}
                     beadColor={beadColor}
                     beadWindow={beadWindow}
-                    CURVE_RADIUS={CURVE_RADIUS}
-                    ANGLE_SPACING={ANGLE_SPACING}
+                    total={total}
                     tapProgress={tapProgress}
                 />
 
                 <StarryNightBackground />
-                <fog attach="fog" args={['#000000', 30, 90]} />
+                <fog attach="fog" args={['#000000', 8, 45]} />
             </Canvas>
         </div>
     );
