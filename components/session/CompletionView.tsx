@@ -4,9 +4,9 @@ import { motion } from "framer-motion";
 import { CheckCircle2, RotateCcw, BookOpen } from "lucide-react";
 
 interface CompletionViewProps {
-    onReset: () => void;
-    onOpenLibrary: () => void;
-    presetName: string;
+    readonly onReset: () => void;
+    readonly onOpenLibrary: () => void;
+    readonly presetName: string;
 }
 
 export function CompletionView({ onReset, onOpenLibrary, presetName }: CompletionViewProps) {
