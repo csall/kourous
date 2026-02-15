@@ -312,7 +312,7 @@ const SceneInternal = memo(({ count, beadWindow, total, presetId, tapProgress }:
     }, [count, presetId, api]);
 
     const radius = 8; // Tighter radius for closer look
-    const angleStep = 0.1; // Maximum condensation for a dense holy look
+    const angleStep = 0.2; // Original value for angular step
 
     return (
         <group position={[0, -1.2, 0]}>
@@ -354,8 +354,17 @@ const SceneInternal = memo(({ count, beadWindow, total, presetId, tapProgress }:
 });
 SceneInternal.displayName = "SceneInternal";
 
-export const BeadScene = memo(({ presetId, count, total, onAdvance, interactive = true }: BeadSceneProps) => {
+export const BeadScene = memo(({ presetId, count, total, onAdvance }: BeadSceneProps) => {
     const isDragging = useRef(false);
+    const isInteractiveRef = useRef(!useSessionStore.getState().isUiOpen && !useSessionStore.getState().isComplete);
+    const [isUiOpen, setIsUiOpen] = useState(useSessionStore.getState().isUiOpen);
+
+    useEffect(() => {
+        return useSessionStore.subscribe((state) => {
+            isInteractiveRef.current = !state.isUiOpen && !state.isComplete;
+            setIsUiOpen(state.isUiOpen);
+        });
+    }, []);
 
     const [{ tapProgress }, tapApi] = useSpring(() => ({
         tapProgress: 0,
@@ -391,21 +400,17 @@ export const BeadScene = memo(({ presetId, count, total, onAdvance, interactive 
 
     const startPos = useRef({ x: 0, y: 0 });
 
-    // Simple pointer handlers — no hacks needed because the header is
-    // on a separate z-layer with pointer-events-none on its container.
-    // Buttons have pointer-events-auto but they are NOT children of this div,
-    // so events never bubble here.
     const handlePointerDown = useCallback((e: React.PointerEvent) => {
-        if (!interactive) return;
+        if (!isInteractiveRef.current) return;
         isDragging.current = true;
         startPos.current = { x: e.clientX, y: e.clientY };
-    }, [interactive]);
+    }, []);
 
     const onAdvanceRef = useRef(onAdvance);
     onAdvanceRef.current = onAdvance;
 
     const handlePointerUp = useCallback((e: React.PointerEvent) => {
-        if (!interactive || !isDragging.current) return;
+        if (!isInteractiveRef.current || !isDragging.current) return;
         isDragging.current = false;
 
         const deltaX = e.clientX - startPos.current.x;
@@ -417,13 +422,13 @@ export const BeadScene = memo(({ presetId, count, total, onAdvance, interactive 
             triggerTapAnimation();
             onAdvanceRef.current();
         }
-    }, [interactive, triggerTapAnimation]);
+    }, [triggerTapAnimation]);
 
     if (presetId === "none") return <div className="h-full w-full bg-slate-950" />;
 
     return (
         <div
-            className={`h-full w-full cursor-pointer touch-none select-none ${interactive ? '' : 'pointer-events-none'}`}
+            className={`h-full w-full cursor-pointer touch-none select-none ${isUiOpen ? 'pointer-events-none' : ''}`}
             onPointerDown={handlePointerDown}
             onPointerUp={handlePointerUp}
         >
