@@ -43,6 +43,8 @@ export function SettingsContent() {
 
                         <button
                             onClick={toggleSound}
+                            onPointerDown={(e) => e.stopPropagation()}
+                            onPointerUp={(e) => e.stopPropagation()}
                             className="w-12 h-6 rounded-full transition-all"
                             style={{ backgroundColor: soundEnabled ? beadColor : '#334155' }}
                         >
@@ -65,6 +67,8 @@ export function SettingsContent() {
 
                         <button
                             onClick={toggleHaptics}
+                            onPointerDown={(e) => e.stopPropagation()}
+                            onPointerUp={(e) => e.stopPropagation()}
                             className="w-12 h-6 rounded-full transition-all"
                             style={{ backgroundColor: hapticsEnabled ? beadColor : '#334155' }}
                         >
@@ -86,6 +90,8 @@ export function SettingsContent() {
                         </div>
                         <button
                             onClick={toggleShowTitle}
+                            onPointerDown={(e) => e.stopPropagation()}
+                            onPointerUp={(e) => e.stopPropagation()}
                             className="w-12 h-6 rounded-full transition-all"
                             style={{ backgroundColor: showTitle ? beadColor : '#334155' }}
                         >
@@ -111,6 +117,8 @@ export function SettingsContent() {
                                 <button
                                     key={c.value}
                                     onClick={() => setBeadColor(c.value)}
+                                    onPointerDown={(e) => e.stopPropagation()}
+                                    onPointerUp={(e) => e.stopPropagation()}
                                     className={`relative w-8 h-8 rounded-full transition-all active:scale-90 ${beadColor === c.value ? 'ring-2 ring-white ring-offset-2 ring-offset-slate-900 scale-110' : 'opacity-70 hover:opacity-100'
                                         }`}
                                     style={{ backgroundColor: c.value }}

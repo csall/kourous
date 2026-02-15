@@ -198,7 +198,9 @@ function SessionContent() {
         onClose={() => setIsLibraryOpen(false)}
         title="Bibliothèque"
       >
-        <LibraryContent onSessionStart={() => setIsLibraryOpen(false)} />
+        <div onPointerDown={(e) => e.stopPropagation()} onPointerUp={(e) => e.stopPropagation()} className="h-full">
+          <LibraryContent onSessionStart={() => setIsLibraryOpen(false)} />
+        </div>
       </FullscreenModal>
 
       {/* Settings Modal */}
@@ -207,7 +209,9 @@ function SessionContent() {
         onClose={() => setIsSettingsOpen(false)}
         title="Réglages"
       >
-        <SettingsContent />
+        <div onPointerDown={(e) => e.stopPropagation()} onPointerUp={(e) => e.stopPropagation()} className="h-full">
+          <SettingsContent />
+        </div>
       </FullscreenModal>
 
       {/* Session Controls removed as they are now in the settings modal */}
@@ -224,6 +228,7 @@ function SessionContent() {
             beadColor={beadColor}
             onAdvance={handleAdvance}
             onRewind={handleRewind}
+            interactive={!isLibraryOpen && !isSettingsOpen}
           />
         )}
       </div>

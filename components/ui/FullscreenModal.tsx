@@ -35,7 +35,11 @@ export function FullscreenModal({ isOpen, onClose, title, children }: Fullscreen
                     className="fixed inset-0 z-[100] bg-slate-950 flex flex-col"
                 >
                     {/* Header */}
-                    <div className="flex items-center gap-4 px-6 py-4 border-b border-white/5 bg-slate-950/50 backdrop-blur-xl sticky top-0 z-10">
+                    <div
+                        onPointerDown={(e) => e.stopPropagation()}
+                        onPointerUp={(e) => e.stopPropagation()}
+                        className="flex items-center gap-4 px-6 py-4 border-b border-white/5 bg-slate-950/50 backdrop-blur-xl sticky top-0 z-10"
+                    >
                         <button
                             onClick={onClose}
                             className="w-10 h-10 -ml-2 rounded-full flex items-center justify-center text-slate-400 hover:text-white transition-colors active:scale-90"
