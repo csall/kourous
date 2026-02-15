@@ -272,21 +272,14 @@ function SceneInternal({ count, beadWindow, total, presetId, beadColor, tapProgr
         lastCount.current = count;
     }, [count, presetId, api]);
 
-    const radius = 12; // Larger radius for flatter, vertical stacking
-    const angleStep = 0.20; // Tighter spacing
+    const radius = 8; // Tighter radius for closer look
+    const angleStep = 0.5; // Wide vertical spacing for the 3 beads
 
     return (
         <group>
             {/* The Rosary String - Fixed Arc */}
             <ConnectionString radius={radius} />
 
-            {/* Thumb Overlay - Realistic Hand Effect */}
-            <animated.group
-                position={tapProgress.to((t: number) => [0.8, -2.5 + (t * 0.2), 0.5])}
-                rotation={[0, 0, -0.2]}
-            >
-                <DreiImage url="/thumb_overlay.png" transparent scale={[3, 3]} opacity={1} toneMapped={false} />
-            </animated.group>
 
             {beadWindow.map((idx: number) => {
                 return (
@@ -360,10 +353,10 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, o
     }, [tapApi]);
 
     // Visually limit rendered beads to a window around current count
-    // This reduces visual clutter and ensures performance
+    // User requested "just 3 beads" for clarity and performance
     const beadWindow = useMemo(() => {
         const window: number[] = [];
-        const range = 6; // Render 6 before and 6 after
+        const range = 1; // Render 1 before and 1 after (Total 3)
         for (let i = count - range; i <= count + range; i++) {
             window.push(i);
         }
@@ -410,7 +403,7 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, o
                 key="main-bead-canvas"
                 shadows
                 camera={{
-                    position: [0, 0, 5],
+                    position: [0, 0, 4],
                     fov: 60
                 }}
                 gl={{
@@ -440,7 +433,7 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, o
                 />
 
                 <StarryNightBackground />
-                <fog attach="fog" args={['#0f172a', 3, 20]} />
+                <fog attach="fog" args={['#0f172a', 2, 10]} />
             </Canvas>
         </div>
     );
