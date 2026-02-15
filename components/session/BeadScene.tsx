@@ -290,12 +290,14 @@ function SceneInternal({ count, beadWindow, total, presetId, tapProgress }: any)
 
     // Handle jumps and preset changes
     useEffect(() => {
-        const isJump = lastPresetId.current !== presetId || Math.abs(lastCount.current - count) > 1;
-        const isBackward = count < lastCount.current && lastPresetId.current === presetId;
+        const isPresetChange = lastPresetId.current !== presetId;
+        const isReset = count === 0 && lastCount.current > 0; // Complete reset to 0
+        const isJump = isPresetChange || Math.abs(lastCount.current - count) > 1;
+        const isBackward = count < lastCount.current && lastPresetId.current === presetId && !isReset;
 
         api.start({
             smoothedCount: count,
-            immediate: isJump || isBackward
+            immediate: isJump || isBackward || isReset // Immediate for resets too
         });
 
         lastPresetId.current = presetId;

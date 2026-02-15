@@ -10,8 +10,21 @@ interface CompletionViewProps {
 }
 
 export function CompletionView({ onReset, onOpenLibrary, presetName }: CompletionViewProps) {
+    // Isolated event handlers to prevent propagation
+    const handleReset = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        onReset();
+    };
+
+    const handleOpenLibrary = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        e.preventDefault();
+        onOpenLibrary();
+    };
+
     return (
-        <div className="flex flex-col items-center justify-center space-y-6 sm:space-y-8 p-4 sm:p-8 text-center text-white relative">
+        <div className="flex flex-col items-center justify-center space-y-6 sm:space-y-8 p-4 sm:p-8 text-center text-white relative pointer-events-none">
             <motion.div
                 initial={{ scale: 0, rotate: -45, opacity: 0 }}
                 animate={{ scale: 1, rotate: 0, opacity: 1 }}
@@ -45,12 +58,12 @@ export function CompletionView({ onReset, onOpenLibrary, presetName }: Completio
                 </motion.p>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 relative z-10 w-full max-w-sm sm:max-w-none">
+            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 relative z-10 w-full max-w-sm sm:max-w-none pointer-events-auto">
                 <motion.button
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.7 }}
-                    onClick={onReset}
+                    onClick={handleReset}
                     className="group flex items-center justify-center gap-3 rounded-2xl bg-white/10 px-6 py-4 text-white hover:bg-white/20 active:scale-95 transition-all backdrop-blur-md border border-white/10 w-full sm:w-auto touch-manipulation min-h-[52px]"
                 >
                     <RotateCcw size={18} className="group-hover:-rotate-180 transition-transform duration-700 ease-in-out" />
@@ -61,7 +74,7 @@ export function CompletionView({ onReset, onOpenLibrary, presetName }: Completio
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.8 }}
-                    onClick={onOpenLibrary}
+                    onClick={handleOpenLibrary}
                     className="group flex items-center justify-center gap-3 rounded-2xl bg-emerald-500/20 px-6 py-4 text-white hover:bg-emerald-500/30 active:scale-95 transition-all backdrop-blur-md border border-emerald-500/30 w-full sm:w-auto touch-manipulation min-h-[52px]"
                 >
                     <BookOpen size={18} />
