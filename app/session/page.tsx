@@ -58,7 +58,7 @@ function SessionContent() {
 
   const progress = useSessionProgress();
   const { playClick } = useClickSound(soundEnabled);
-  const [showControls, setShowControls] = useState(true);
+  const [showControls, setShowControls] = useState(false);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
@@ -74,11 +74,11 @@ function SessionContent() {
     }
   }, [searchParams, setPresetByGroupId, setPresetByInvocationId]);
 
-  // Auto-hide controls after 3 seconds of inactivity
+  // Auto-hide controls after inactivity
   useEffect(() => {
-    const timer = setTimeout(() => setShowControls(false), 3000);
+    const timer = setTimeout(() => setShowControls(false), 2000);
     return () => clearTimeout(timer);
-  }, [progress?.cycleProgress]);
+  }, [progress?.cycleProgress, showControls]);
 
   const handleAdvance = useCallback(() => {
     setShowControls(true);
@@ -208,18 +208,18 @@ function SessionContent() {
       {!isComplete && (
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: showControls ? 1 : 0.3 }}
+          animate={{ opacity: showControls ? 1 : 0 }}
           className="absolute top-1/2 right-4 -translate-y-1/2 z-20 text-right pointer-events-none w-[35%] min-w-[120px]"
         >
           <AnimatePresence mode="wait">
             <motion.div
               key={progress.label}
-              initial={{ opacity: 0, x: 20, filter: "blur(10px)" }}
-              animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, x: -20, filter: "blur(10px)" }}
+              initial={{ opacity: 0, y: 20, filter: "blur(5px)" }}
+              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, y: -30, filter: "blur(5px)" }}
               transition={{
-                duration: 0.6,
-                ease: [0.22, 1, 0.36, 1] // Custom ease-out expo
+                duration: 0.4,
+                ease: "easeOut"
               }}
               className="space-y-1"
             >
