@@ -69,5 +69,59 @@ export function useClickSound(enabled: boolean = true) {
         osc.stop(now + 0.1);
     }, [enabled]);
 
-    return { playClick };
+    const playSuccess = useCallback(() => {
+        if (!enabled || !audioContextRef.current) return;
+        const ctx = audioContextRef.current;
+        if (ctx.state === 'suspended') ctx.resume();
+
+        const now = ctx.currentTime;
+
+        // Two-note chime (C6 -> E6)
+        [1046.50, 1318.51].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(freq, now + i * 0.1);
+
+            gain.gain.setValueAtTime(0, now + i * 0.1);
+            gain.gain.linearRampToValueAtTime(0.2, now + i * 0.1 + 0.05);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.4);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start(now + i * 0.1);
+            osc.stop(now + i * 0.1 + 0.5);
+        });
+    }, [enabled]);
+
+    const playFinalSuccess = useCallback(() => {
+        if (!enabled || !audioContextRef.current) return;
+        const ctx = audioContextRef.current;
+        if (ctx.state === 'suspended') ctx.resume();
+
+        const now = ctx.currentTime;
+
+        // "Heavenly" Major 7 chord (C5, E5, G5, B5)
+        [523.25, 659.25, 783.99, 987.77].forEach((freq, i) => {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.type = "sine";
+            osc.frequency.setValueAtTime(freq, now + i * 0.05);
+
+            gain.gain.setValueAtTime(0, now + i * 0.05);
+            gain.gain.linearRampToValueAtTime(0.15, now + i * 0.05 + 0.1);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.05 + 1.5);
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.start(now + i * 0.05);
+            osc.stop(now + i * 0.05 + 2.0);
+        });
+    }, [enabled]);
+
+    return { playClick, playSuccess, playFinalSuccess };
 }

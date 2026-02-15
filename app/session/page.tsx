@@ -7,11 +7,12 @@ import { useClickSound } from "@/lib/hooks/useClickSound";
 import { useEffect, useState, Suspense, useCallback, useRef, memo } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { BookOpen, SlidersHorizontal, RefreshCw, Volume2, VolumeX } from "lucide-react";
+import { BookOpen, SlidersHorizontal, RefreshCw, Volume2, VolumeX, CircleCheck } from "lucide-react";
 import { FullscreenModal } from "@/components/ui/FullscreenModal";
 import { LibraryContent } from "@/components/library/LibraryContent";
 import { SettingsContent } from "@/components/settings/SettingsContent";
 import { CompletionView } from "@/components/session/CompletionView";
+import confetti from "canvas-confetti";
 
 const BeadScene = dynamic(
   () => import("@/components/session/BeadScene").then((mod) => mod.BeadScene),
@@ -214,15 +215,31 @@ const SessionHeader = memo(({
                     exit={{ opacity: 0, scale: 1.2, y: -3 }}
                     className="relative flex flex-col items-center"
                   >
-                    <span
-                      className="text-2xl font-black tabular-nums tracking-tight leading-none"
-                      style={{
-                        color: beadColor,
-                        textShadow: `0 0 15px ${beadColor}40`
-                      }}
-                    >
-                      {progress.cycleProgress}
-                    </span>
+                    {progress.cycleProgress === progress.cycleTotal ? (
+                      <motion.div
+                        initial={{ scale: 0, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 15 }}
+                      >
+                        <CircleCheck
+                          size={28}
+                          style={{
+                            color: beadColor,
+                            filter: `drop-shadow(0 0 10px ${beadColor}80)`
+                          }}
+                        />
+                      </motion.div>
+                    ) : (
+                      <span
+                        className="text-2xl font-black tabular-nums tracking-tight leading-none"
+                        style={{
+                          color: beadColor,
+                          textShadow: `0 0 15px ${beadColor}40`
+                        }}
+                      >
+                        {progress.cycleProgress}
+                      </span>
+                    )}
                   </motion.div>
                 </AnimatePresence>
               </div>
@@ -309,8 +326,13 @@ function SessionContent() {
   const preset = useSessionStore(state => state.preset);
   const isComplete = useSessionStore(state => state.isComplete);
   const reset = useSessionStore(state => state.reset);
+  const advance = useSessionStore(state => state.advance);
+  const beadColor = useSessionStore(state => state.beadColor);
   const setPresetByGroupId = useSessionStore(state => state.setPresetByGroupId);
   const setPresetByInvocationId = useSessionStore(state => state.setPresetByInvocationId);
+  const soundEnabled = useSessionStore(state => state.soundEnabled);
+
+  const { playSuccess, playFinalSuccess } = useClickSound(soundEnabled);
 
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -322,6 +344,13 @@ function SessionContent() {
   useEffect(() => {
     setIsUiOpen(isAnyUIOpen);
   }, [isAnyUIOpen, setIsUiOpen]);
+
+  // Handle final completion sound
+  useEffect(() => {
+    if (isComplete && soundEnabled) {
+      playFinalSuccess();
+    }
+  }, [isComplete, soundEnabled, playFinalSuccess]);
 
   useEffect(() => {
     if (!hasHydrated) return;
@@ -335,6 +364,41 @@ function SessionContent() {
   const openSettings = useCallback(() => setIsSettingsOpen(true), []);
   const closeLibrary = useCallback(() => setIsLibraryOpen(false), []);
   const closeSettings = useCallback(() => setIsSettingsOpen(false), []);
+
+  const progress = useSessionProgress();
+
+  const [lastFinishedCycle, setLastFinishedCycle] = useState(-1);
+
+  useEffect(() => {
+    if (!preset || !progress) return;
+
+    // Check if we just finished a cycle
+    if (progress.cycleProgress === progress.cycleTotal && progress.cycleIndex > lastFinishedCycle) {
+      const isIntermediary = progress.cycleIndex < (preset.sequence.length - 1);
+
+      if (isIntermediary) {
+        // Play success sound for intermediate step
+        if (soundEnabled) {
+          playSuccess();
+        }
+
+        confetti({
+          particleCount: 40,
+          spread: 70,
+          origin: { y: 0.2 },
+          colors: [beadColor, '#ffffff']
+        });
+      }
+
+      setLastFinishedCycle(progress.cycleIndex);
+    }
+  }, [progress, preset, lastFinishedCycle, beadColor, soundEnabled, playSuccess]);
+
+
+  const handleReset = useCallback(() => {
+    setLastFinishedCycle(-1);
+    reset();
+  }, [reset]);
 
   if (!isMounted || !isActuallyHydrated) {
     return (
@@ -386,12 +450,13 @@ function SessionContent() {
             className="fixed inset-0 flex items-center justify-center bg-slate-950/80 backdrop-blur-xl z-[70] w-full"
           >
             <CompletionView
-              onReset={reset}
+              onReset={handleReset}
               onOpenLibrary={() => {
-                reset();
+                handleReset();
                 openLibrary();
               }}
               presetName={preset?.name || "Session"}
+              beadColor={beadColor}
             />
           </motion.div>
         )}
