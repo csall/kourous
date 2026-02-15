@@ -124,7 +124,10 @@ function SessionContent() {
         <div className="flex items-center gap-2">
 
           <button
-            onClick={toggleSound}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleSound();
+            }}
             onPointerDown={(e) => e.stopPropagation()}
             onPointerUp={(e) => e.stopPropagation()}
             className="flex items-center justify-center w-11 h-11 rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white/70 hover:text-white hover:bg-white/5 transition-all active:scale-90"
