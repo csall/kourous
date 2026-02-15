@@ -393,12 +393,19 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, o
     const startPos = useRef({ x: 0, y: 0 });
 
     const handlePointerDown = (e: React.PointerEvent) => {
+        // Safety check: Don't start interaction if we clicked a UI button or control
+        if ((e.target as HTMLElement).closest('button')) return;
+
         isDragging.current = true;
         startPos.current = { x: e.clientX, y: e.clientY };
     };
 
     const handlePointerUp = (e: React.PointerEvent) => {
         if (!isDragging.current) return;
+        isDragging.current = false;
+
+        // Safety check: If we're releasing on a UI element, don't trigger bead actions
+        if ((e.target as HTMLElement).closest('button')) return;
 
         const deltaX = e.clientX - startPos.current.x;
         const deltaY = e.clientY - startPos.current.y;
