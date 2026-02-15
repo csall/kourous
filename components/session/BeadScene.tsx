@@ -279,7 +279,7 @@ function SceneInternal({ count, beadWindow, total, presetId, beadColor, tapProgr
     }, [count, presetId, api]);
 
     const radius = 8; // Tighter radius for closer look
-    const angleStep = 0.35; // Balanced spacing for 9 beads
+    const angleStep = 0.25; // Condensed spacing as requested
 
     return (
         <group>
