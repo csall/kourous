@@ -312,7 +312,7 @@ const SceneInternal = memo(({ count, beadWindow, total, presetId, tapProgress }:
     }, [count, presetId, api]);
 
     const radius = 8; // Tighter radius for closer look
-    const angleStep = 0.2; // Original value for angular step
+    const angleStep = 0.1; // Maximum condensation for a dense holy look
 
     return (
         <group position={[0, -1.2, 0]}>
