@@ -17,18 +17,20 @@ interface PearlProps {
     idx: number;
     rotation?: [number, number, number];
     tapProgress: any; // SpringValue<number>
+    interactive: boolean;
 }
 
-const Pearl = memo(({ position, activeProgress, idx, rotation = [0, 0, 0], tapProgress }: PearlProps) => {
+const Pearl = memo(({ position, activeProgress, idx, rotation = [0, 0, 0], tapProgress, interactive }: PearlProps) => {
     // Read color directly from the store — changes are picked up in useFrame
-    // without causing a re-render of the Pearl or parent components.
-    const colorRef = useRef(useSessionStore.getState().beadColor);
+    const [beadColor, setBeadColor] = useState(useSessionStore.getState().beadColor);
+
     useEffect(() => {
         return useSessionStore.subscribe((state) => {
-            colorRef.current = state.beadColor;
+            setBeadColor(state.beadColor);
         });
     }, []);
-    const color = colorRef.current;
+
+    const color = beadColor;
     const meshRef = useRef<THREE.Mesh>(null);
     const groupRef = useRef<THREE.Group>(null);
 
@@ -52,7 +54,7 @@ const Pearl = memo(({ position, activeProgress, idx, rotation = [0, 0, 0], tapPr
     const floatOffset = useMemo(() => (idx * 0.77) % (Math.PI * 2), [idx]);
 
     useFrame((state) => {
-        if (!meshRef.current || !groupRef.current) return;
+        if (!interactive || !meshRef.current || !groupRef.current) return;
 
         const time = state.clock.getElapsedTime();
         const p = activeProgress.get();
@@ -62,7 +64,7 @@ const Pearl = memo(({ position, activeProgress, idx, rotation = [0, 0, 0], tapPr
         meshRef.current.rotation.y += 0.005 * rotationSpeed;
         meshRef.current.rotation.z += 0.002 * rotationSpeed;
 
-        // 2. Weightless Float (Modern replacement for physical enlargement)
+        // 2. Weightless Float 
         if (p > 0.01) {
             // Subtle Y-axis bobbing
             const bob = Math.sin(time * 2.5 + floatOffset) * 0.15 * p;
@@ -70,8 +72,6 @@ const Pearl = memo(({ position, activeProgress, idx, rotation = [0, 0, 0], tapPr
 
             // Subtle "wobble" to show it's energized
             meshRef.current.rotation.x = Math.sin(time * 1.5) * 0.1 * p;
-        } else {
-            meshRef.current.position.y = THREE.MathUtils.lerp(meshRef.current.position.y, 0, 0.1);
         }
     });
 
@@ -274,7 +274,7 @@ const ActiveBeadCounter = ({ countSpring }: { countSpring: any }) => {
 };
 
 // Internal scene with animated state
-function SceneInternal({ count, beadWindow, total, presetId, tapProgress }: any) {
+const SceneInternal = memo(({ count, beadWindow, total, presetId, tapProgress, interactive }: any) => {
     const lastPresetId = useRef(presetId);
     const lastCount = useRef(count);
 
@@ -334,6 +334,7 @@ function SceneInternal({ count, beadWindow, total, presetId, tapProgress }: any)
                             position={[0, 0, 0]}
                             idx={idx}
                             tapProgress={tapProgress}
+                            interactive={interactive}
                             activeProgress={smoothedCount.to((sc: number) => {
                                 let dist = Math.abs(idx - sc);
                                 return Math.max(0, 1 - dist * 0.8);
@@ -344,7 +345,8 @@ function SceneInternal({ count, beadWindow, total, presetId, tapProgress }: any)
             })}
         </group>
     );
-}
+});
+SceneInternal.displayName = "SceneInternal";
 
 export const BeadScene = memo(({ presetId, count, total, onAdvance, interactive = true }: BeadSceneProps) => {
     const isDragging = useRef(false);
@@ -450,6 +452,7 @@ export const BeadScene = memo(({ presetId, count, total, onAdvance, interactive 
                     beadWindow={beadWindow}
                     total={total}
                     tapProgress={tapProgress}
+                    interactive={interactive}
                 />
 
                 <StarryNightBackground />

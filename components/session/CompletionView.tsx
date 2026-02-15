@@ -11,20 +11,23 @@ interface CompletionViewProps {
 
 export function CompletionView({ onReset, onOpenLibrary, presetName }: CompletionViewProps) {
     // Isolated event handlers to prevent propagation
-    const handleReset = (e: React.MouseEvent) => {
+    const stopAllBubbles = (e: React.UIEvent) => {
         e.stopPropagation();
-        e.preventDefault();
-        onReset();
-    };
-
-    const handleOpenLibrary = (e: React.MouseEvent) => {
-        e.stopPropagation();
-        e.preventDefault();
-        onOpenLibrary();
+        if ('nativeEvent' in e) {
+            (e.nativeEvent as any).stopImmediatePropagation?.();
+        }
     };
 
     return (
-        <div className="flex flex-col items-center justify-center space-y-8 p-6 sm:p-10 text-center text-white relative pointer-events-none">
+        <div
+            className="flex flex-col items-center justify-center space-y-8 p-6 sm:p-10 text-center text-white relative pointer-events-auto w-full h-full"
+            onPointerDown={stopAllBubbles}
+            onPointerUp={stopAllBubbles}
+            onMouseDown={stopAllBubbles}
+            onMouseUp={stopAllBubbles}
+            onTouchStart={stopAllBubbles}
+            onTouchEnd={stopAllBubbles}
+        >
             <motion.div
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -63,7 +66,12 @@ export function CompletionView({ onReset, onOpenLibrary, presetName }: Completio
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.7 }}
-                    onClick={handleReset}
+                    onClick={(e) => { stopAllBubbles(e); onReset(); }}
+                    onPointerDown={stopAllBubbles}
+                    onPointerUp={stopAllBubbles}
+                    onMouseDown={stopAllBubbles}
+                    onMouseUp={stopAllBubbles}
+                    onTouchStart={stopAllBubbles}
                     className="group flex items-center justify-center gap-3 rounded-3xl bg-white/12 px-8 py-4 text-white hover:bg-white/18 active:scale-95 transition-all duration-200 backdrop-blur-2xl w-full sm:w-auto min-h-[56px]"
                 >
                     <RefreshCw size={20} className="group-hover:rotate-180 transition-transform duration-500 ease-out stroke-[1.5]" />
@@ -74,7 +82,12 @@ export function CompletionView({ onReset, onOpenLibrary, presetName }: Completio
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.8 }}
-                    onClick={handleOpenLibrary}
+                    onClick={(e) => { stopAllBubbles(e); onOpenLibrary(); }}
+                    onPointerDown={stopAllBubbles}
+                    onPointerUp={stopAllBubbles}
+                    onMouseDown={stopAllBubbles}
+                    onMouseUp={stopAllBubbles}
+                    onTouchStart={stopAllBubbles}
                     className="group flex items-center justify-center gap-3 rounded-3xl bg-emerald-500/15 px-8 py-4 text-emerald-100 hover:bg-emerald-500/20 active:scale-95 transition-all duration-200 backdrop-blur-2xl ring-1 ring-emerald-500/20 w-full sm:w-auto min-h-[56px]"
                 >
                     <BookOpen size={20} className="stroke-[1.5]" />

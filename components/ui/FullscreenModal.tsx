@@ -32,12 +32,22 @@ export function FullscreenModal({ isOpen, onClose, title, children }: Fullscreen
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: "100%" }}
                     transition={{ type: "spring", damping: 30, stiffness: 300 }}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    onPointerUp={(e) => e.stopPropagation()}
+                    onMouseDown={(e) => e.stopPropagation()}
+                    onMouseUp={(e) => e.stopPropagation()}
+                    onTouchStart={(e) => e.stopPropagation()}
+                    onTouchEnd={(e) => e.stopPropagation()}
                     className="fixed inset-0 z-[100] bg-slate-950 flex flex-col"
                 >
                     {/* Header */}
                     <div
                         onPointerDown={(e) => e.stopPropagation()}
                         onPointerUp={(e) => e.stopPropagation()}
+                        onMouseDown={(e) => e.stopPropagation()}
+                        onMouseUp={(e) => e.stopPropagation()}
+                        onTouchStart={(e) => e.stopPropagation()}
+                        onTouchEnd={(e) => e.stopPropagation()}
                         className="flex items-center gap-4 px-6 py-4 border-b border-white/5 bg-slate-950/50 backdrop-blur-xl sticky top-0 z-10"
                     >
                         <button

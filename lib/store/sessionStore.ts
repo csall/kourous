@@ -23,6 +23,8 @@ export type SessionState = {
   toggleSound: () => void;
   toggleShowTitle: () => void;
   setBeadColor: (color: string) => void;
+  isUiOpen: boolean;
+  setIsUiOpen: (isOpen: boolean) => void;
   _hasHydrated: boolean;
   setHasHydrated: (state: boolean) => void;
 };
@@ -156,6 +158,9 @@ export const useSessionStore = create<SessionState>()(
 
       showTitle: true,
       toggleShowTitle: () => set((state) => ({ showTitle: !state.showTitle })),
+
+      isUiOpen: false,
+      setIsUiOpen: (isOpen: boolean) => set({ isUiOpen: isOpen }),
 
       _hasHydrated: false,
       setHasHydrated: (state) => set({ _hasHydrated: state }),

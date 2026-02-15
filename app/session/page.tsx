@@ -18,6 +18,14 @@ const BeadScene = dynamic(
   { ssr: false }
 );
 
+const stopAllBubbles = (e: React.UIEvent | React.PointerEvent | React.MouseEvent | React.TouchEvent) => {
+  e.stopPropagation();
+  // We don't call preventDefault here to allow button clicks to still fire their onClick
+  if ('nativeEvent' in e) {
+    (e.nativeEvent as any).stopImmediatePropagation?.();
+  }
+};
+
 // ─────────────────────────────────────────────────────────────
 // LAYER 1: Header (Controls) — Ultra Modern & Floating
 // ─────────────────────────────────────────────────────────────
@@ -55,12 +63,24 @@ const SessionHeader = memo(({
       <div className="w-full max-w-full px-4 pt-safe pt-8 flex justify-center">
         <motion.div
           layout
+          onPointerDown={stopAllBubbles}
+          onPointerUp={stopAllBubbles}
+          onMouseDown={stopAllBubbles}
+          onMouseUp={stopAllBubbles}
+          onTouchStart={stopAllBubbles}
+          onTouchEnd={stopAllBubbles}
           className="flex items-center gap-1.5 pointer-events-auto p-1.5 bg-slate-900/40 backdrop-blur-2xl rounded-[2.5rem] shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] transition-all duration-500 ease-out"
         >
           {/* Counter Button - Always Visible */}
           {!isComplete && progress && (
             <motion.div
               layout
+              onPointerDown={stopAllBubbles}
+              onPointerUp={stopAllBubbles}
+              onMouseDown={stopAllBubbles}
+              onMouseUp={stopAllBubbles}
+              onTouchStart={stopAllBubbles}
+              onTouchEnd={stopAllBubbles}
               className="group relative flex flex-col items-center justify-center w-[64px] h-[64px] rounded-[2rem] bg-white/5 transition-all duration-300"
               style={{
                 backgroundColor: `${beadColor}15`,
@@ -86,13 +106,13 @@ const SessionHeader = memo(({
           <div className="flex items-center gap-1 px-1">
             {totalCount > 0 && (
               <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  reset();
-                }}
-                onPointerDown={(e) => e.stopPropagation()}
-                onMouseDown={(e) => e.stopPropagation()}
-                onMouseUp={(e) => e.stopPropagation()}
+                onClick={(e) => { stopAllBubbles(e); reset(); }}
+                onPointerDown={stopAllBubbles}
+                onPointerUp={stopAllBubbles}
+                onMouseDown={stopAllBubbles}
+                onMouseUp={stopAllBubbles}
+                onTouchStart={stopAllBubbles}
+                onTouchEnd={stopAllBubbles}
                 className="flex items-center justify-center w-14 h-14 rounded-[1.75rem] bg-white/5 text-white/60 md:hover:bg-white/10 active:scale-90 transition-all"
                 aria-label="Recommencer"
               >
@@ -101,13 +121,13 @@ const SessionHeader = memo(({
             )}
 
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleSound();
-              }}
-              onPointerDown={(e) => e.stopPropagation()}
-              onMouseDown={(e) => e.stopPropagation()}
-              onMouseUp={(e) => e.stopPropagation()}
+              onClick={(e) => { stopAllBubbles(e); toggleSound(); }}
+              onPointerDown={stopAllBubbles}
+              onPointerUp={stopAllBubbles}
+              onMouseDown={stopAllBubbles}
+              onMouseUp={stopAllBubbles}
+              onTouchStart={stopAllBubbles}
+              onTouchEnd={stopAllBubbles}
               className={`flex items-center justify-center w-14 h-14 rounded-[1.75rem] transition-all duration-300 ${soundEnabled
                 ? 'bg-emerald-500/15 text-emerald-400'
                 : 'bg-white/5 text-white/20'
@@ -117,26 +137,26 @@ const SessionHeader = memo(({
             </button>
 
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onOpenLibrary();
-              }}
-              onPointerDown={(e) => e.stopPropagation()}
-              onMouseDown={(e) => e.stopPropagation()}
-              onMouseUp={(e) => e.stopPropagation()}
+              onClick={(e) => { stopAllBubbles(e); onOpenLibrary(); }}
+              onPointerDown={stopAllBubbles}
+              onPointerUp={stopAllBubbles}
+              onMouseDown={stopAllBubbles}
+              onMouseUp={stopAllBubbles}
+              onTouchStart={stopAllBubbles}
+              onTouchEnd={stopAllBubbles}
               className="flex items-center justify-center w-14 h-14 rounded-[1.75rem] bg-white/5 text-white/60 md:hover:bg-white/10 active:scale-95 transition-all"
             >
               <BookOpen size={20} />
             </button>
 
             <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onOpenSettings();
-              }}
-              onPointerDown={(e) => e.stopPropagation()}
-              onMouseDown={(e) => e.stopPropagation()}
-              onMouseUp={(e) => e.stopPropagation()}
+              onClick={(e) => { stopAllBubbles(e); onOpenSettings(); }}
+              onPointerDown={stopAllBubbles}
+              onPointerUp={stopAllBubbles}
+              onMouseDown={stopAllBubbles}
+              onMouseUp={stopAllBubbles}
+              onTouchStart={stopAllBubbles}
+              onTouchEnd={stopAllBubbles}
               className="flex items-center justify-center w-14 h-14 rounded-[1.75rem] bg-white/5 text-white/60 md:hover:bg-white/10 active:scale-95 transition-all"
             >
               <SlidersHorizontal size={20} />
@@ -177,39 +197,54 @@ SessionHeader.displayName = "SessionHeader";
 // ─────────────────────────────────────────────────────────────
 // LAYER 2: Bead Scene
 // ─────────────────────────────────────────────────────────────
-const BeadLayer = memo(({ active }: { active: boolean }) => {
-  const preset = useSessionStore(state => state.preset);
+const BeadLayer = memo(() => {
+  // Select strictly what is needed for the 3D scene identity and completion state
+  const presetId = useSessionStore(state => state.preset?.id || "none");
   const isComplete = useSessionStore(state => state.isComplete);
   const advance = useSessionStore(state => state.advance);
-  const hapticsEnabled = useSessionStore(state => state.hapticsEnabled);
-  const soundEnabled = useSessionStore(state => state.soundEnabled);
-  const progress = useSessionProgress();
-  const { playClick } = useClickSound(soundEnabled);
+  const isUiOpen = useSessionStore(state => state.isUiOpen);
 
-  const refs = useRef({ hapticsEnabled, soundEnabled, playClick, advance });
+  // progress depends on totalCount, so it will only cause re-render when a bead is clicked
+  const progress = useSessionProgress();
+
+  // Use internal refs for non-structural state to avoid re-rendering the 3D layer
+  const hapticRef = useRef(useSessionStore.getState().hapticsEnabled);
+  const soundRef = useRef(useSessionStore.getState().soundEnabled);
 
   useEffect(() => {
-    refs.current = { hapticsEnabled, soundEnabled, playClick, advance };
-  }, [hapticsEnabled, soundEnabled, playClick, advance]);
+    return useSessionStore.subscribe((state) => {
+      hapticRef.current = state.hapticsEnabled;
+      soundRef.current = state.soundEnabled;
+    });
+  }, []);
 
+  const { playClick } = useClickSound(true); // Control manually inside callback
+
+  // ULTIMATE GUARD: Direct check of store state inside callback
   const handleAdvance = useCallback(() => {
-    if (!active) return;
-    const { hapticsEnabled: h, soundEnabled: s, playClick: p, advance: a } = refs.current;
-    if (h && typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(15);
-    if (s) p();
-    a();
-  }, [active]);
+    // Read fresh state just in case of race conditions
+    const state = useSessionStore.getState();
+    if (state.isUiOpen || state.isComplete) return;
+
+    if (hapticRef.current && typeof navigator !== "undefined" && navigator.vibrate) {
+      navigator.vibrate(15);
+    }
+    if (soundRef.current) {
+      playClick();
+    }
+    advance();
+  }, [advance, playClick]);
 
   const count = progress ? progress.cycleProgress : 0;
   const total = progress?.cycleTotal || 100;
 
   return (
     <BeadScene
-      presetId={preset?.id || "none"}
+      presetId={presetId}
       count={count}
       total={total}
       onAdvance={handleAdvance}
-      interactive={!isComplete && active}
+      interactive={!isUiOpen && !isComplete}
     />
   );
 });
@@ -240,6 +275,14 @@ function SessionContent() {
 
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const setIsUiOpen = useSessionStore(state => state.setIsUiOpen);
+
+  const isAnyUIOpen = isLibraryOpen || isSettingsOpen || isComplete;
+
+  // Global sync of UI state to store for 3D scene protection
+  useEffect(() => {
+    setIsUiOpen(isAnyUIOpen);
+  }, [isAnyUIOpen, setIsUiOpen]);
 
   useEffect(() => {
     if (!hasHydrated) return;
@@ -268,7 +311,6 @@ function SessionContent() {
     );
   }
 
-  const isAnyUIOpen = isLibraryOpen || isSettingsOpen || isComplete;
 
   return (
     <div className="fixed inset-0 h-[100dvh] bg-slate-950 text-slate-100 overflow-hidden font-sans select-none">
@@ -279,7 +321,7 @@ function SessionContent() {
       />
 
       <div className={`absolute inset-0 z-0 pt-48 sm:pt-56 transition-all duration-500 ${isAnyUIOpen ? 'pointer-events-none opacity-40 blur-sm grayscale' : 'opacity-100'}`}>
-        <BeadLayer active={!isAnyUIOpen} />
+        <BeadLayer />
       </div>
 
       <FullscreenModal isOpen={isLibraryOpen} onClose={closeLibrary} title="Bibliothèque">
@@ -298,6 +340,10 @@ function SessionContent() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.6, ease: "circOut" }}
+            onPointerDown={stopAllBubbles}
+            onPointerUp={stopAllBubbles}
+            onMouseDown={stopAllBubbles}
+            onMouseUp={stopAllBubbles}
             className="fixed inset-0 flex items-center justify-center bg-slate-950/80 backdrop-blur-xl z-[70] w-full"
           >
             <CompletionView
