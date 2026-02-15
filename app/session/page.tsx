@@ -55,7 +55,7 @@ const SessionHeader = memo(({
       <div className="w-full max-w-full px-4 pt-safe pt-8 flex justify-center">
         <motion.div
           layout
-          className="flex items-center gap-1.5 pointer-events-auto p-1.5 bg-slate-900/40 backdrop-blur-3xl rounded-[2.5rem] shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] transition-all duration-500 ease-out"
+          className="flex items-center gap-1.5 pointer-events-auto p-1.5 bg-slate-900/40 backdrop-blur-2xl rounded-[2.5rem] shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] transition-all duration-500 ease-out"
         >
           {/* Counter Button - Always Visible */}
           {!isComplete && progress && (
@@ -91,7 +91,7 @@ const SessionHeader = memo(({
                   reset();
                 }}
                 onPointerDown={(e) => e.stopPropagation()}
-                className="flex items-center justify-center w-14 h-14 rounded-[1.75rem] bg-white/5 text-white/60 hover:bg-white/10 active:scale-90 transition-all"
+                className="flex items-center justify-center w-14 h-14 rounded-[1.75rem] bg-white/5 text-white/60 md:hover:bg-white/10 active:scale-90 transition-all"
                 aria-label="Recommencer"
               >
                 <RefreshCw size={20} className="stroke-[1.5]" />
@@ -118,7 +118,7 @@ const SessionHeader = memo(({
                 onOpenLibrary();
               }}
               onPointerDown={(e) => e.stopPropagation()}
-              className="flex items-center justify-center w-14 h-14 rounded-[1.75rem] bg-white/5 text-white/60 hover:bg-white/10 active:scale-95 transition-all"
+              className="flex items-center justify-center w-14 h-14 rounded-[1.75rem] bg-white/5 text-white/60 md:hover:bg-white/10 active:scale-95 transition-all"
             >
               <BookOpen size={20} />
             </button>
@@ -129,7 +129,7 @@ const SessionHeader = memo(({
                 onOpenSettings();
               }}
               onPointerDown={(e) => e.stopPropagation()}
-              className="flex items-center justify-center w-14 h-14 rounded-[1.75rem] bg-white/5 text-white/60 hover:bg-white/10 active:scale-95 transition-all"
+              className="flex items-center justify-center w-14 h-14 rounded-[1.75rem] bg-white/5 text-white/60 md:hover:bg-white/10 active:scale-95 transition-all"
             >
               <SlidersHorizontal size={20} />
             </button>
@@ -283,11 +283,11 @@ function SessionContent() {
         {isComplete && (
           <motion.div
             key="complete"
-            initial={{ opacity: 0, backdropFilter: "blur(0px)" }}
-            animate={{ opacity: 1, backdropFilter: "blur(20px)" }}
-            exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
-            transition={{ duration: 0.8, ease: "circOut" }}
-            className="fixed inset-0 flex items-center justify-center bg-slate-950/80 z-[70] w-full"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6, ease: "circOut" }}
+            className="fixed inset-0 flex items-center justify-center bg-slate-950/80 backdrop-blur-xl z-[70] w-full"
           >
             <CompletionView
               onReset={reset}

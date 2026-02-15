@@ -216,13 +216,13 @@ const StarryNightBackground = memo(() => {
     return (
         <group>
             <color attach="background" args={['#020617']} />
-            {/* Deep Universe background */}
-            <Stars radius={250} depth={100} count={5000} factor={4} saturation={1} fade speed={0.3} />
-            <Stars radius={100} depth={50} count={3000} factor={3} saturation={0} fade speed={1} />
+            {/* Deep Universe background - Reduced for mobile */}
+            <Stars radius={250} depth={100} count={1500} factor={4} saturation={1} fade speed={0.1} />
+            <Stars radius={100} depth={50} count={500} factor={3} saturation={0} fade speed={0.5} />
 
             {/* Floating spiritual dust - Gold & Blue */}
-            <Sparkles count={80} scale={25} size={2} speed={0.4} opacity={0.2} color="#fbbf24" />
-            <Sparkles count={150} scale={35} size={4} speed={0.2} opacity={0.1} color="#6366f1" />
+            <Sparkles count={40} scale={25} size={2} speed={0.2} opacity={0.15} color="#fbbf24" />
+            <Sparkles count={60} scale={35} size={4} speed={0.1} opacity={0.08} color="#6366f1" />
 
             {/* Periodic shooting stars */}
             <ShootingStar />
@@ -427,11 +427,12 @@ export const BeadScene = memo(({ presetId, count, total, onAdvance, interactive 
                     fov: 60
                 }}
                 gl={{
-                    antialias: true,
+                    antialias: false,
                     alpha: true,
                     powerPreference: "high-performance",
                     preserveDrawingBuffer: true
                 }}
+                dpr={[1, 2]} // Cap pixel ratio for mobile performance
                 onCreated={(state) => {
                     state.gl.setClearColor('#020617');
                 }}
