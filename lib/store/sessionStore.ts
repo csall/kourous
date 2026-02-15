@@ -23,6 +23,8 @@ export type SessionState = {
   toggleSound: () => void;
   toggleShowTitle: () => void;
   setBeadColor: (color: string) => void;
+  _hasHydrated: boolean;
+  setHasHydrated: (state: boolean) => void;
 };
 
 export const useSessionStore = create<SessionState>()(
@@ -154,9 +156,15 @@ export const useSessionStore = create<SessionState>()(
 
       showTitle: true,
       toggleShowTitle: () => set((state) => ({ showTitle: !state.showTitle })),
+
+      _hasHydrated: false,
+      setHasHydrated: (state) => set({ _hasHydrated: state }),
     }),
     {
       name: "kourous-session-storage",
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
   )
 );
