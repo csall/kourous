@@ -7,12 +7,14 @@ import { useClickSound } from "@/lib/hooks/useClickSound";
 import { useEffect, useState, Suspense, useCallback, useRef, memo } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { BookOpen, SlidersHorizontal, RefreshCw, Volume2, VolumeX, CircleCheck } from "lucide-react";
+import { BookOpen, SlidersHorizontal, RefreshCw, Volume2, VolumeX, CircleCheck, Home } from "lucide-react";
+import Link from "next/link";
 import { FullscreenModal } from "@/components/ui/FullscreenModal";
 import { LibraryContent } from "@/components/library/LibraryContent";
 import { SettingsContent } from "@/components/settings/SettingsContent";
 import { CompletionView } from "@/components/session/CompletionView";
 import confetti from "canvas-confetti";
+import { hapticLight, hapticMedium, hapticSuccess } from "@/lib/utils/haptics";
 
 const BeadScene = dynamic(
   () => import("@/components/session/BeadScene").then((mod) => mod.BeadScene),
@@ -76,6 +78,33 @@ const SessionHeader = memo(({
 
           {/* Action Buttons Group */}
           <div className="flex items-center gap-1 px-1">
+            <Link
+              href="/"
+              onPointerDown={stopAllBubbles}
+              onPointerUp={stopAllBubbles}
+              onMouseDown={stopAllBubbles}
+              onMouseUp={stopAllBubbles}
+              onTouchStart={stopAllBubbles}
+              onTouchEnd={stopAllBubbles}
+              className="flex items-center justify-center w-14 h-14 rounded-[1.75rem] transition-all duration-300 bg-white/5 text-white/60 md:hover:bg-white/10 active:scale-90"
+              aria-label="Accueil"
+            >
+              <Home size={20} className="stroke-[1.5]" />
+            </Link>
+
+            <button
+              onClick={(e) => { stopAllBubbles(e); onOpenLibrary(); }}
+              onPointerDown={stopAllBubbles}
+              onPointerUp={stopAllBubbles}
+              onMouseDown={stopAllBubbles}
+              onMouseUp={stopAllBubbles}
+              onTouchStart={stopAllBubbles}
+              onTouchEnd={stopAllBubbles}
+              className="flex items-center justify-center w-14 h-14 rounded-[1.75rem] bg-white/5 text-white/60 md:hover:bg-white/10 active:scale-95 transition-all"
+            >
+              <BookOpen size={20} />
+            </button>
+
             <button
               onClick={(e) => { stopAllBubbles(e); reset(); }}
               onPointerDown={stopAllBubbles}
@@ -104,19 +133,6 @@ const SessionHeader = memo(({
                 }`}
             >
               {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
-            </button>
-
-            <button
-              onClick={(e) => { stopAllBubbles(e); onOpenLibrary(); }}
-              onPointerDown={stopAllBubbles}
-              onPointerUp={stopAllBubbles}
-              onMouseDown={stopAllBubbles}
-              onMouseUp={stopAllBubbles}
-              onTouchStart={stopAllBubbles}
-              onTouchEnd={stopAllBubbles}
-              className="flex items-center justify-center w-14 h-14 rounded-[1.75rem] bg-white/5 text-white/60 md:hover:bg-white/10 active:scale-95 transition-all"
-            >
-              <BookOpen size={20} />
             </button>
 
             <button
@@ -282,8 +298,8 @@ const BeadLayer = memo(() => {
   const handleAdvance = useCallback(() => {
     if (isUiOpenRef.current || isCompleteRef.current) return;
 
-    if (hapticRef.current && typeof navigator !== "undefined" && navigator.vibrate) {
-      navigator.vibrate(15);
+    if (hapticRef.current) {
+      hapticLight();
     }
     if (soundRef.current) {
       playClick();
@@ -345,10 +361,11 @@ function SessionContent() {
     setIsUiOpen(isAnyUIOpen);
   }, [isAnyUIOpen, setIsUiOpen]);
 
-  // Handle final completion sound
+  // Handle final completion sound + haptics
   useEffect(() => {
-    if (isComplete && soundEnabled) {
-      playFinalSuccess();
+    if (isComplete) {
+      if (soundEnabled) playFinalSuccess();
+      hapticSuccess();
     }
   }, [isComplete, soundEnabled, playFinalSuccess]);
 
@@ -377,10 +394,11 @@ function SessionContent() {
       const isIntermediary = progress.cycleIndex < (preset.sequence.length - 1);
 
       if (isIntermediary) {
-        // Play success sound for intermediate step
+        // Play success sound + haptic for intermediate step
         if (soundEnabled) {
           playSuccess();
         }
+        hapticMedium();
 
         confetti({
           particleCount: 40,

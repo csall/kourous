@@ -13,6 +13,14 @@ export type SessionState = {
   beadColor: string;
   showTitle: boolean;
 
+  // Stats
+  stats: {
+    totalSessions: number;
+    totalRepetitions: number;
+    lastSessionDate: string | null;
+    streak: number;
+  };
+
   setPreset: (preset: PrayerPreset) => void;
   setPresetById: (id: string) => void;
   setPresetByGroupId: (groupId: string) => void;
@@ -39,6 +47,12 @@ export const useSessionStore = create<SessionState>()(
       hapticsEnabled: true,
       soundEnabled: true,
       beadColor: "#3b82f6", // Default Saphir blue
+      stats: {
+        totalSessions: 0,
+        totalRepetitions: 0,
+        lastSessionDate: null,
+        streak: 0,
+      },
 
       setPreset: (preset) =>
         set({ preset, beadIndex: 0, totalCount: 0, isComplete: false }),
@@ -137,7 +151,7 @@ export const useSessionStore = create<SessionState>()(
       },
 
       advance: () => {
-        const { preset, totalCount, isComplete } = get();
+        const { preset, totalCount, isComplete, stats } = get();
         if (!preset || isComplete) return;
 
         const nextTotal = totalCount + 1;
@@ -145,11 +159,29 @@ export const useSessionStore = create<SessionState>()(
         const totalSteps = preset.totalBeads + (preset.sequence.length - 1);
         const completed = nextTotal >= totalSteps;
 
-        set({
+        const updates: Partial<SessionState> = {
           totalCount: nextTotal,
-          beadIndex: nextTotal, // Let 3D scene handle wrapping/interpolation
+          beadIndex: nextTotal,
           isComplete: completed,
-        });
+        };
+
+        // Update stats on completion
+        if (completed) {
+          const today = new Date().toISOString().split('T')[0];
+          const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+          const newStreak = stats.lastSessionDate === yesterday || stats.lastSessionDate === today
+            ? (stats.lastSessionDate === today ? stats.streak : stats.streak + 1)
+            : 1;
+
+          updates.stats = {
+            totalSessions: stats.totalSessions + 1,
+            totalRepetitions: stats.totalRepetitions + preset.totalBeads,
+            lastSessionDate: today,
+            streak: newStreak,
+          };
+        }
+
+        set(updates);
       },
 
       reset: () => set({ totalCount: 0, beadIndex: 0, isComplete: false }),

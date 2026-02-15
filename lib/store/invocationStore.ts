@@ -92,7 +92,7 @@ export const useInvocationStore = create<InvocationStoreState>()(
                     createdAt: new Date().toISOString(),
                 };
                 set((state) => ({
-                    groups: [...state.groups, newGroup],
+                    groups: [newGroup, ...state.groups],
                 }));
             },
 
