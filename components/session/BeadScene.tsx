@@ -273,7 +273,7 @@ function SceneInternal({ count, beadWindow, total, presetId, beadColor, tapProgr
     }, [count, presetId, api]);
 
     const radius = 8; // Tighter radius for closer look
-    const angleStep = 0.5; // Wide vertical spacing for the 3 beads
+    const angleStep = 0.4; // Slightly tighter spacing allowed by increased bead count
 
     return (
         <group>
@@ -353,10 +353,10 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, o
     }, [tapApi]);
 
     // Visually limit rendered beads to a window around current count
-    // User requested "just 3 beads" for clarity and performance
+    // User requested "rajoute des perles" -> Increased to 7 beads
     const beadWindow = useMemo(() => {
         const window: number[] = [];
-        const range = 1; // Render 1 before and 1 after (Total 3)
+        const range = 3; // Render 3 before and 3 after (Total 7)
         for (let i = count - range; i <= count + range; i++) {
             window.push(i);
         }
@@ -421,7 +421,7 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, o
                 <spotLight position={[10, 25, 15]} angle={0.3} penumbra={1} intensity={2.5} castShadow />
                 <pointLight position={[-10, 5, -10]} intensity={1.5} color="#f43f5e" />
 
-                <Environment preset="city" />
+                <Environment preset="warehouse" />
 
                 <SceneInternal
                     presetId={presetId}
@@ -433,7 +433,7 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, o
                 />
 
                 <StarryNightBackground />
-                <fog attach="fog" args={['#0f172a', 2, 10]} />
+                <fog attach="fog" args={['#0f172a', 3, 15]} />
             </Canvas>
         </div>
     );
