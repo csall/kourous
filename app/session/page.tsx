@@ -212,18 +212,18 @@ function SessionContent() {
           <AnimatePresence mode="popLayout">
             <motion.div
               key={totalCount}
-              initial={{ opacity: 0, y: 30, filter: "blur(5px)" }}
+              initial={{ y: 50, opacity: 0, filter: "blur(5px)" }}
               animate={{
-                opacity: [0, 1, 1, 0],
-                y: [30, 0, -10, -40],
-                filter: ["blur(5px)", "blur(0px)", "blur(0px)", "blur(5px)"]
+                y: -100, // Continuous upward movement
+                opacity: [0, 1, 1, 0], // Fade in, stay, fade out
+                filter: "blur(0px)"
               }}
-              exit={{ opacity: 0, y: -40, filter: "blur(5px)", transition: { duration: 0.2 } }}
               transition={{
-                duration: 1, // Full cycle length
-                times: [0, 0.1, 0.8, 1], // FadeIn (10%), Hold (70%), FadeOut (20%)
-                ease: "easeOut"
+                y: { duration: 0.8, ease: "linear" }, // Constant speed up
+                opacity: { duration: 0.8, times: [0, 0.2, 0.7, 1] }, // Visibility curve
+                filter: { duration: 0.4 }
               }}
+              exit={{ opacity: 0, transition: { duration: 0.1 } }}
               className="space-y-1"
             >
               <h2 className="text-lg md:text-2xl font-medium tracking-wide text-white/95 drop-shadow-md leading-tight">
