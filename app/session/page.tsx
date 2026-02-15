@@ -45,19 +45,31 @@ const SessionHeader = memo(({
     e.stopPropagation();
     e.preventDefault();
     e.nativeEvent?.stopImmediatePropagation?.();
-    reset();
+    // Add a small delay to ensure BeadScene doesn't pick up any residual events
+    setTimeout(() => {
+      reset();
+    }, 0);
   }, [reset]);
 
   return (
     <div className="absolute top-0 left-0 right-0 z-50 pointer-events-none">
       {/* Modern minimal header */}
       <div className="flex items-center justify-between px-5 pt-safe pt-4 sm:px-8 sm:pt-6">
-        {/* Left: Counter & Session Info */}
+        {/* Left: Counter with title below */}
         {!isComplete && progress && (
-          <div className="flex items-center gap-4 pointer-events-auto">
+          <div className="flex flex-col gap-2 pointer-events-auto">
             <div className="flex items-center gap-3">
-              <div className="flex items-baseline gap-1.5 px-4 py-2.5 rounded-2xl bg-white/8 backdrop-blur-2xl border border-white/5">
-                <span className="text-2xl font-light text-white tabular-nums">
+              <div 
+                className="flex items-baseline gap-1.5 px-4 py-2.5 rounded-2xl backdrop-blur-2xl border"
+                style={{
+                  backgroundColor: `${beadColor}15`,
+                  borderColor: `${beadColor}30`
+                }}
+              >
+                <span 
+                  className="text-2xl font-light tabular-nums"
+                  style={{ color: beadColor }}
+                >
                   {progress.cycleProgress}
                 </span>
                 <span className="text-base text-white/30 font-extralight">/</span>
@@ -66,14 +78,17 @@ const SessionHeader = memo(({
                 </span>
               </div>
             </div>
-
+            
             {showTitle && (
-              <div className="flex flex-col">
-                <p className="text-sm font-medium text-white/80 leading-tight">
+              <div className="pl-1">
+                <p 
+                  className="text-sm font-medium leading-tight"
+                  style={{ color: beadColor }}
+                >
                   {progress.label}
                 </p>
                 {progress.sublabel && (
-                  <p className="text-xs text-white/40 font-light mt-0.5 max-w-[180px] truncate">
+                  <p className="text-xs text-white/50 font-light mt-0.5 max-w-[200px]">
                     {progress.sublabel}
                   </p>
                 )}
@@ -85,15 +100,28 @@ const SessionHeader = memo(({
         {/* Right: Modern action buttons */}
         <div className="flex items-center gap-2 pointer-events-auto">
           {totalCount > 0 && (
-            <button
-              onClick={handleReset}
-              onMouseDown={(e) => e.stopPropagation()}
-              onTouchStart={(e) => e.stopPropagation()}
-              className="relative z-[60] flex items-center justify-center w-11 h-11 rounded-2xl bg-white/10 text-white/90 hover:bg-white/15 active:scale-95 transition-all duration-200 backdrop-blur-2xl pointer-events-auto"
-              aria-label="Recommencer"
-            >
-              <RefreshCw size={18} className="stroke-[1.5]" />
-            </button>
+            <div className="relative z-[60] pointer-events-auto">
+              <button
+                onClick={handleReset}
+                onMouseDown={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                }}
+                onTouchStart={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                }}
+                onPointerDown={(e) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                }}
+                className="relative flex items-center justify-center w-11 h-11 rounded-2xl bg-white/8 text-white/80 hover:bg-white/12 active:scale-95 transition-all duration-200 backdrop-blur-2xl"
+                aria-label="Recommencer"
+                style={{ isolation: 'isolate' }}
+              >
+                <RefreshCw size={18} className="stroke-[1.5] pointer-events-none" />
+              </button>
+            </div>
           )}
 
           <button
