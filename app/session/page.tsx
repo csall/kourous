@@ -162,7 +162,11 @@ function SessionContent() {
       {!isComplete && (
         <div className="absolute top-[calc(env(safe-area-inset-top)+1rem)] left-6 z-50 flex flex-col items-start gap-2 pointer-events-none">
           <div className="flex items-center gap-3">
-            <div className="flex items-baseline gap-1 px-4 py-2 rounded-full bg-black/20 border border-white/10 backdrop-blur-md shadow-sm pointer-events-auto">
+            <div
+              onPointerDown={(e) => e.stopPropagation()}
+              onPointerUp={(e) => e.stopPropagation()}
+              className="flex items-baseline gap-1 px-4 py-2 rounded-full bg-black/20 border border-white/10 backdrop-blur-md shadow-sm pointer-events-auto"
+            >
               <span className="text-xl font-normal text-emerald-100 tabular-nums">
                 {progress.cycleProgress}
               </span>
@@ -259,6 +263,8 @@ function SessionContent() {
             animate={{ opacity: 1, backdropFilter: "blur(20px)" }}
             exit={{ opacity: 0, backdropFilter: "blur(0px)" }}
             transition={{ duration: 0.8, ease: "circOut" }}
+            onPointerDown={(e) => e.stopPropagation()}
+            onPointerUp={(e) => e.stopPropagation()}
             className="fixed inset-0 flex items-center justify-center bg-slate-950/80 z-40 w-full"
           >
             <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/40 to-transparent pointer-events-none" />

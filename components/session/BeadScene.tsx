@@ -436,7 +436,7 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, o
 
     return (
         <div
-            className="h-full w-full cursor-pointer touch-none select-none"
+            className={`h-full w-full cursor-pointer touch-none select-none ${interactive ? '' : 'pointer-events-none'}`}
             onPointerDown={handlePointerDown}
             onPointerUp={handlePointerUp}
             onPointerLeave={handlePointerUp}
