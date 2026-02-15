@@ -272,12 +272,12 @@ function SceneInternal({ count, beadWindow, total, presetId, beadColor, tapProgr
         lastCount.current = count;
     }, [count, presetId, api]);
 
-    const radius = Math.max(8, (total * 0.5) / (2 * Math.PI)); // Calculate radius to fit all beads
-    const angleStep = (Math.PI * 2) / total;
+    const radius = 10; // Fixed large radius for vertical look
+    const angleStep = 0.25; // Consistent spacing
 
     return (
         <group>
-            {/* The Rosary String */}
+            {/* The Rosary String - Fixed Arc */}
             <ConnectionString radius={radius} />
 
             {beadWindow.map((idx: number) => {
@@ -285,34 +285,21 @@ function SceneInternal({ count, beadWindow, total, presetId, beadColor, tapProgr
                     <animated.group
                         key={idx}
                         position={smoothedCount.to((sc: number) => {
-                            // Circular positioning
+                            // Position on vertical wheel
                             const angle = (idx - sc) * angleStep;
-                            // Shift phase so active (angle=0) is at bottom/center.
-                            // cos(0) = 1. z = 0. This puts it at front.
-                            // sin(0) = 0. y = 0.
-                            const yPos = Math.sin(angle + Math.PI / 2) * radius - radius; // Shift y to generally be lower? No let's keep it centered on Y?
-                            // Let's stick to the previous feeling: Active at (0, 0, 0).
-                            // Loop goes 'back' into Z.
-                            // Previous: z = (cos - 1) * R. At 0: z=0. At PI: z=-2R.
-                            // y = sin * R.
-                            // But we want "top" of loop or "bottom"?
-                            // Usually we hold the "bottom" of the loop.
-                            // Let's behave as if looking at the bead in hand.
-                            // angle 0 -> y=0, z=0.
-                            const zPos = (Math.cos(angle) * -1 * radius) + radius; // Invert to circle back
-                            // Wait, if angle=0, cos=1. -R + R = 0.
-                            // if angle=PI, cos=-1. R + R = 2R. That's closer? No z is depth. positive is Closer.
-                            // Standard: Camera at +8.
-                            // We want active at 0.
-                            // Loop behind: z < 0.
-                            // So: z = (Math.cos(angle) * radius) - radius;
-                            // angle 0 => z = 1*R - R = 0.
-                            // angle PI => z = -1*R - R = -2R. (Far away). Perfect.
+
+                            const yPos = Math.sin(angle + Math.PI / 2) * radius - radius;
+                            // Simplify to standard vertical wheel: 
+                            // angle 0 (active) -> y=0, z=0.
+                            // angle > 0 (future) -> y>0
+                            // angle < 0 (past) -> y<0
+                            // Let's use standard trigonometric circle adapted:
+                            // y = sin(angle) * radius
+                            // z = (cos(angle) * radius) - radius
+
                             const z = (Math.cos(angle) * radius) - radius;
                             const y = Math.sin(angle) * radius;
 
-                            // Slight spiral offset for realism vs overlap? 
-                            // With sufficient radius, no overlap.
                             return [0, y, z];
                         })}
                         rotation={smoothedCount.to((sc: number) => {
@@ -325,16 +312,10 @@ function SceneInternal({ count, beadWindow, total, presetId, beadColor, tapProgr
                             idx={idx}
                             tapProgress={tapProgress}
                             activeProgress={smoothedCount.to((sc: number) => {
-                                // Circular distance for loop wrapping
                                 let dist = Math.abs(idx - sc);
-                                // The visual loop connects 0 and total-1.
-                                // But `sc` and `idx` are distinct integers.
-                                // If sc=0, idx=99 (total=100), distance should be 1.
-                                const loopDist = Math.min(dist, Math.abs(total - dist));
-                                return Math.max(0, 1 - loopDist * 0.8);
+                                return Math.max(0, 1 - dist * 0.8);
                             })}
                             color={beadColor}
-                        // rotation={[0, 0, 0]} 
                         />
                     </animated.group>
                 );
@@ -349,7 +330,12 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, o
 
     const [{ tapProgress }, tapApi] = useSpring(() => ({
         tapProgress: 0,
-        config: config.stiff
+        config: {
+            mass: 1,
+            tension: 400,
+            friction: 20,
+            clamp: true
+        }
     }));
 
     const triggerTapAnimation = useCallback(() => {
@@ -365,10 +351,16 @@ export const BeadScene = memo(({ presetId, count, total, beadColor, onAdvance, o
         });
     }, [tapApi]);
 
-    // Generate ALL beads for the full loop
+    // Visually limit rendered beads to a window around current count
+    // This reduces visual clutter and ensures performance
     const beadWindow = useMemo(() => {
-        return Array.from({ length: total }, (_, i) => i);
-    }, [total]);
+        const window: number[] = [];
+        const range = 9; // Render 9 before and 9 after
+        for (let i = count - range; i <= count + range; i++) {
+            window.push(i);
+        }
+        return window;
+    }, [count]);
 
     const startPos = useRef({ x: 0, y: 0 });
 
