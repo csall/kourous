@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CheckCircle2, RotateCcw, BookOpen } from "lucide-react";
+import { CircleCheck, RefreshCw, BookOpen } from "lucide-react";
 
 interface CompletionViewProps {
     readonly onReset: () => void;
@@ -24,19 +24,19 @@ export function CompletionView({ onReset, onOpenLibrary, presetName }: Completio
     };
 
     return (
-        <div className="flex flex-col items-center justify-center space-y-6 sm:space-y-8 p-4 sm:p-8 text-center text-white relative pointer-events-none">
+        <div className="flex flex-col items-center justify-center space-y-8 p-6 sm:p-10 text-center text-white relative pointer-events-none">
             <motion.div
-                initial={{ scale: 0, rotate: -45, opacity: 0 }}
-                animate={{ scale: 1, rotate: 0, opacity: 1 }}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
                 transition={{
                     type: "spring",
-                    stiffness: 260,
-                    damping: 20,
+                    stiffness: 200,
+                    damping: 25,
                     delay: 0.1
                 }}
-                className="rounded-full bg-emerald-500/20 p-4 sm:p-6 text-emerald-400 ring-1 ring-emerald-500/50 shadow-[0_0_60px_rgba(16,185,129,0.4)] relative z-10"
+                className="rounded-3xl bg-emerald-500/15 p-6 sm:p-8 text-emerald-400 ring-1 ring-emerald-500/20 backdrop-blur-2xl relative z-10"
             >
-                <CheckCircle2 size={56} className="sm:w-16 sm:h-16" />
+                <CircleCheck size={64} className="sm:w-20 sm:h-20 stroke-[1.5]" />
             </motion.div>
 
             <div className="space-y-3 sm:space-y-4 relative z-10">
@@ -58,16 +58,16 @@ export function CompletionView({ onReset, onOpenLibrary, presetName }: Completio
                 </motion.p>
             </div>
 
-            <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 relative z-10 w-full max-w-sm sm:max-w-none pointer-events-auto">
+            <div className="flex flex-col sm:flex-row items-center gap-4 relative z-10 w-full max-w-md pointer-events-auto">
                 <motion.button
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.7 }}
                     onClick={handleReset}
-                    className="group flex items-center justify-center gap-3 rounded-2xl bg-white/10 px-6 py-4 text-white hover:bg-white/20 active:scale-95 transition-all backdrop-blur-md border border-white/10 w-full sm:w-auto touch-manipulation min-h-[52px]"
+                    className="group flex items-center justify-center gap-3 rounded-3xl bg-white/12 px-8 py-4 text-white hover:bg-white/18 active:scale-95 transition-all duration-200 backdrop-blur-2xl w-full sm:w-auto min-h-[56px]"
                 >
-                    <RotateCcw size={18} className="group-hover:-rotate-180 transition-transform duration-700 ease-in-out" />
-                    <span className="font-medium tracking-wide">Recommencer</span>
+                    <RefreshCw size={20} className="group-hover:rotate-180 transition-transform duration-500 ease-out stroke-[1.5]" />
+                    <span className="font-medium text-base">Recommencer</span>
                 </motion.button>
 
                 <motion.button
@@ -75,10 +75,10 @@ export function CompletionView({ onReset, onOpenLibrary, presetName }: Completio
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.8 }}
                     onClick={handleOpenLibrary}
-                    className="group flex items-center justify-center gap-3 rounded-2xl bg-emerald-500/20 px-6 py-4 text-white hover:bg-emerald-500/30 active:scale-95 transition-all backdrop-blur-md border border-emerald-500/30 w-full sm:w-auto touch-manipulation min-h-[52px]"
+                    className="group flex items-center justify-center gap-3 rounded-3xl bg-emerald-500/15 px-8 py-4 text-emerald-100 hover:bg-emerald-500/20 active:scale-95 transition-all duration-200 backdrop-blur-2xl ring-1 ring-emerald-500/20 w-full sm:w-auto min-h-[56px]"
                 >
-                    <BookOpen size={18} />
-                    <span className="font-medium tracking-wide">Bibliothèque</span>
+                    <BookOpen size={20} className="stroke-[1.5]" />
+                    <span className="font-medium text-base">Bibliothèque</span>
                 </motion.button>
             </div>
         </div>

@@ -7,7 +7,7 @@ import { useClickSound } from "@/lib/hooks/useClickSound";
 import { useEffect, useState, Suspense, useCallback, useRef, memo } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { BookOpen, Settings, RotateCcw, Volume2, VolumeX } from "lucide-react";
+import { BookOpen, SlidersHorizontal, RefreshCw, Volume2, VolumeX, MoreHorizontal } from "lucide-react";
 import { FullscreenModal } from "@/components/ui/FullscreenModal";
 import { LibraryContent } from "@/components/library/LibraryContent";
 import { SettingsContent } from "@/components/settings/SettingsContent";
@@ -40,87 +40,94 @@ const SessionHeader = memo(({
 
   const showTitle = useSessionStore(state => state.showTitle);
 
+  // Isolated event handler to prevent propagation to beads
+  const handleReset = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    e.nativeEvent?.stopImmediatePropagation?.();
+    reset();
+  }, [reset]);
+
   return (
     <div className="absolute top-0 left-0 right-0 z-50 pointer-events-none">
-      {/* Mobile-first responsive header */}
-      <div className="flex flex-col gap-2 px-4 pt-safe pt-3 sm:flex-row sm:items-start sm:justify-between sm:px-6 sm:pt-4">
-        {/* Top section: Counter, Title & Controls on mobile */}
-        <div className="flex items-start justify-between gap-3 pointer-events-auto">
-          {/* Left: Counter, Title & Reset */}
-          {!isComplete && progress && (
-            <div className="flex flex-col gap-1.5">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="flex items-baseline gap-1 px-3 py-2 sm:px-4 rounded-full bg-black/60 border border-white/10 backdrop-blur-xl shadow-lg">
-                  <span className="text-lg sm:text-xl font-normal text-emerald-100 tabular-nums">
-                    {progress.cycleProgress}
-                  </span>
-                  <span className="text-sm text-white/20 font-light mx-0.5">/</span>
-                  <span className="text-sm font-light text-white/40 tabular-nums">
-                    {progress.cycleTotal}
-                  </span>
-                </div>
+      {/* Modern minimal header */}
+      <div className="flex items-center justify-between px-5 pt-safe pt-4 sm:px-8 sm:pt-6">
+        {/* Left: Counter & Session Info */}
+        {!isComplete && progress && (
+          <div className="flex items-center gap-4 pointer-events-auto">
+            <div className="flex items-center gap-3">
+              <div className="flex items-baseline gap-1.5 px-4 py-2.5 rounded-2xl bg-white/8 backdrop-blur-2xl border border-white/5">
+                <span className="text-2xl font-light text-white tabular-nums">
+                  {progress.cycleProgress}
+                </span>
+                <span className="text-base text-white/30 font-extralight">/</span>
+                <span className="text-base font-extralight text-white/50 tabular-nums">
+                  {progress.cycleTotal}
+                </span>
+              </div>
+            </div>
 
-                {totalCount > 0 && (
-                  <button
-                    onClick={reset}
-                    className="flex items-center justify-center w-12 h-12 sm:w-11 sm:h-11 rounded-full bg-rose-500/80 backdrop-blur-xl border border-white/20 text-white shadow-lg transition-all active:scale-90 touch-manipulation"
-                    aria-label="Recommencer"
-                  >
-                    <RotateCcw size={18} />
-                  </button>
+            {showTitle && (
+              <div className="flex flex-col">
+                <p className="text-sm font-medium text-white/80 leading-tight">
+                  {progress.label}
+                </p>
+                {progress.sublabel && (
+                  <p className="text-xs text-white/40 font-light mt-0.5 max-w-[180px] truncate">
+                    {progress.sublabel}
+                  </p>
                 )}
               </div>
+            )}
+          </div>
+        )}
 
-              {showTitle && (
-                <div className="pl-1">
-                  <p className="text-xs uppercase tracking-[0.15em] text-white/50 font-medium">
-                    {progress.label}
-                  </p>
-                  {progress.sublabel && (
-                    <p className="text-[10px] text-white/20 font-light mt-0.5 max-w-[200px] sm:max-w-[220px]">
-                      {progress.sublabel}
-                    </p>
-                  )}
-                </div>
-              )}
-            </div>
+        {/* Right: Modern action buttons */}
+        <div className="flex items-center gap-2 pointer-events-auto">
+          {totalCount > 0 && (
+            <button
+              onClick={handleReset}
+              onMouseDown={(e) => e.stopPropagation()}
+              onTouchStart={(e) => e.stopPropagation()}
+              className="relative z-[60] flex items-center justify-center w-11 h-11 rounded-2xl bg-white/10 text-white/90 hover:bg-white/15 active:scale-95 transition-all duration-200 backdrop-blur-2xl pointer-events-auto"
+              aria-label="Recommencer"
+            >
+              <RefreshCw size={18} className="stroke-[1.5]" />
+            </button>
           )}
 
-          {/* Right: Action buttons */}
-          <div className="flex items-center gap-1.5 sm:gap-2">
-            <button
-              onClick={toggleSound}
-              className="flex items-center justify-center w-12 h-12 sm:w-11 sm:h-11 rounded-full backdrop-blur-xl border text-white shadow-lg transition-all active:scale-90 touch-manipulation"
-              style={{
-                backgroundColor: soundEnabled ? `${beadColor}99` : 'rgba(0,0,0,0.6)',
-                borderColor: soundEnabled ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.1)'
-              }}
-              aria-label={soundEnabled ? "Couper le son" : "Activer le son"}
-            >
-              {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} className="text-white/40" />}
-            </button>
+          <button
+            onClick={toggleSound}
+            className={`flex items-center justify-center w-11 h-11 rounded-2xl transition-all duration-200 backdrop-blur-2xl ${
+              soundEnabled 
+                ? 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/25' 
+                : 'bg-white/8 text-white/50 hover:bg-white/12'
+            }`}
+            aria-label={soundEnabled ? "Couper le son" : "Activer le son"}
+          >
+            {soundEnabled ? <Volume2 size={18} className="stroke-[1.5]" /> : <VolumeX size={18} className="stroke-[1.5]" />}
+          </button>
 
-            <button
-              onClick={onOpenLibrary}
-              className="flex items-center justify-center w-12 h-12 sm:w-11 sm:h-11 rounded-full bg-black/60 backdrop-blur-xl border border-white/10 text-white transition-all active:scale-90 shadow-lg touch-manipulation"
-              aria-label="Bibliothèque"
-            >
-              <BookOpen size={18} />
-            </button>
+          <button
+            onClick={onOpenLibrary}
+            className="flex items-center justify-center w-11 h-11 rounded-2xl bg-white/8 text-white/80 hover:bg-white/12 active:scale-95 transition-all duration-200 backdrop-blur-2xl"
+            aria-label="Bibliothèque"
+          >
+            <BookOpen size={18} className="stroke-[1.5]" />
+          </button>
 
-            <button
-              onClick={onOpenSettings}
-              className="flex items-center justify-center w-12 h-12 sm:w-11 sm:h-11 rounded-full bg-black/60 backdrop-blur-xl border border-white/10 text-white transition-all active:scale-90 shadow-lg touch-manipulation"
-              aria-label="Réglages"
-            >
-              <Settings size={18} />
-            </button>
-          </div>
+          <button
+            onClick={onOpenSettings}
+            className="flex items-center justify-center w-11 h-11 rounded-2xl bg-white/8 text-white/80 hover:bg-white/12 active:scale-95 transition-all duration-200 backdrop-blur-2xl"
+            aria-label="Réglages"
+          >
+            <SlidersHorizontal size={18} className="stroke-[1.5]" />
+          </button>
         </div>
       </div>
       
-      {/* Spacer to push bead scene down and prevent overlap */}
-      <div className="h-16 sm:h-20 pointer-events-none" />
+      {/* Minimal spacer */}
+      <div className="h-20 pointer-events-none" />
     </div>
   );
 });
