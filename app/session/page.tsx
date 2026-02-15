@@ -191,7 +191,7 @@ const BeadLayer = memo(() => {
     a();
   }, []);
 
-  const count = progress ? progress.cycleProgress - 1 : 0;
+  const count = progress ? progress.cycleProgress : 0;
   const total = progress?.cycleTotal || 100;
 
   return (
@@ -291,7 +291,10 @@ function SessionContent() {
           >
             <CompletionView
               onReset={reset}
-              onOpenLibrary={openLibrary}
+              onOpenLibrary={() => {
+                reset();
+                openLibrary();
+              }}
               presetName={preset?.name || "Session"}
             />
           </motion.div>
