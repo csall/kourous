@@ -209,29 +209,29 @@ function SessionContent() {
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: showControls ? 1 : 0.3 }}
-          className="absolute bottom-[calc(env(safe-area-inset-bottom)+6.5rem)] left-0 right-0 z-20 text-center pointer-events-none px-6"
+          className="absolute top-1/2 right-4 -translate-y-1/2 z-20 text-right pointer-events-none w-[35%] min-w-[120px]"
         >
           <AnimatePresence mode="wait">
             <motion.div
               key={progress.label}
-              initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-              exit={{ opacity: 0, y: -20, filter: "blur(10px)" }}
+              initial={{ opacity: 0, x: 20, filter: "blur(10px)" }}
+              animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+              exit={{ opacity: 0, x: -20, filter: "blur(10px)" }}
               transition={{
                 duration: 0.6,
                 ease: [0.22, 1, 0.36, 1] // Custom ease-out expo
               }}
-              className="space-y-2 bg-gradient-to-b from-transparent via-slate-950/40 to-slate-950/80 pb-6 pt-12"
+              className="space-y-1"
             >
-              <h2 className="text-3xl md:text-4xl font-light tracking-wide text-white/95 drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+              <h2 className="text-lg md:text-2xl font-medium tracking-wide text-white/95 drop-shadow-md leading-tight">
                 {progress.label}
               </h2>
               {progress.sublabel && (
                 <motion.p
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                  className="text-xs md:text-sm uppercase tracking-[0.3em] text-white/50"
+                  transition={{ delay: 0.1 }}
+                  className="text-[11px] md:text-sm text-white/70 font-light leading-snug"
                 >
                   {progress.sublabel}
                 </motion.p>
