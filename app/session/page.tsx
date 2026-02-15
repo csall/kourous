@@ -205,7 +205,7 @@ function SessionContent() {
       </div>
 
       {/* Prayer Text Overlay - Independent Pulse per Increment */}
-      {!isComplete && (
+      {!isComplete && totalCount > 0 && (
         <div
           className="absolute top-1/2 right-4 -translate-y-1/2 z-20 text-right pointer-events-none w-[35%] min-w-[120px]"
         >
