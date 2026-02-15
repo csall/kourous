@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Environment, Sparkles, ContactShadows, Stars, Trail, Text, Billboard } from "@react-three/drei";
+import { Environment, Sparkles, ContactShadows, Stars, Trail, Text, Billboard, Image as DreiImage } from "@react-three/drei";
 import { useRef, useState, useMemo, useEffect, useCallback } from "react";
 import * as THREE from "three";
 import { useSpring, animated, config, SpringValue } from "@react-spring/three";
@@ -272,13 +272,21 @@ function SceneInternal({ count, beadWindow, total, presetId, beadColor, tapProgr
         lastCount.current = count;
     }, [count, presetId, api]);
 
-    const radius = 10; // Fixed large radius for vertical look
-    const angleStep = 0.25; // Consistent spacing
+    const radius = 12; // Larger radius for flatter, vertical stacking
+    const angleStep = 0.20; // Tighter spacing
 
     return (
         <group>
             {/* The Rosary String - Fixed Arc */}
             <ConnectionString radius={radius} />
+
+            {/* Thumb Overlay - Realistic Hand Effect */}
+            <animated.group
+                position={tapProgress.to((t: number) => [0.8, -2.5 + (t * 0.2), 0.5])}
+                rotation={[0, 0, -0.2]}
+            >
+                <DreiImage url="/thumb_overlay.png" transparent scale={[3, 3]} opacity={1} toneMapped={false} />
+            </animated.group>
 
             {beadWindow.map((idx: number) => {
                 return (
@@ -289,7 +297,7 @@ function SceneInternal({ count, beadWindow, total, presetId, beadColor, tapProgr
                             const angle = (idx - sc) * angleStep;
 
                             const yPos = Math.sin(angle + Math.PI / 2) * radius - radius;
-                            // Simplify to standard vertical wheel: 
+                            // Simplify to standard vertical wheel:
                             // angle 0 (active) -> y=0, z=0.
                             // angle > 0 (future) -> y>0
                             // angle < 0 (past) -> y<0
