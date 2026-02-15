@@ -10,7 +10,7 @@ import { useClickSound } from "@/lib/hooks/useClickSound";
 import { useEffect, useState, Suspense, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { BookOpen, Settings, RotateCcw } from "lucide-react";
+import { BookOpen, Settings, RotateCcw, Volume2, VolumeX } from "lucide-react";
 import { FullscreenModal } from "@/components/ui/FullscreenModal";
 import { LibraryContent } from "@/components/library/LibraryContent";
 import { SettingsContent } from "@/components/settings/SettingsContent";
@@ -122,6 +122,16 @@ function SessionContent() {
       {/* Top Right Navigation */}
       <div className="absolute top-[calc(env(safe-area-inset-top)+1rem)] right-6 z-50 flex items-center gap-2">
         <div className="flex items-center gap-2">
+
+          <button
+            onClick={toggleSound}
+            onPointerDown={(e) => e.stopPropagation()}
+            onPointerUp={(e) => e.stopPropagation()}
+            className="flex items-center justify-center w-11 h-11 rounded-full bg-black/20 backdrop-blur-md border border-white/10 text-white/70 hover:text-white hover:bg-white/5 transition-all active:scale-90"
+            aria-label={soundEnabled ? "Couper le son" : "Activer le son"}
+          >
+            {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} className="text-white/40" />}
+          </button>
 
           <button
             onClick={() => setIsLibraryOpen(true)}

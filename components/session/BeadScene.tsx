@@ -304,7 +304,7 @@ function SceneInternal({ count, beadWindow, total, presetId, beadColor, tapProgr
     const angleStep = 0.1; // Maximum condensation for a dense holy look
 
     return (
-        <group>
+        <group position={[0, -1.2, 0]}>
             {/* The Rosary String - Fixed Arc */}
             <ConnectionString radius={radius} />
 
