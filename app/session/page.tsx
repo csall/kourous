@@ -7,7 +7,7 @@ import { useClickSound } from "@/lib/hooks/useClickSound";
 import { useEffect, useState, Suspense, useCallback, useRef, memo } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { RefreshCw, Volume2, VolumeX } from "lucide-react";
+import { RefreshCw, Volume2, VolumeX, RotateCcw } from "lucide-react";
 import { FullscreenModal } from "@/components/ui/FullscreenModal";
 import { LibraryContent } from "@/components/library/LibraryContent";
 import { SettingsContent } from "@/components/settings/SettingsContent";
@@ -37,6 +37,8 @@ const SessionHeader = memo(({
   isComplete: boolean;
 }) => {
   const beadColor = useSessionStore(state => state.beadColor);
+  const preset = useSessionStore(state => state.preset);
+  const reset = useSessionStore(state => state.reset);
   const progress = useSessionProgress();
 
   return (
@@ -48,64 +50,81 @@ const SessionHeader = memo(({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full pt-[env(safe-area-inset-top,20px)] px-6 flex flex-col items-center"
+            className="w-full pt-[env(safe-area-inset-top,20px)] px-6 flex flex-col items-center gap-4"
           >
-            {/* Title / Label */}
-            <h1
-              className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 leading-none"
-              style={{ color: beadColor }}
-            >
-              <span className="tabular-nums">{progress.cycleTotal}</span> × {progress.label}
-            </h1>
-
-            {/* Circular Progress & Counter */}
-            <div className="mt-4 relative flex items-center justify-center h-20 w-20">
-              {/* Ring Background */}
-              <div className="absolute inset-0 rounded-full border border-white/[0.03] bg-white/[0.01] backdrop-blur-3xl" />
-
-              <svg className="absolute inset-0 w-full h-full -rotate-90 p-1">
-                <circle
-                  cx="50%" cy="50%" r="46%"
-                  fill="none"
-                  stroke={beadColor} strokeWidth="1.5"
-                  className="opacity-10"
-                />
-                <motion.circle
-                  cx="50%" cy="50%" r="46%"
-                  fill="none"
-                  stroke={beadColor} strokeWidth="2.5"
-                  strokeLinecap="round" strokeDasharray="100 100"
-                  pathLength="100"
-                  initial={{ strokeDashoffset: 100 }}
-                  animate={{ strokeDashoffset: 100 - (progress.cycleProgress / progress.cycleTotal * 100) }}
-                  transition={{ type: "spring", stiffness: 45, damping: 15 }}
-                  className="opacity-90"
-                  style={{ filter: `drop-shadow(0 0 8px ${beadColor}60)` }}
-                />
-              </svg>
-
-              {/* Counter Text */}
-              <AnimatePresence mode="popLayout">
-                <motion.div
-                  key={progress.cycleProgress}
-                  initial={{ opacity: 0, scale: 0.8, filter: "blur(4px)" }}
-                  animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, scale: 1.2, filter: "blur(4px)" }}
-                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                  className="relative flex items-center justify-center"
-                >
-                  <span className="text-2xl font-black tabular-nums tracking-tighter text-white">
-                    {progress.cycleProgress}
-                  </span>
-                </motion.div>
-              </AnimatePresence>
+            {/* Top Bar: Collection Name (only if it's a collection) */}
+            <div className="w-full flex items-center justify-center pointer-events-auto">
+              {preset && preset.sequence.length > 1 && (
+                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-slate-500 truncate max-w-[250px] text-center">
+                  {preset.name}
+                </span>
+              )}
             </div>
 
-            {/* Sub-info */}
-            <div className="mt-3 px-3 py-1 bg-white/[0.03] border border-white/[0.05] rounded-full backdrop-blur-3xl">
-              <p className="text-[9px] font-bold tracking-widest text-slate-500 uppercase">
-                Collection {progress.cycleIndex + 1} / {progress.totalCycles}
-              </p>
+            <div className="flex flex-col items-center">
+              {/* Title / Label */}
+              <h1
+                className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 leading-none mb-4"
+                style={{ color: beadColor }}
+              >
+                <span className="tabular-nums">{progress.cycleTotal}</span> × {progress.label}
+              </h1>
+
+              {/* Circular Progress & Counter */}
+              <div className="relative flex items-center justify-center h-20 w-20">
+                {/* Ring Background */}
+                <div className="absolute inset-0 rounded-full border border-white/[0.03] bg-white/[0.01] backdrop-blur-3xl" />
+
+                <svg className="absolute inset-0 w-full h-full -rotate-90 p-1">
+                  <circle
+                    cx="50%" cy="50%" r="46%"
+                    fill="none"
+                    stroke={beadColor} strokeWidth="1.5"
+                    className="opacity-10"
+                  />
+                  <motion.circle
+                    cx="50%" cy="50%" r="46%"
+                    fill="none"
+                    stroke={beadColor} strokeWidth="2.5"
+                    strokeLinecap="round" strokeDasharray="100 100"
+                    pathLength="100"
+                    initial={{ strokeDashoffset: 100 }}
+                    animate={{ strokeDashoffset: 100 - (progress.cycleProgress / progress.cycleTotal * 100) }}
+                    transition={{ type: "spring", stiffness: 45, damping: 15 }}
+                    className="opacity-90"
+                    style={{ filter: `drop-shadow(0 0 8px ${beadColor}60)` }}
+                  />
+                </svg>
+
+                {/* Counter Text */}
+                <AnimatePresence mode="popLayout">
+                  <motion.div
+                    key={progress.cycleProgress}
+                    initial={{ opacity: 0, scale: 0.8, filter: "blur(4px)" }}
+                    animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, scale: 1.2, filter: "blur(4px)" }}
+                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                    className="relative flex items-center justify-center"
+                  >
+                    <span className="text-2xl font-black tabular-nums tracking-tighter text-white">
+                      {progress.cycleProgress}
+                    </span>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+
+              {/* Restart Button Below Counter - Positioned at the boundary */}
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => {
+                  hapticMedium();
+                  reset();
+                }}
+                className="mt-6 pointer-events-auto flex items-center justify-center w-12 h-12 rounded-full bg-white/10 border border-white/20 text-slate-300 hover:text-white transition-all backdrop-blur-3xl group shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95"
+              >
+                <RotateCcw size={20} className="group-hover:rotate-[-45deg] transition-transform duration-500" />
+              </motion.button>
             </div>
           </motion.div>
         )}
@@ -274,7 +293,7 @@ function SessionContent() {
       <SessionHeader isComplete={isComplete} />
 
       {/* Main interactive area positioned to be at the limit of the counter area */}
-      <div className={`flex-1 relative z-0 mt-52 sm:mt-60 transition-all duration-1000 ${isAnyUIOpen ? 'pointer-events-none opacity-40 blur-sm grayscale' : 'opacity-100'}`}>
+      <div className={`flex-1 relative z-0 mt-[18rem] sm:mt-64 transition-all duration-1000 ${isAnyUIOpen ? 'pointer-events-none opacity-40 blur-sm grayscale' : 'opacity-100'}`}>
         <BeadLayer />
       </div>
 
