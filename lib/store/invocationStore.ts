@@ -5,6 +5,7 @@ import { persist } from "zustand/middleware";
 export interface Invocation {
     id: string;
     name: string;
+    description?: string;
     repetitions: number; // Nombre de répétitions par défaut
     createdAt: string;
 }
@@ -24,7 +25,8 @@ export interface InvocationGroup {
 interface InvocationStoreState {
     invocations: Invocation[];
     groups: InvocationGroup[];
-    _hasLoadedDefaults?: boolean; // Internal flag to track if defaults were loaded
+    favoriteIds: string[];
+    _hasLoadedDefaults?: boolean;
 
     // Invocations CRUD
     addInvocation: (invocation: Omit<Invocation, "id" | "createdAt">) => void;
@@ -36,10 +38,13 @@ interface InvocationStoreState {
     addGroup: (group: Omit<InvocationGroup, "id" | "createdAt">) => void;
     updateGroup: (id: string, updates: Partial<Omit<InvocationGroup, "id" | "createdAt">>) => void;
     deleteGroup: (id: string) => void;
-    getGroupById: (id: string) => InvocationGroup | undefined;
+    // Favorites
+    toggleFavorite: (id: string) => void;
+    isFavorite: (id: string) => boolean;
 
     // Utility
     loadDefaultData: () => void;
+    resetStore: () => void;
 }
 
 export const useInvocationStore = create<InvocationStoreState>()(
@@ -47,6 +52,7 @@ export const useInvocationStore = create<InvocationStoreState>()(
         (set, get) => ({
             invocations: [],
             groups: [],
+            favoriteIds: [],
             _hasLoadedDefaults: false,
 
             // Invocations
@@ -110,11 +116,24 @@ export const useInvocationStore = create<InvocationStoreState>()(
                 }));
             },
 
-            getGroupById: (id) => {
+            getGroupById: (id: string) => {
                 return get().groups.find((grp) => grp.id === id);
             },
 
-            // Load default data
+            // Favorites
+            toggleFavorite: (id) => {
+                set((state) => ({
+                    favoriteIds: state.favoriteIds.includes(id)
+                        ? state.favoriteIds.filter((favId) => favId !== id)
+                        : [...state.favoriteIds, id],
+                }));
+            },
+
+            isFavorite: (id) => {
+                return get().favoriteIds.includes(id);
+            },
+
+            // Utility
             loadDefaultData: () => {
                 const { defaultInvocations, defaultGroups } = require("@/lib/data/defaultInvocations");
 
@@ -162,50 +181,18 @@ export const useInvocationStore = create<InvocationStoreState>()(
                     _hasLoadedDefaults: true,
                 }));
             },
+
+            resetStore: () => {
+                set({ invocations: [], groups: [], favoriteIds: [], _hasLoadedDefaults: true });
+            },
         }),
         {
             name: "kourous-invocations",
             onRehydrateStorage: () => (state) => {
-                // Load defaults automatically if never loaded before
+                // Ensure defaults aren't loaded automatically if we just reset
+                // But allow if we want them back
                 if (state && !state._hasLoadedDefaults) {
-                    const { defaultInvocations, defaultGroups } = require("@/lib/data/defaultInvocations");
-
-                    // Add default invocations
-                    const invocationMap = new Map<string, string>();
-                    defaultInvocations.forEach((inv: any) => {
-                        const id = `inv-default-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-                        state.invocations.push({
-                            ...inv,
-                            id,
-                            createdAt: new Date().toISOString(),
-                        });
-                        invocationMap.set(inv.name, id);
-                    });
-
-                    // Add default groups
-                    defaultGroups.forEach((grp: any) => {
-                        const invocations = grp.invocationNames
-                            .map((invName: any) => {
-                                const invId = invocationMap.get(invName.name);
-                                return invId ? {
-                                    invocationId: invId,
-                                    repetitions: invName.repetitions,
-                                } : null;
-                            })
-                            .filter(Boolean);
-
-                        if (invocations.length > 0) {
-                            state.groups.push({
-                                id: `grp-default-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                                name: grp.name,
-                                description: grp.description,
-                                invocations,
-                                createdAt: new Date().toISOString(),
-                            });
-                        }
-                    });
-
-                    state._hasLoadedDefaults = true;
+                    // We'll let the component call loadDefaultData or rehydrate
                 }
             },
         }

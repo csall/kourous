@@ -36,138 +36,76 @@ const SessionHeader = memo(({
 }: {
   isComplete: boolean;
 }) => {
-  const reset = useSessionStore(state => state.reset);
   const beadColor = useSessionStore(state => state.beadColor);
-  const soundEnabled = useSessionStore(state => state.soundEnabled);
-  const toggleSound = useSessionStore(state => state.toggleSound);
   const progress = useSessionProgress();
 
-  const handleReset = useCallback((e: React.MouseEvent | React.TouchEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    e.nativeEvent?.stopImmediatePropagation?.();
-    setTimeout(() => reset(), 0);
-  }, [reset]);
-
   return (
-    <div className="absolute top-0 left-0 right-0 z-50 pointer-events-none flex flex-col items-center">
-      {/* Floating Reset Button */}
-      <div className="w-full max-w-full px-4 pt-safe pt-8 flex justify-center">
-        <motion.div
-          layout
-          onPointerDown={stopAllBubbles}
-          onPointerUp={stopAllBubbles}
-          onMouseDown={stopAllBubbles}
-          onMouseUp={stopAllBubbles}
-          onTouchStart={stopAllBubbles}
-          onTouchEnd={stopAllBubbles}
-          className="flex items-center gap-1.5 pointer-events-auto p-1.5 bg-slate-900/40 backdrop-blur-2xl rounded-[2.5rem] shadow-[0_8px_32px_0_rgba(0,0,0,0.3)] transition-all duration-500 ease-out"
-        >
-          <div className="flex items-center gap-1 px-1">
-            <button
-              onClick={(e) => { stopAllBubbles(e); reset(); }}
-              onPointerDown={stopAllBubbles}
-              onPointerUp={stopAllBubbles}
-              onMouseDown={stopAllBubbles}
-              onMouseUp={stopAllBubbles}
-              onTouchStart={stopAllBubbles}
-              onTouchEnd={stopAllBubbles}
-              className="flex items-center justify-center w-14 h-14 rounded-[1.75rem] transition-all duration-300 bg-white/5 text-white/60 md:hover:bg-white/10 active:scale-90"
-              aria-label="Recommencer"
-            >
-              <RefreshCw size={20} className="stroke-[1.5]" />
-            </button>
-
-            <button
-              onClick={(e) => { stopAllBubbles(e); toggleSound(); }}
-              onPointerDown={stopAllBubbles}
-              onPointerUp={stopAllBubbles}
-              onMouseDown={stopAllBubbles}
-              onMouseUp={stopAllBubbles}
-              onTouchStart={stopAllBubbles}
-              onTouchEnd={stopAllBubbles}
-              className={`flex items-center justify-center w-14 h-14 rounded-[1.75rem] transition-all duration-300 ${soundEnabled
-                ? 'bg-emerald-500/15 text-emerald-400'
-                : 'bg-white/5 text-white/20'
-                }`}
-              aria-label="Son"
-            >
-              {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
-            </button>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Title + Counter */}
+    <div className="absolute top-0 left-0 right-0 z-50 pointer-events-none">
       <AnimatePresence>
         {!isComplete && progress && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="w-full mt-3 px-8 flex flex-col items-center text-center pointer-events-none"
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full pt-[env(safe-area-inset-top,20px)] px-6 flex flex-col items-center"
           >
+            {/* Title / Label */}
             <h1
-              className="text-sm font-bold tracking-[0.2em] uppercase opacity-50 leading-none"
+              className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 leading-none"
               style={{ color: beadColor }}
             >
               <span className="tabular-nums">{progress.cycleTotal}</span> × {progress.label}
             </h1>
 
-            {progress.sublabel && (
-              <p className="text-[10px] text-white/20 font-light tracking-wide max-w-[240px] mx-auto leading-none mt-1 uppercase">
-                {progress.sublabel}
-              </p>
-            )}
+            {/* Circular Progress & Counter */}
+            <div className="mt-4 relative flex items-center justify-center h-20 w-20">
+              {/* Ring Background */}
+              <div className="absolute inset-0 rounded-full border border-white/[0.03] bg-white/[0.01] backdrop-blur-3xl" />
 
-            <div className="mt-2">
-              <div className="relative flex items-center justify-center h-16 w-16">
-                {/* Circular Progress Ring */}
-                <svg className="absolute inset-0 w-full h-full -rotate-90">
-                  <circle
-                    cx="50%" cy="50%" r="46%"
-                    fill={beadColor} fillOpacity="0.05"
-                    stroke={beadColor} strokeWidth="1.5"
-                    className="opacity-30"
-                  />
-                  <motion.circle
-                    cx="50%" cy="50%" r="46%"
-                    fill="none" stroke={beadColor} strokeWidth="2"
-                    strokeLinecap="round" strokeDasharray="100 100"
-                    pathLength="100"
-                    initial={{ strokeDashoffset: 100 }}
-                    animate={{ strokeDashoffset: 100 - (progress.cycleProgress / progress.cycleTotal * 100) }}
-                    transition={{ type: "spring", stiffness: 60, damping: 15 }}
-                    className="opacity-80"
-                    style={{ filter: `drop-shadow(0 0 6px ${beadColor}60)` }}
-                  />
-                </svg>
-
-                {/* Pulsing Core */}
-                <motion.div
-                  animate={{ scale: [1, 1.05, 1], opacity: [0.03, 0.08, 0.03] }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                  className="absolute inset-2 rounded-full"
-                  style={{ backgroundColor: beadColor }}
+              <svg className="absolute inset-0 w-full h-full -rotate-90 p-1">
+                <circle
+                  cx="50%" cy="50%" r="46%"
+                  fill="none"
+                  stroke={beadColor} strokeWidth="1.5"
+                  className="opacity-10"
                 />
+                <motion.circle
+                  cx="50%" cy="50%" r="46%"
+                  fill="none"
+                  stroke={beadColor} strokeWidth="2.5"
+                  strokeLinecap="round" strokeDasharray="100 100"
+                  pathLength="100"
+                  initial={{ strokeDashoffset: 100 }}
+                  animate={{ strokeDashoffset: 100 - (progress.cycleProgress / progress.cycleTotal * 100) }}
+                  transition={{ type: "spring", stiffness: 45, damping: 15 }}
+                  className="opacity-90"
+                  style={{ filter: `drop-shadow(0 0 8px ${beadColor}60)` }}
+                />
+              </svg>
 
-                {/* Counter */}
-                <AnimatePresence mode="popLayout">
-                  <motion.span
-                    key={progress.cycleProgress}
-                    initial={{ opacity: 0, scale: 0.8, y: 3 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 1.2, y: -3 }}
-                    className="relative text-2xl font-black tabular-nums tracking-tight leading-none"
-                    style={{
-                      color: beadColor,
-                      textShadow: `0 0 15px ${beadColor}40`
-                    }}
-                  >
+              {/* Counter Text */}
+              <AnimatePresence mode="popLayout">
+                <motion.div
+                  key={progress.cycleProgress}
+                  initial={{ opacity: 0, scale: 0.8, filter: "blur(4px)" }}
+                  animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, scale: 1.2, filter: "blur(4px)" }}
+                  transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  className="relative flex items-center justify-center"
+                >
+                  <span className="text-2xl font-black tabular-nums tracking-tighter text-white">
                     {progress.cycleProgress}
-                  </motion.span>
-                </AnimatePresence>
-              </div>
+                  </span>
+                </motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Sub-info */}
+            <div className="mt-3 px-3 py-1 bg-white/[0.03] border border-white/[0.05] rounded-full backdrop-blur-3xl">
+              <p className="text-[9px] font-bold tracking-widest text-slate-500 uppercase">
+                Collection {progress.cycleIndex + 1} / {progress.totalCycles}
+              </p>
             </div>
           </motion.div>
         )}
@@ -182,12 +120,10 @@ SessionHeader.displayName = "SessionHeader";
 // LAYER 2: Bead Scene
 // ─────────────────────────────────────────────────────────────
 const BeadLayer = memo(() => {
-  // Select strictly structural identity state (Preset)
   const presetId = useSessionStore(state => state.preset?.id || "none");
   const advance = useSessionStore(state => state.advance);
   const progress = useSessionProgress();
 
-  // Use internal refs for interactive state to avoid re-rendering the 3D layer
   const hapticRef = useRef(useSessionStore.getState().hapticsEnabled);
   const soundRef = useRef(useSessionStore.getState().soundEnabled);
   const isUiOpenRef = useRef(useSessionStore.getState().isUiOpen);
@@ -207,12 +143,8 @@ const BeadLayer = memo(() => {
   const handleAdvance = useCallback(() => {
     if (isUiOpenRef.current || isCompleteRef.current) return;
 
-    if (hapticRef.current) {
-      hapticLight();
-    }
-    if (soundRef.current) {
-      playClick();
-    }
+    if (hapticRef.current) hapticLight();
+    if (soundRef.current) playClick();
     advance();
   }, [advance, playClick]);
 
@@ -225,7 +157,6 @@ const BeadLayer = memo(() => {
       count={count}
       total={total}
       onAdvance={handleAdvance}
-    // Note: BeadScene now handles its own internal isUiOpen subscription for animation freezing
     />
   );
 });
@@ -251,7 +182,6 @@ function SessionContent() {
   const preset = useSessionStore(state => state.preset);
   const isComplete = useSessionStore(state => state.isComplete);
   const reset = useSessionStore(state => state.reset);
-  const advance = useSessionStore(state => state.advance);
   const beadColor = useSessionStore(state => state.beadColor);
   const setPresetByGroupId = useSessionStore(state => state.setPresetByGroupId);
   const setPresetByInvocationId = useSessionStore(state => state.setPresetByInvocationId);
@@ -265,12 +195,10 @@ function SessionContent() {
 
   const isAnyUIOpen = isLibraryOpen || isSettingsOpen || isComplete;
 
-  // Global sync of UI state to store for 3D scene protection
   useEffect(() => {
     setIsUiOpen(isAnyUIOpen);
   }, [isAnyUIOpen, setIsUiOpen]);
 
-  // Handle final completion sound + haptics
   useEffect(() => {
     if (isComplete) {
       if (soundEnabled) playFinalSuccess();
@@ -287,28 +215,19 @@ function SessionContent() {
   }, [searchParams, setPresetByGroupId, setPresetByInvocationId, preset?.id, hasHydrated]);
 
   const openLibrary = useCallback(() => setIsLibraryOpen(true), []);
-  const openSettings = useCallback(() => setIsSettingsOpen(true), []);
   const closeLibrary = useCallback(() => setIsLibraryOpen(false), []);
   const closeSettings = useCallback(() => setIsSettingsOpen(false), []);
 
   const progress = useSessionProgress();
-
   const [lastFinishedCycle, setLastFinishedCycle] = useState(-1);
 
   useEffect(() => {
     if (!preset || !progress) return;
-
-    // Check if we just finished a cycle
     if (progress.cycleProgress === progress.cycleTotal && progress.cycleIndex > lastFinishedCycle) {
       const isIntermediary = progress.cycleIndex < (preset.sequence.length - 1);
-
       if (isIntermediary) {
-        // Play success sound + haptic for intermediate step
-        if (soundEnabled) {
-          playSuccess();
-        }
+        if (soundEnabled) playSuccess();
         hapticMedium();
-
         confetti({
           particleCount: 40,
           spread: 70,
@@ -316,11 +235,9 @@ function SessionContent() {
           colors: [beadColor, '#ffffff']
         });
       }
-
       setLastFinishedCycle(progress.cycleIndex);
     }
   }, [progress, preset, lastFinishedCycle, beadColor, soundEnabled, playSuccess]);
-
 
   const handleReset = useCallback(() => {
     setLastFinishedCycle(-1);
@@ -330,25 +247,34 @@ function SessionContent() {
   if (!isMounted || !isActuallyHydrated) {
     return (
       <div className="fixed inset-0 bg-slate-950 flex items-center justify-center">
-        <motion.div
-          animate={{ opacity: [0.3, 0.6, 0.3] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          className="text-slate-500 font-light tracking-widest uppercase text-xs"
-        >
+        <motion.div animate={{ opacity: [0.3, 0.6, 0.3] }} transition={{ duration: 1.5, repeat: Infinity }} className="text-slate-500 font-light tracking-widest uppercase text-xs">
           Kourous
         </motion.div>
       </div>
     );
   }
 
-
   return (
-    <div className="fixed inset-0 h-[100dvh] bg-slate-950 text-slate-100 overflow-hidden font-sans select-none">
-      <SessionHeader
-        isComplete={isComplete}
-      />
+    <div className="fixed inset-0 h-[100dvh] bg-slate-950 text-slate-100 overflow-hidden font-sans select-none flex flex-col">
+      {/* Immersive mesh glows */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10 bg-slate-950/20">
+        <motion.div
+          animate={{ scale: [1, 1.4, 1], opacity: [0.08, 0.15, 0.08], x: [0, 50, 0], y: [0, -50, 0], rotate: [0, 45, 0] }}
+          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute -top-[10%] -right-[15%] w-[90%] h-[70%] blur-[140px] rounded-full"
+          style={{ backgroundColor: beadColor }}
+        />
+        <motion.div
+          animate={{ scale: [1, 1.2, 1], opacity: [0.04, 0.08, 0.04], x: [0, -30, 0], y: [0, 40, 0] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          className="absolute bottom-[10%] -left-[20%] w-[100%] h-[80%] bg-indigo-600 blur-[150px] rounded-full"
+        />
+      </div>
 
-      <div className={`absolute inset-0 z-0 pt-48 sm:pt-56 transition-all duration-500 ${isAnyUIOpen ? 'pointer-events-none opacity-40 blur-sm grayscale' : 'opacity-100'}`}>
+      <SessionHeader isComplete={isComplete} />
+
+      {/* Main interactive area positioned to be at the limit of the counter area */}
+      <div className={`flex-1 relative z-0 mt-52 sm:mt-60 transition-all duration-1000 ${isAnyUIOpen ? 'pointer-events-none opacity-40 blur-sm grayscale' : 'opacity-100'}`}>
         <BeadLayer />
       </div>
 

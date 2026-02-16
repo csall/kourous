@@ -48,7 +48,7 @@ export function FullscreenModal({ isOpen, onClose, title, children }: Fullscreen
                         onMouseUp={(e) => e.stopPropagation()}
                         onTouchStart={(e) => e.stopPropagation()}
                         onTouchEnd={(e) => e.stopPropagation()}
-                        className="flex items-center gap-4 px-6 py-4 border-b border-white/5 bg-slate-950/50 backdrop-blur-xl sticky top-0 z-10"
+                        className="flex items-center gap-4 px-6 pt-[calc(env(safe-area-inset-top,0px)+16px)] pb-4 border-b border-white/5 bg-slate-950/50 backdrop-blur-xl sticky top-0 z-10"
                     >
                         <button
                             onClick={onClose}

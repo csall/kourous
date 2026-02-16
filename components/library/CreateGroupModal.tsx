@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Trash2, GripVertical } from "lucide-react";
+import { X, Trash2, GripVertical, Sparkles, Plus, Check } from "lucide-react";
 import { useInvocationStore, type InvocationGroup } from "@/lib/store/invocationStore";
+import { useSessionStore } from "@/lib/store/sessionStore";
 
 interface CreateGroupModalProps {
     isOpen: boolean;
@@ -12,7 +13,8 @@ interface CreateGroupModalProps {
 }
 
 export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModalProps) {
-    const { addGroup, updateGroup, invocations } = useInvocationStore();
+    const { addGroup, updateGroup, invocations, getInvocationById } = useInvocationStore();
+    const beadColor = useSessionStore((s) => s.beadColor);
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [selectedInvocations, setSelectedInvocations] = useState<Array<{
@@ -36,7 +38,7 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModa
     }, [editGroup, isOpen]);
 
     const handleAddInvocation = (invocationId: string) => {
-        const invocation = invocations.find(inv => inv.id === invocationId);
+        const invocation = getInvocationById(invocationId);
         if (!invocation) return;
 
         setSelectedInvocations([
@@ -65,10 +67,10 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModa
 
         const newErrors: { name?: string; invocations?: string } = {};
         if (!name.trim()) {
-            newErrors.name = "Le nom est requis";
+            newErrors.name = "Donnez un nom à votre collection";
         }
         if (selectedInvocations.length === 0) {
-            newErrors.invocations = "Ajoutez au moins une invocation";
+            newErrors.invocations = "Ajoutez au moins une étape";
         }
 
         if (Object.keys(newErrors).length > 0) {
@@ -114,144 +116,138 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModa
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-md p-5"
                     onClick={handleClose}
                 >
                     <motion.div
-                        initial={{ y: 100, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        exit={{ y: 100, opacity: 0 }}
+                        initial={{ scale: 0.95, opacity: 0, y: 30 }}
+                        animate={{ scale: 1, opacity: 1, y: 0 }}
+                        exit={{ scale: 0.95, opacity: 0, y: 30 }}
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                        className="bg-[#0c0f16] border border-white/[0.08] rounded-t-3xl sm:rounded-3xl p-6 w-full sm:max-w-lg shadow-2xl max-h-[85vh] overflow-y-auto"
+                        className="relative overflow-hidden bg-slate-900 border border-white/10 rounded-[2.5rem] p-8 sm:p-10 max-w-lg w-full shadow-2xl flex flex-col max-h-[90vh]"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        {/* Header */}
-                        <div className="flex items-center justify-between mb-6">
-                            <h2 className="text-xl font-bold text-white">{isEditing ? "Modifier le groupe" : "Nouveau groupe"}</h2>
+                        {/* Decoration */}
+                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-20" />
+                        <div className="absolute -top-24 -right-24 w-64 h-64 blur-[100px] rounded-full pointer-events-none opacity-20" style={{ backgroundColor: beadColor }} />
+
+                        <div className="flex items-center justify-between mb-8 relative z-10">
+                            <div>
+                                <div className="flex items-center gap-2 mb-2" style={{ color: beadColor }}>
+                                    <Sparkles size={14} className="animate-pulse" />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.25em]">{isEditing ? "Édition" : "Création"}</span>
+                                </div>
+                                <h2 className="text-3xl font-black tracking-tight text-white leading-tight">Collection</h2>
+                            </div>
                             <button
                                 onClick={handleClose}
-                                className="w-8 h-8 rounded-full bg-white/[0.06] hover:bg-white/[0.1] flex items-center justify-center transition-colors"
+                                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
                             >
-                                <X size={16} className="text-slate-400" />
+                                <X size={20} />
                             </button>
                         </div>
 
-                        {/* Form */}
-                        <form onSubmit={handleSubmit} className="space-y-5">
-                            {/* Name */}
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase tracking-[0.15em] text-slate-500">Nom du groupe</label>
+                        <form onSubmit={handleSubmit} className="space-y-6 relative z-10 flex-1 flex flex-col min-h-0 overflow-y-auto pr-1 -mr-1 scrollbar-hide">
+                            {/* Name Input */}
+                            <div className="space-y-3 shrink-0">
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Nom de la collection</label>
                                 <input
                                     type="text"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    placeholder="Ex: Tasbih du matin"
-                                    className="w-full px-4 py-3 bg-white/[0.04] border border-white/[0.08] rounded-2xl text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-blue-500/30 transition-colors"
+                                    placeholder="Ex: Rituel du Matin"
+                                    className="w-full px-6 py-4.5 bg-white/[0.03] border border-white/10 rounded-2xl text-white text-lg placeholder:text-slate-700 focus:outline-none focus:border-white/20 transition-all font-bold"
                                 />
                                 {errors.name && (
-                                    <p className="text-xs text-red-400">{errors.name}</p>
+                                    <p className="text-[11px] font-bold text-rose-500 px-1">{errors.name}</p>
                                 )}
                             </div>
 
-                            {/* Description */}
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase tracking-[0.15em] text-slate-500">Description (optionnel)</label>
-                                <input
-                                    type="text"
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
-                                    placeholder="Ex: Invocations recommandées après Fajr"
-                                    className="w-full px-4 py-3 bg-white/[0.04] border border-white/[0.08] rounded-2xl text-white text-sm placeholder:text-slate-600 focus:outline-none focus:border-blue-500/30 transition-colors"
-                                />
-                            </div>
+                            {/* Sequence List */}
+                            <div className="space-y-4 flex-1 flex flex-col min-h-0">
+                                <div className="flex items-center justify-between px-1">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Séquence d'étapes</label>
+                                    <span className="text-[10px] font-bold text-slate-600 bg-white/5 px-3 py-1 rounded-full">{selectedInvocations.length} étape{selectedInvocations.length > 1 ? 's' : ''}</span>
+                                </div>
 
-                            {/* Selected Invocations */}
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase tracking-[0.15em] text-slate-500">Invocations</label>
-
-                                {selectedInvocations.length > 0 && (
-                                    <div className="space-y-2 mb-3">
+                                <div className="space-y-2.5 overflow-y-auto px-1 -mx-1 scrollbar-hide py-1 flex-1">
+                                    <AnimatePresence mode="popLayout">
                                         {selectedInvocations.map((sel, index) => {
-                                            const invocation = invocations.find(inv => inv.id === sel.invocationId);
+                                            const invocation = getInvocationById(sel.invocationId);
                                             if (!invocation) return null;
 
                                             return (
-                                                <div
-                                                    key={index}
-                                                    className="flex items-center gap-2 p-3 bg-white/[0.04] border border-white/[0.06] rounded-xl"
+                                                <motion.div
+                                                    key={`${sel.invocationId}-${index}`}
+                                                    layout
+                                                    className="flex items-center gap-4 p-4 bg-white/[0.03] border border-white/5 rounded-2xl group transition-all"
                                                 >
-                                                    <GripVertical size={14} className="text-slate-600" />
+                                                    <GripVertical size={16} className="text-slate-700 shrink-0" />
                                                     <div className="flex-1 min-w-0">
-                                                        <p className="text-sm text-white truncate">{invocation.name}</p>
+                                                        <p className="text-sm font-bold text-white truncate">{invocation.name}</p>
                                                     </div>
-                                                    <input
-                                                        type="number"
-                                                        value={sel.repetitions}
-                                                        onChange={(e) => handleUpdateRepetitions(index, parseInt(e.target.value) || 1)}
-                                                        className="w-16 px-2 py-1.5 bg-white/[0.04] border border-white/[0.08] rounded-lg text-white text-sm text-center focus:outline-none focus:border-blue-500/30"
-                                                        min="1"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleRemoveInvocation(index)}
-                                                        className="w-8 h-8 rounded-lg bg-red-500/10 hover:bg-red-500/20 flex items-center justify-center transition-colors"
-                                                    >
-                                                        <Trash2 size={13} className="text-red-400" />
-                                                    </button>
-                                                </div>
+                                                    <div className="flex items-center gap-3">
+                                                        <input
+                                                            type="number"
+                                                            value={sel.repetitions}
+                                                            onChange={(e) => handleUpdateRepetitions(index, parseInt(e.target.value) || 1)}
+                                                            className="w-14 h-10 bg-white/5 border border-white/5 rounded-xl text-white text-[13px] font-black text-center focus:outline-none focus:border-white/20"
+                                                        />
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleRemoveInvocation(index)}
+                                                            className="w-10 h-10 rounded-xl bg-rose-500/5 flex items-center justify-center text-rose-500/60 hover:text-rose-500 transition-colors"
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    </div>
+                                                </motion.div>
                                             );
                                         })}
-                                    </div>
-                                )}
+                                    </AnimatePresence>
 
-                                {/* Add Invocation Dropdown */}
-                                {availableInvocations.length > 0 ? (
-                                    <select
-                                        onChange={(e) => {
-                                            if (e.target.value) {
-                                                handleAddInvocation(e.target.value);
-                                                e.target.value = "";
-                                            }
-                                        }}
-                                        className="w-full px-4 py-3 bg-white/[0.04] border border-white/[0.08] rounded-2xl text-white text-sm focus:outline-none focus:border-blue-500/30 transition-colors"
-                                    >
-                                        <option value="" className="bg-[#0c0f16]">+ Ajouter une invocation</option>
-                                        {availableInvocations.map((inv) => (
-                                            <option key={inv.id} value={inv.id} className="bg-[#0c0f16]">
-                                                {inv.name} ({inv.repetitions}×)
-                                            </option>
-                                        ))}
-                                    </select>
-                                ) : (
-                                    <p className="text-sm text-slate-600 text-center py-3">
-                                        {invocations.length === 0
-                                            ? "Créez d'abord des invocations individuelles"
-                                            : "Toutes les invocations ont été ajoutées"
-                                        }
-                                    </p>
-                                )}
-
-                                {errors.invocations && (
-                                    <p className="text-xs text-red-400">{errors.invocations}</p>
-                                )}
+                                    {/* Add Step Dropdown */}
+                                    {availableInvocations.length > 0 ? (
+                                        <div className="relative pt-2">
+                                            <select
+                                                onChange={(e) => {
+                                                    if (e.target.value) {
+                                                        handleAddInvocation(e.target.value);
+                                                        e.target.value = "";
+                                                    }
+                                                }}
+                                                className="w-full appearance-none px-6 py-4 bg-white/[0.02] border-2 border-dashed border-white/10 rounded-2xl text-slate-500 text-[13px] font-black focus:outline-none transition-all cursor-pointer hover:border-white/20 hover:text-slate-400"
+                                            >
+                                                <option value="">+ AJOUTER UNE ÉTAPE</option>
+                                                {availableInvocations.map((inv) => (
+                                                    <option key={inv.id} value={inv.id} className="bg-slate-900 text-white">
+                                                        {inv.name}
+                                                    </option>
+                                                ))}
+                                            </select>
+                                            <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-30">
+                                                <Plus size={16} />
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="text-center py-6 border-2 border-dashed border-white/5 rounded-2xl">
+                                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-700">Toutes les étapes ont été ajoutées</p>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
-                            {/* Actions */}
-                            <div className="flex gap-3 pt-2">
-                                <button
-                                    type="button"
-                                    onClick={handleClose}
-                                    className="flex-1 px-4 py-3 rounded-2xl bg-white/[0.04] text-slate-400 hover:bg-white/[0.08] transition-all text-sm font-medium"
-                                >
-                                    Annuler
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="flex-1 px-4 py-3 rounded-2xl bg-blue-500 text-white hover:bg-blue-600 transition-all active:scale-[0.97] text-sm font-bold"
-                                >
-                                    {isEditing ? "Enregistrer" : "Créer"}
-                                </button>
-                            </div>
+                            <button
+                                type="submit"
+                                style={{
+                                    backgroundColor: beadColor,
+                                    boxShadow: `0 10px 30px -10px ${beadColor}80`
+                                }}
+                                className="w-full py-5 rounded-[1.5rem] text-white font-black text-sm tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2 shrink-0"
+                            >
+                                <Check size={18} strokeWidth={4} />
+                                {isEditing ? "ENREGISTRER LA COLLECTION" : "CRÉER LA COLLECTION"}
+                            </button>
                         </form>
                     </motion.div>
                 </motion.div>

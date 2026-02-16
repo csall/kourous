@@ -19,7 +19,7 @@ export function CompletionView({ onReset, onOpenLibrary, presetName, beadColor, 
 
     useEffect(() => {
         if (!confettiLaunched.current) {
-            const duration = isIntermediary ? 1.5 * 1000 : 3 * 1000;
+            const duration = isIntermediary ? 2.5 * 1000 : 5 * 1000;
             const animationEnd = Date.now() + duration;
             const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
 

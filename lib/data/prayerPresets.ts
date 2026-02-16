@@ -13,23 +13,23 @@ export type PrayerPreset = {
 
 export const prayerPresets: PrayerPreset[] = [
   {
-    id: "dhikr-33",
-    name: "Tasbih 33",
-    description: "33 Subhanallah • 33 Alhamdulillah • 33 Allahu Akbar",
+    id: "tasbih-post-priere",
+    name: "Tasbih après la Prière",
+    description: "La sunna classique après chaque prière obligatoire : 33 Gloire, 33 Louange et 33/34 Grandeur.",
     totalBeads: 99,
-    cycles: 3,
+    cycles: 1,
     sequence: [
-      { label: "Subḥān Allāh", transliteration: "Subhanallah", repetitions: 33 },
-      { label: "Al-ḥamdu li-llāh", transliteration: "Alhamdulillah", repetitions: 33 },
-      { label: "Allāhu ʾAkbar", transliteration: "Allahu Akbar", repetitions: 33 },
+      { label: "Subḥān Allāh", transliteration: "Gloire à Allah", repetitions: 33 },
+      { label: "Al-ḥamdu li-llāh", transliteration: "Louange à Allah", repetitions: 33 },
+      { label: "Allāhu ʾAkbar", transliteration: "Allah est le plus Grand", repetitions: 33 },
     ],
   },
   {
     id: "tasbih-fatima",
     name: "Tasbih de Fâtima",
-    description: "34 Allahu Akbar • 33 Alhamdulillah • 33 Subhanallah",
+    description: "Recommandé avant de dormir pour la force et la sérénité intérieure.",
     totalBeads: 100,
-    cycles: 3,
+    cycles: 1,
     sequence: [
       { label: "Allāhu ʾAkbar", repetitions: 34 },
       { label: "Al-ḥamdu li-llāh", repetitions: 33 },
@@ -37,13 +37,15 @@ export const prayerPresets: PrayerPreset[] = [
     ],
   },
   {
-    id: "custom-99",
-    name: "Libre 99",
-    description: "Template vierge pour créer son propre dhikr",
-    totalBeads: 99,
+    id: "protection-matin",
+    name: "Protection du Matin",
+    description: "Courtes sourates protectrices à réciter 3 fois chacune au lever du soleil.",
+    totalBeads: 9,
     cycles: 1,
     sequence: [
-      { label: "Récitation personnalisée", repetitions: 99 },
+      { label: "Al-Ikhlās (La Pureté)", repetitions: 3 },
+      { label: "Al-Falaq (L'Aube)", repetitions: 3 },
+      { label: "An-Nās (Les Hommes)", repetitions: 3 },
     ],
   },
 ];

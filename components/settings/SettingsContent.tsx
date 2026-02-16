@@ -1,11 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Volume2, VolumeX, Vibrate, Moon, Info, Palette } from "lucide-react";
+import { Volume2, VolumeX, Vibrate, Moon, Sun, Smartphone, Info, Palette } from "lucide-react";
 import { useSessionStore } from "@/lib/store/sessionStore";
 
 export function SettingsContent() {
-    const { soundEnabled, hapticsEnabled, toggleSound, toggleHaptics, beadColor, setBeadColor } = useSessionStore();
+    const { soundEnabled, hapticsEnabled, toggleSound, toggleHaptics, beadColor, setBeadColor, theme, setTheme } = useSessionStore();
 
     const colors = [
         { name: "Rose", value: "#fb7185" },
@@ -14,6 +14,12 @@ export function SettingsContent() {
         { name: "Or", value: "#fbbf24" },
         { name: "Ardoise", value: "#94a3b8" },
         { name: "Améthyste", value: "#a855f7" }
+    ];
+
+    const themes = [
+        { key: 'dark' as const, label: 'Sombre', icon: <Moon size={14} /> },
+        { key: 'light' as const, label: 'Clair', icon: <Sun size={14} /> },
+        { key: 'auto' as const, label: 'Auto', icon: <Smartphone size={14} /> },
     ];
 
     return (
@@ -78,6 +84,34 @@ export function SettingsContent() {
                     </div>
                 </div>
 
+                {/* Theme Selector */}
+                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
+                    <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                            <Moon size={20} style={{ color: beadColor }} />
+                            <div>
+                                <div className="text-sm font-medium text-white">Thème</div>
+                                <div className="text-xs text-slate-400">Apparence de l&apos;application</div>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-1 p-1 bg-white/[0.04] rounded-xl">
+                            {themes.map((t) => (
+                                <button
+                                    key={t.key}
+                                    onClick={() => setTheme(t.key)}
+                                    className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${theme === t.key
+                                        ? 'bg-white/10 text-white shadow-sm'
+                                        : 'text-slate-500'
+                                        }`}
+                                >
+                                    {t.icon}
+                                    {t.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
 
                 {/* Color Selection */}
                 <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">

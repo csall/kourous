@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { BottomNav } from "@/components/layout/BottomNav";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -13,12 +14,20 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+  themeColor: "#05070c",
+};
+
 export const metadata: Metadata = {
   title: "Kourous | Chapelet virtuel",
   description:
     "Kourous - Chapelet virtuel immersif en 3D. Une expérience méditative moderne et apaisante.",
   manifest: "/manifest.json",
-  themeColor: "#05070c",
   appleWebApp: {
     capable: true,
     statusBarStyle: "black-translucent",
@@ -26,13 +35,6 @@ export const metadata: Metadata = {
   },
   formatDetection: {
     telephone: false,
-  },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-    viewportFit: "cover",
   },
 };
 
@@ -51,6 +53,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} min-h-screen bg-slate-950 text-slate-100 antialiased`}
       >
+        <ThemeProvider />
         {children}
         <BottomNav />
       </body>

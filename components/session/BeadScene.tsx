@@ -223,6 +223,30 @@ const ShootingStar = () => {
 };
 
 const StarryNightBackground = memo(() => {
+    const [theme, setTheme] = useState(useSessionStore.getState().theme);
+
+    useEffect(() => {
+        return useSessionStore.subscribe((state) => {
+            setTheme(state.theme);
+        });
+    }, []);
+
+    // Resolve 'auto' to actual mode
+    const resolvedTheme = theme === 'auto'
+        ? (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
+        : theme;
+
+    if (resolvedTheme === 'light') {
+        return (
+            <group>
+                {/* No background color here - we want transparency */}
+                {/* Soft warm sparkles for light mode */}
+                <Sparkles count={30} scale={30} size={2} speed={0.15} opacity={0.12} color="#c4b5fd" />
+                <Sparkles count={20} scale={25} size={3} speed={0.1} opacity={0.08} color="#93c5fd" />
+            </group>
+        );
+    }
+
     return (
         <group>
             <color attach="background" args={['#020617']} />
@@ -361,13 +385,21 @@ export const BeadScene = memo(({ presetId, count, total, onAdvance }: BeadSceneP
     const isDragging = useRef(false);
     const isInteractiveRef = useRef(!useSessionStore.getState().isUiOpen && !useSessionStore.getState().isComplete);
     const [isUiOpen, setIsUiOpen] = useState(useSessionStore.getState().isUiOpen);
+    const [theme, setThemeState] = useState(useSessionStore.getState().theme);
 
     useEffect(() => {
         return useSessionStore.subscribe((state) => {
             isInteractiveRef.current = !state.isUiOpen && !state.isComplete;
             setIsUiOpen(state.isUiOpen);
+            setThemeState(state.theme);
         });
     }, []);
+
+    const resolvedTheme = theme === 'auto'
+        ? (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark')
+        : theme;
+
+    const isLight = resolvedTheme === 'light';
 
     const [{ tapProgress }, tapApi] = useSpring(() => ({
         tapProgress: 0,
@@ -380,7 +412,6 @@ export const BeadScene = memo(({ presetId, count, total, onAdvance }: BeadSceneP
     }));
 
     const triggerTapAnimation = useCallback(() => {
-        // Create a "pulse" effect: dive down then spring back
         tapApi.start({
             to: [
                 { tapProgress: 1, config: { tension: 800, friction: 20 } },
@@ -417,7 +448,6 @@ export const BeadScene = memo(({ presetId, count, total, onAdvance }: BeadSceneP
         const deltaY = e.clientY - startPos.current.y;
         const distance = Math.hypot(deltaX, deltaY);
 
-        // Action detection: Tap or Swipe Down only
         if (distance < 10 || (deltaY > 30 && deltaY > Math.abs(deltaX))) {
             triggerTapAnimation();
             onAdvanceRef.current();
@@ -445,15 +475,19 @@ export const BeadScene = memo(({ presetId, count, total, onAdvance }: BeadSceneP
                     powerPreference: "high-performance",
                     preserveDrawingBuffer: true
                 }}
-                dpr={[1, 2]} // Cap pixel ratio for mobile performance
+                dpr={[1, 2]}
                 onCreated={(state) => {
-                    state.gl.setClearColor('#020617');
+                    if (isLight) {
+                        state.gl.setClearColor(0x000000, 0); // Transparent
+                    } else {
+                        state.gl.setClearColor('#020617', 1);
+                    }
                 }}
                 style={{ width: '100%', height: '100%' }}
             >
-                <ambientLight intensity={0.25} />
-                <spotLight position={[10, 25, 15]} angle={0.3} penumbra={1} intensity={2.5} castShadow />
-                <pointLight position={[-10, 5, -10]} intensity={1.5} color="#f43f5e" />
+                <ambientLight intensity={isLight ? 0.8 : 0.25} />
+                <spotLight position={[10, 25, 15]} angle={0.3} penumbra={1} intensity={isLight ? 3.5 : 2.5} castShadow />
+                <pointLight position={[-10, 5, -10]} intensity={isLight ? 0.5 : 1.5} color={isLight ? "#a78bfa" : "#f43f5e"} />
 
                 <Environment preset="warehouse" />
 
@@ -466,7 +500,7 @@ export const BeadScene = memo(({ presetId, count, total, onAdvance }: BeadSceneP
                 />
 
                 <StarryNightBackground />
-                <fog attach="fog" args={['#0f172a', 4, 25]} />
+                <fog attach="fog" args={[isLight ? '#eeeef2' : '#0f172a', isLight ? 6 : 4, isLight ? 30 : 25]} />
             </Canvas>
         </div>
     );

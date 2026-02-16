@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Hash } from "lucide-react";
+import { X, Sparkles, Plus } from "lucide-react";
 import { useInvocationStore } from "@/lib/store/invocationStore";
+import { useSessionStore } from "@/lib/store/sessionStore";
 
 interface CreateInvocationModalProps {
     isOpen: boolean;
@@ -14,18 +15,19 @@ const quickRepetitions = [33, 99, 100];
 
 export function CreateInvocationModal({ isOpen, onClose }: CreateInvocationModalProps) {
     const { addInvocation } = useInvocationStore();
+    const beadColor = useSessionStore((s) => s.beadColor);
     const [name, setName] = useState("");
     const [repetitions, setRepetitions] = useState<number>(33);
     const [customRepetitions, setCustomRepetitions] = useState("");
+    const [description, setDescription] = useState("");
     const [errors, setErrors] = useState<{ name?: string; repetitions?: string }>({});
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validation
         const newErrors: { name?: string; repetitions?: string } = {};
         if (!name.trim()) {
-            newErrors.name = "Le nom est requis";
+            newErrors.name = "Veuillez donner un nom";
         }
         const finalRepetitions = customRepetitions ? parseInt(customRepetitions) : repetitions;
         if (!finalRepetitions || finalRepetitions < 1) {
@@ -37,24 +39,20 @@ export function CreateInvocationModal({ isOpen, onClose }: CreateInvocationModal
             return;
         }
 
-        // Create invocation
         addInvocation({
             name: name.trim(),
             repetitions: finalRepetitions,
+            description: description.trim() || undefined,
         });
 
-        // Reset and close
-        setName("");
-        setRepetitions(33);
-        setCustomRepetitions("");
-        setErrors({});
-        onClose();
+        handleClose();
     };
 
     const handleClose = () => {
         setName("");
         setRepetitions(33);
         setCustomRepetitions("");
+        setDescription("");
         setErrors({});
         onClose();
     };
@@ -66,59 +64,70 @@ export function CreateInvocationModal({ isOpen, onClose }: CreateInvocationModal
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-md p-0 sm:p-4"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-md p-5"
                     onClick={handleClose}
                 >
                     <motion.div
-                        initial={{ y: "100%", opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        exit={{ y: "100%", opacity: 0 }}
+                        initial={{ scale: 0.95, opacity: 0, y: 30 }}
+                        animate={{ scale: 1, opacity: 1, y: 0 }}
+                        exit={{ scale: 0.95, opacity: 0, y: 30 }}
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                        className="bg-gradient-to-b from-slate-900 to-slate-950 backdrop-blur-xl border-t sm:border border-white/10 rounded-t-3xl sm:rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl max-h-[90vh] overflow-y-auto"
+                        className="relative overflow-hidden bg-slate-900 border border-white/10 rounded-[2.5rem] p-8 sm:p-10 max-w-md w-full shadow-2xl flex flex-col"
                         onClick={(e) => e.stopPropagation()}
                     >
-                        {/* Header */}
-                        <div className="flex items-center justify-between mb-8">
+                        {/* Premium Glow Decoration */}
+                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-20" />
+                        <div className="absolute -top-24 -right-24 w-64 h-64 blur-[100px] rounded-full pointer-events-none opacity-20" style={{ backgroundColor: beadColor }} />
+
+                        <div className="flex items-center justify-between mb-8 relative z-10">
                             <div>
-                                <h2 className="text-2xl sm:text-3xl font-semibold text-white">Nouvelle invocation</h2>
-                                <p className="text-sm text-slate-400 mt-1">Ajoutez une invocation à votre bibliothèque</p>
+                                <div className="flex items-center gap-2 mb-2" style={{ color: beadColor }}>
+                                    <Sparkles size={14} className="animate-pulse" />
+                                    <span className="text-[10px] font-black uppercase tracking-[0.25em]">Personnalisation</span>
+                                </div>
+                                <h2 className="text-2xl font-black tracking-tight text-white leading-tight">Nouvelle Invocation</h2>
                             </div>
                             <button
                                 onClick={handleClose}
-                                className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 active:scale-95 flex items-center justify-center transition-all"
+                                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
                             >
-                                <X size={20} className="text-white/70" />
+                                <X size={20} />
                             </button>
                         </div>
 
-                        {/* Form */}
-                        <form onSubmit={handleSubmit} className="space-y-6">
-                            {/* Name */}
+                        <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+                            {/* Name Input */}
                             <div className="space-y-3">
-                                <label className="text-sm font-medium text-slate-300">Nom de l'invocation</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Nom de l'invocation</label>
                                 <input
                                     type="text"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    placeholder="Ex: Subḥān Allāh"
+                                    placeholder="Ex: Al-Hamdulillah"
                                     autoFocus
-                                    className="w-full px-4 py-3.5 bg-white/5 border border-white/10 rounded-2xl text-white placeholder:text-slate-500 focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all text-base"
+                                    className="w-full px-6 py-4.5 bg-white/[0.03] border border-white/10 rounded-2xl text-white text-lg placeholder:text-slate-700 focus:outline-none focus:border-white/20 transition-all font-bold"
                                 />
                                 {errors.name && (
-                                    <p className="text-xs text-rose-400 flex items-center gap-1">
-                                        <span className="w-1 h-1 rounded-full bg-rose-400" />
-                                        {errors.name}
-                                    </p>
+                                    <p className="text-[11px] font-bold text-rose-500 px-1">{errors.name}</p>
                                 )}
                             </div>
 
-                            {/* Repetitions */}
+                            {/* Description Input */}
                             <div className="space-y-3">
-                                <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
-                                    <Hash size={16} />
-                                    Nombre de répétitions
-                                </label>
-                                <div className="grid grid-cols-2 gap-3">
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Notes (Optionnel)</label>
+                                <textarea
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    placeholder="Signification ou rappel..."
+                                    rows={2}
+                                    className="w-full px-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl text-white text-sm placeholder:text-slate-700 focus:outline-none focus:border-white/20 transition-all font-medium resize-none"
+                                />
+                            </div>
+
+                            {/* Repetitions Selection */}
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Nombre de répétitions</label>
+                                <div className="grid grid-cols-4 gap-3">
                                     {quickRepetitions.map((quickRep) => (
                                         <button
                                             key={quickRep}
@@ -127,49 +136,40 @@ export function CreateInvocationModal({ isOpen, onClose }: CreateInvocationModal
                                                 setRepetitions(quickRep);
                                                 setCustomRepetitions("");
                                             }}
-                                            className={`px-4 py-4 rounded-2xl border-2 transition-all font-semibold text-base active:scale-95 ${repetitions === quickRep && !customRepetitions
-                                                    ? "bg-white/10 border-white/30 text-white shadow-lg"
-                                                    : "bg-white/5 border-white/10 text-slate-400 hover:border-white/20 hover:bg-white/10"
+                                            style={{
+                                                backgroundColor: repetitions === quickRep && !customRepetitions ? `${beadColor}20` : undefined,
+                                                borderColor: repetitions === quickRep && !customRepetitions ? `${beadColor}40` : undefined,
+                                                color: repetitions === quickRep && !customRepetitions ? 'white' : undefined
+                                            }}
+                                            className={`h-12 rounded-xl border-2 transition-all font-black text-sm flex items-center justify-center ${repetitions === quickRep && !customRepetitions
+                                                ? ""
+                                                : "bg-white/[0.03] border-white/5 text-slate-500"
                                                 }`}
                                         >
-                                            {quickRep}×
+                                            {quickRep}
                                         </button>
                                     ))}
                                     <input
                                         type="number"
                                         value={customRepetitions}
                                         onChange={(e) => setCustomRepetitions(e.target.value)}
-                                        placeholder="Personnalisé"
-                                        className={`px-4 py-4 bg-white/5 border-2 rounded-2xl text-white placeholder:text-slate-500 focus:outline-none transition-all min-w-0 text-center font-semibold text-base ${customRepetitions
-                                                ? "border-white/30 bg-white/10"
-                                                : "border-white/10 focus:border-white/30 focus:bg-white/10"
-                                            }`}
+                                        placeholder="..."
+                                        className="w-full h-12 bg-white/[0.03] border-2 border-white/5 rounded-xl text-white placeholder:text-slate-700 focus:outline-none transition-all text-center font-black text-sm"
                                     />
                                 </div>
-                                {errors.repetitions && (
-                                    <p className="text-xs text-rose-400 flex items-center gap-1">
-                                        <span className="w-1 h-1 rounded-full bg-rose-400" />
-                                        {errors.repetitions}
-                                    </p>
-                                )}
                             </div>
 
-                            {/* Actions */}
-                            <div className="flex flex-col-reverse sm:flex-row gap-3 pt-4">
-                                <button
-                                    type="button"
-                                    onClick={handleClose}
-                                    className="flex-1 px-6 py-4 rounded-full bg-white/5 hover:bg-white/10 text-white/70 hover:text-white font-semibold transition-all active:scale-95 border border-white/10"
-                                >
-                                    Annuler
-                                </button>
-                                <button
-                                    type="submit"
-                                    className="flex-1 px-6 py-4 rounded-full bg-gradient-to-r from-slate-700 to-slate-800 hover:from-slate-600 hover:to-slate-700 text-white font-semibold transition-all active:scale-95 shadow-lg shadow-black/30"
-                                >
-                                    Créer l'invocation
-                                </button>
-                            </div>
+                            <button
+                                type="submit"
+                                style={{
+                                    backgroundColor: beadColor,
+                                    boxShadow: `0 10px 30px -10px ${beadColor}80`
+                                }}
+                                className="w-full py-5 rounded-[1.5rem] text-white font-black text-sm tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2 mt-4"
+                            >
+                                <Plus size={18} strokeWidth={4} />
+                                ENREGISTRER L'INVOCATION
+                            </button>
                         </form>
                     </motion.div>
                 </motion.div>

@@ -1,209 +1,232 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useSessionStore } from "@/lib/store/sessionStore";
-import { prayerPresets } from "@/lib/data/prayerPresets";
 import { useEffect, useState, useMemo } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import confetti from "canvas-confetti";
 import {
-  ChevronRight,
-  Flame,
-  Hash,
-  Play,
-  RotateCcw,
   Sparkles,
   Moon,
   Sun,
   Sunrise,
   Sunset,
+  Play,
 } from "lucide-react";
 
-/* ─── Greeting ─────────────────────────────────────── */
-function getGreeting(): { label: string; arabic: string; icon: React.ReactNode } {
+/* ─── Greeting Logic ─────────────────────────────────────── */
+function getGreeting(): { label: string; sub: string; icon: React.ReactNode } {
   const h = new Date().getHours();
   if (h >= 5 && h < 12)
-    return { label: "Ṣabāḥ al-khayr", arabic: "صباح الخير", icon: <Sunrise size={16} className="text-amber-400" /> };
-  if (h >= 12 && h < 16)
-    return { label: "Masā' al-khayr", arabic: "مساء الخير", icon: <Sun size={16} className="text-orange-400" /> };
-  if (h >= 16 && h < 19)
-    return { label: "Masā' an-nūr", arabic: "مساء النور", icon: <Sunset size={16} className="text-rose-400" /> };
-  return { label: "Ṭāba masā'uk", arabic: "طاب مساؤك", icon: <Moon size={16} className="text-indigo-300" /> };
+    return { label: "Bonjour", sub: "La clarté du matin", icon: <Sunrise size={20} className="text-amber-300" /> };
+  if (h >= 12 && h < 18)
+    return { label: "Bienvenue", sub: "L'équilibre du moment", icon: <Sun size={20} className="text-orange-300" /> };
+  if (h >= 18 && h < 22)
+    return { label: "Bonsoir", sub: "Un souffle de sérénité", icon: <Sunset size={20} className="text-rose-300" /> };
+  return { label: "Douce nuit", sub: "La paix du silence", icon: <Moon size={20} className="text-indigo-200" /> };
 }
 
-/* ─── Page ─────────────────────────────────────────── */
-export default function DashboardPage() {
+export default function ZenDashboard() {
   const [mounted, setMounted] = useState(false);
   const hasHydrated = useSessionStore((s) => s._hasHydrated);
   const preset = useSessionStore((s) => s.preset);
   const totalCount = useSessionStore((s) => s.totalCount);
   const isComplete = useSessionStore((s) => s.isComplete);
-  const stats = useSessionStore((s) => s.stats);
+  const beadColor = useSessionStore((s) => s.beadColor);
 
   useEffect(() => { setMounted(true); }, []);
 
   const greeting = useMemo(() => getGreeting(), []);
   const hasActiveSession = mounted && hasHydrated && preset && totalCount > 0 && !isComplete;
-  const progress = hasActiveSession && preset ? Math.round((totalCount / preset.totalBeads) * 100) : 0;
-  const ready = mounted && hasHydrated;
+  const progress = hasActiveSession && preset ? (totalCount / preset.totalBeads) : 0;
 
-  const stagger = {
-    container: { hidden: {}, show: { transition: { staggerChildren: 0.08, delayChildren: 0.05 } } },
-    item: {
-      hidden: { opacity: 0, y: 16 },
-      show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] as const } },
-    },
+  const handleStartEffect = () => {
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: [beadColor, '#ffffff', '#60a5fa'],
+      ticks: 200,
+      gravity: 1.2,
+      scalar: 0.7,
+      shapes: ['circle', 'square'],
+    });
   };
 
-  const circumference = 2 * Math.PI * 44;
+  if (!mounted || !hasHydrated) return <div className="min-h-screen bg-slate-950" />;
 
   return (
-    <div className="min-h-[100dvh] bg-[#050810] text-slate-100 pb-28 overflow-x-hidden">
-      {/* Ambient glow */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[-18%] left-[50%] -translate-x-1/2 w-[80%] h-[45%] bg-blue-600/[0.06] blur-[160px] rounded-full" />
+    <div className="h-[100dvh] bg-slate-950 text-slate-100 flex flex-col items-center overflow-hidden selection:bg-blue-500/30 relative">
+      <div className="absolute inset-0 noise-bg pointer-events-none opacity-20" />
+
+      {/* ── IMMERSIVE BACKGROUND ─────────────────────────── */}
+      <div className="fixed inset-0 pointer-events-none -z-10 bg-slate-950">
+        <motion.div
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.15, 0.25, 0.15],
+            x: [0, 30, 0],
+            y: [0, -30, 0],
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-[-20%] right-[-10%] w-[120%] h-[120%] blur-[160px] rounded-full"
+          style={{ backgroundColor: beadColor }}
+        />
+        <motion.div
+          animate={{
+            scale: [1.2, 1, 1.2],
+            opacity: [0.05, 0.12, 0.05],
+            x: [0, -20, 0],
+            y: [0, 20, 0],
+          }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          className="absolute bottom-[-10%] left-[-20%] w-[100%] h-[100%] bg-indigo-600 blur-[180px] rounded-full"
+        />
       </div>
 
-      <motion.div
-        className="relative z-10 max-w-md mx-auto px-5 pt-safe"
-        variants={stagger.container}
-        initial="hidden"
-        animate="show"
-      >
-        {/* ── Header ─────────────────────────────── */}
-        <motion.div variants={stagger.item} className="flex items-center gap-3 pt-4 mb-6">
-          <div className="w-11 h-11 rounded-2xl overflow-hidden shadow-[0_4px_24px_rgba(59,130,246,0.3)]">
-            <Image src="/icon.png" alt="Kourous" width={44} height={44} className="w-full h-full object-cover" />
+      {/* ── CONTENT WRAPPER ──────────────────────────────── */}
+      <div className="flex-1 w-full flex flex-col items-center justify-between px-6 pb-[calc(env(safe-area-inset-bottom,0px)+74px)] pt-[calc(env(safe-area-inset-top,0px)+1.5rem)]">
+
+        {/* ── TOP GREETING ────────────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+          className="flex flex-col items-center text-center gap-2"
+        >
+          <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.06] backdrop-blur-3xl shadow-2xl">
+            {greeting.icon}
+            <span className="text-xs font-medium tracking-[0.2em] uppercase text-slate-400">{greeting.label}</span>
           </div>
-          <div>
-            <h1 className="text-[1.4rem] font-extrabold tracking-tight leading-tight">Kourous</h1>
-            <div className="flex items-center gap-1.5 mt-0.5">
-              {greeting.icon}
-              <span className="text-[11px] text-slate-400 font-medium">{greeting.label}</span>
-              <span className="text-[11px] text-slate-600">{greeting.arabic}</span>
-            </div>
-          </div>
+          <h1 className="text-base font-light tracking-wide text-slate-400/60 lowercase italic">
+            {greeting.sub}
+          </h1>
         </motion.div>
 
-        {/* ── Session card ────────────────────────── */}
-        {hasActiveSession && preset ? (
-          <motion.div variants={stagger.item} className="mb-6">
-            <Link href="/session" className="block group">
-              <div className="relative overflow-hidden rounded-[1.5rem] bg-gradient-to-br from-blue-600/20 via-indigo-600/12 to-transparent border border-blue-400/12 p-6">
-                {/* Progress ring */}
-                <div className="absolute top-5 right-5">
-                  <svg width="60" height="60" viewBox="0 0 96 96">
-                    <circle cx="48" cy="48" r="44" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="4" />
-                    <circle
-                      cx="48" cy="48" r="44" fill="none" stroke="url(#pg)" strokeWidth="4"
-                      strokeDasharray={circumference} strokeDashoffset={circumference * (1 - progress / 100)}
-                      strokeLinecap="round" transform="rotate(-90 48 48)" className="transition-all duration-700"
-                    />
-                    <defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stopColor="#60a5fa" /><stop offset="100%" stopColor="#818cf8" /></linearGradient></defs>
-                    <text x="48" y="49" textAnchor="middle" dominantBaseline="middle" className="fill-white text-[13px] font-bold">{progress}%</text>
-                  </svg>
-                </div>
+        {/* ── CENTRAL ORB GATEWAY ─────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+          className="relative flex items-center justify-center py-4"
+        >
+          {/* Breathing Aura */}
+          <motion.div
+            animate={{
+              scale: [1, 1.1, 1],
+              opacity: [0.3, 0.5, 0.3]
+            }}
+            transition={{
+              duration: 4,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="absolute w-64 h-64 rounded-full blur-[60px]"
+            style={{ backgroundColor: `${beadColor}66` }}
+          />
 
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="relative flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-70" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-400" />
-                  </span>
-                  <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-300">En cours</span>
-                </div>
-
-                <h2 className="text-xl font-bold text-white mb-1 pr-20">{preset.name}</h2>
-                <p className="text-sm text-slate-400 mb-4">{totalCount} / {preset.totalBeads} répétitions</p>
-
-                <div className="inline-flex items-center gap-2 text-blue-300 text-[13px] font-semibold">
-                  <Play size={14} className="fill-blue-300" />
-                  Continuer
-                  <ChevronRight size={14} />
-                </div>
+          {/* The Action Orb */}
+          <Link href="/session" onClick={handleStartEffect} className="relative group block">
+            <motion.div
+              whileTap={{ scale: 0.9, rotate: 1 }}
+              className="w-56 h-56 rounded-full bg-white/[0.02] border border-white/[0.08] backdrop-blur-3xl flex flex-col items-center justify-center text-center p-8 transition-colors hover:bg-white/[0.05] relative z-10 overflow-hidden shadow-[inset_0_0_40px_rgba(255,255,255,0.02)]"
+            >
+              <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity">
+                <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white to-transparent" />
+                <div className="absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-white to-transparent" />
               </div>
-            </Link>
-          </motion.div>
-        ) : (
-          <motion.div variants={stagger.item} className="mb-6">
-            <Link href="/session" className="block group">
-              <div className="relative overflow-hidden rounded-[1.5rem] bg-gradient-to-br from-blue-600 via-blue-500 to-indigo-600 p-6 active:scale-[0.98] transition-transform shadow-[0_12px_40px_-8px_rgba(59,130,246,0.4)]">
-                <div className="absolute top-[-30%] right-[-10%] w-32 h-32 rounded-full bg-white/[0.06]" />
-                <div className="relative z-10 flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-blue-100/70 mb-1">Bismillāh</p>
-                    <h2 className="text-xl font-bold text-white">Nouvelle session</h2>
-                  </div>
-                  <div className="w-14 h-14 rounded-2xl bg-white/15 flex items-center justify-center">
-                    <Sparkles size={24} className="text-white" />
-                  </div>
-                </div>
-              </div>
-            </Link>
-          </motion.div>
-        )}
 
-        {/* ── Stats ───────────────────────────────── */}
-        <motion.div variants={stagger.item} className="mb-4">
-          <div className="rounded-[1.5rem] bg-white/[0.03] border border-white/[0.07] p-4">
-            <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-3 px-1">Statistiques</h3>
-            <div className="grid grid-cols-3 gap-2.5">
-              {[
-                { icon: <Hash size={15} className="text-blue-400" />, value: ready ? stats?.totalSessions || 0 : "–", label: "Sessions" },
-                { icon: <RotateCcw size={15} className="text-emerald-400" />, value: ready ? stats?.totalRepetitions || 0 : "–", label: "Dhikr" },
-                { icon: <Flame size={15} className="text-orange-400" />, value: ready ? stats?.streak || 0 : "–", label: "Série" },
-              ].map((s) => (
-                <div key={s.label} className="rounded-2xl bg-white/[0.04] p-4 text-center">
-                  <div className="w-8 h-8 rounded-xl bg-white/[0.05] flex items-center justify-center mx-auto mb-2">
-                    {s.icon}
-                  </div>
-                  <p className="text-xl font-extrabold text-white leading-none">{s.value}</p>
-                  <p className="text-[10px] text-slate-500 font-semibold uppercase tracking-[0.1em] mt-1">{s.label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
+              <AnimatePresence mode="wait">
+                {hasActiveSession ? (
+                  <motion.div
+                    key="active"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="flex flex-col items-center justify-center gap-4"
+                  >
+                    <div className="text-[10px] font-black tracking-[0.3em] uppercase text-white/40">Continuer</div>
+                    <div className="text-5xl font-black tracking-tighter tabular-nums text-white">
+                      {Math.round(progress * 100)}<span className="text-lg opacity-30 ml-1">%</span>
+                    </div>
+                    <div className="text-[11px] font-medium text-slate-500 tracking-wider">
+                      {preset?.name}
+                    </div>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="new"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 1.1 }}
+                    transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                    className="flex flex-col items-center justify-center"
+                  >
+                    <div className="relative group/btn">
+                      <div className="absolute -inset-4 bg-white/5 rounded-full blur-2xl opacity-0 group-hover/btn:opacity-100 transition-opacity duration-700" />
 
-        {/* ── Bibliothèque ────────────────────────── */}
-        <motion.div variants={stagger.item}>
-          <div className="rounded-[1.5rem] bg-white/[0.03] border border-white/[0.07] p-4">
-            <div className="flex items-center justify-between mb-3 px-1">
-              <h3 className="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">Bibliothèque</h3>
-              <Link href="/library" className="text-[11px] text-blue-400 font-semibold">Voir tout</Link>
-            </div>
-            <div className="space-y-2">
-              {prayerPresets.slice(0, 3).map((p) => (
-                <Link
-                  key={p.id}
-                  href="/session"
-                  onClick={() => useSessionStore.getState().setPreset(p)}
-                  className="flex items-center gap-4 p-4 rounded-2xl bg-white/[0.04] active:scale-[0.98] transition-all"
-                >
-                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center shrink-0">
-                    <div className="w-3 h-3 rounded-full bg-blue-400" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-bold text-white">{p.name}</h4>
-                    <p className="text-[11px] text-slate-500 truncate">{p.description}</p>
-                  </div>
-                  <ChevronRight size={16} className="text-slate-600 shrink-0" />
-                </Link>
-              ))}
-            </div>
-          </div>
-        </motion.div>
+                      <motion.div
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.9, rotate: -2 }}
+                        className="relative px-8 py-4 rounded-2xl bg-white text-slate-950 font-bold text-sm uppercase tracking-[0.2em] shadow-[0_20px_50px_rgba(255,255,255,0.2)] flex items-center gap-3 overflow-hidden"
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite] pointer-events-none" />
+                        <Sparkles size={16} className="text-slate-900" />
+                        Commencer
+                      </motion.div>
+                    </div>
 
-        {/* ── Footer ──────────────────────────────── */}
-        <motion.div variants={stagger.item} className="flex items-center justify-center gap-5 pt-6 pb-4">
-          <Link href="/privacy" className="text-[10px] text-slate-700 uppercase font-bold tracking-[0.15em] hover:text-blue-400 transition-colors">
-            Confidentialité
-          </Link>
-          <span className="w-0.5 h-0.5 rounded-full bg-slate-800" />
-          <Link href="/support" className="text-[10px] text-slate-700 uppercase font-bold tracking-[0.15em] hover:text-blue-400 transition-colors">
-            Support
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 0.5 }}
+                      className="mt-6 text-[10px] font-medium text-white uppercase tracking-[0.3em] italic"
+                    >
+                      Un voyage intérieur
+                    </motion.div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {hasActiveSession && (
+                <svg className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none">
+                  <circle
+                    cx="50%" cy="50%" r="48%"
+                    fill="none"
+                    stroke="white"
+                    strokeWidth="2.5"
+                    strokeDasharray="1 1"
+                    strokeOpacity="0.05"
+                  />
+                  <motion.circle
+                    cx="50%" cy="50%" r="48%"
+                    fill="none"
+                    stroke={beadColor}
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                    strokeDasharray="100 100"
+                    pathLength="100"
+                    initial={{ strokeDashoffset: 100 }}
+                    animate={{ strokeDashoffset: 100 - (progress * 100) }}
+                    transition={{ duration: 2, ease: "circOut" }}
+                    strokeOpacity="0.8"
+                  />
+                </svg>
+              )}
+            </motion.div>
           </Link>
         </motion.div>
-      </motion.div>
+
+        {/* ── FOOTER HINT ───────────────────────────────── */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.3 }}
+          transition={{ duration: 1.5, delay: 1 }}
+          className="flex flex-col items-center gap-2"
+        >
+          <div className="w-px h-8 bg-gradient-to-b from-transparent via-white/40 to-transparent" />
+          <span className="text-[10px] font-medium uppercase tracking-[0.4em] text-white">Kourous</span>
+        </motion.div>
+      </div>
     </div>
   );
 }
