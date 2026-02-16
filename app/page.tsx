@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useSessionStore } from "@/lib/store/sessionStore";
 import { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import confetti from "canvas-confetti";
+
 import {
   Sparkles,
   Moon,
@@ -13,6 +13,13 @@ import {
   Sunset,
   Play,
 } from "lucide-react";
+
+const PrayingHands = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M12 21.5V6" />
+    <path d="M12 21.5C12 21.5 16 19 17 15C18 11 15 5.5 12 2C9 5.5 6 11 7 15C8 19 12 21.5 12 21.5Z" />
+  </svg>
+);
 
 /* ─── Greeting Logic ─────────────────────────────────────── */
 function getGreeting(): { label: string; sub: string; icon: React.ReactNode } {
@@ -40,18 +47,7 @@ export default function ZenDashboard() {
   const hasActiveSession = mounted && hasHydrated && preset && totalCount > 0 && !isComplete;
   const progress = hasActiveSession && preset ? (totalCount / preset.totalBeads) : 0;
 
-  const handleStartEffect = () => {
-    confetti({
-      particleCount: 150,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: [beadColor, '#ffffff', '#60a5fa'],
-      ticks: 200,
-      gravity: 1.2,
-      scalar: 0.7,
-      shapes: ['circle', 'square'],
-    });
-  };
+
 
   if (!mounted || !hasHydrated) return <div className="min-h-screen bg-slate-950" />;
 
@@ -126,7 +122,7 @@ export default function ZenDashboard() {
           />
 
           {/* The Action Orb */}
-          <Link href="/session" onClick={handleStartEffect} className="relative group block">
+          <Link href="/session" className="relative group block">
             <motion.div
               whileTap={{ scale: 0.9, rotate: 1 }}
               className="w-56 h-56 rounded-full bg-white/[0.02] border border-white/[0.08] backdrop-blur-3xl flex flex-col items-center justify-center text-center p-8 transition-colors hover:bg-white/[0.05] relative z-10 overflow-hidden shadow-[inset_0_0_40px_rgba(255,255,255,0.02)]"
@@ -160,29 +156,37 @@ export default function ZenDashboard() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 1.1 }}
                     transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                    className="flex flex-col items-center justify-center"
+                    className="flex flex-col items-center justify-center gap-5 group/orb"
                   >
-                    <div className="relative group/btn">
-                      <div className="absolute -inset-4 bg-white/5 rounded-full blur-2xl opacity-0 group-hover/btn:opacity-100 transition-opacity duration-700" />
+                    {/* Circular Play Trigger */}
+                    <div className="relative">
+                      {/* Ripple Rings */}
+                      <div className="absolute inset-0 rounded-full border border-white/20 opacity-0 group-hover/orb:opacity-100 group-hover/orb:animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite]" />
+                      <div className="absolute inset-0 rounded-full border border-white/10 opacity-0 group-hover/orb:opacity-50 group-hover/orb:animate-[ping_2s_cubic-bezier(0,0,0.2,1)_infinite] delay-150" />
 
                       <motion.div
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.9, rotate: -2 }}
-                        className="relative px-8 py-4 rounded-2xl bg-white text-slate-950 font-bold text-sm uppercase tracking-[0.2em] shadow-[0_20px_50px_rgba(255,255,255,0.2)] flex items-center gap-3 overflow-hidden"
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.95 }}
+                        style={{
+                          backgroundColor: beadColor,
+                          boxShadow: `0 0 40px -10px ${beadColor}80`
+                        }}
+                        className="relative w-16 h-16 rounded-full flex items-center justify-center text-white shadow-2xl z-10 border border-white/20 backdrop-blur-md"
                       >
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover/btn:animate-[shimmer_1.5s_infinite] pointer-events-none" />
-                        <Sparkles size={16} className="text-slate-900" />
-                        Commencer
+                        <PrayingHands size={28} className="ml-0.5 relative z-10" />
+
+                        {/* Inner Gloss */}
+                        <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent rounded-t-full opacity-60" />
                       </motion.div>
                     </div>
 
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 0.5 }}
-                      className="mt-6 text-[10px] font-medium text-white uppercase tracking-[0.3em] italic"
-                    >
-                      Un voyage intérieur
-                    </motion.div>
+                    {/* Text Label */}
+                    <div className="flex flex-col items-center gap-1.5">
+                      <span className="text-[11px] font-black uppercase tracking-[0.3em] text-white group-hover/orb:tracking-[0.4em] transition-all duration-500">
+                        Commencer
+                      </span>
+                      <div className="h-px w-6 bg-white/20 group-hover/orb:w-12 transition-all duration-500" />
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
