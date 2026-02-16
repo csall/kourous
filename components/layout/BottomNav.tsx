@@ -15,9 +15,9 @@ const navItems = [
 export function BottomNav() {
     const pathname = usePathname();
 
-    // Hide BottomNav on legal pages and the immersive session
+    // Hide BottomNav on legal pages only
     const hiddenRoutes = ["/privacy", "/support"];
-    if (hiddenRoutes.includes(pathname) || pathname.startsWith("/session")) return null;
+    if (hiddenRoutes.includes(pathname)) return null;
 
     return (
         <nav className="fixed bottom-0 left-0 right-0 z-50 pb-[env(safe-area-inset-bottom,1.5rem)]">

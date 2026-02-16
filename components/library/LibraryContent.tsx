@@ -81,15 +81,15 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
             </div>
 
             <motion.div
-                className="relative z-10 max-w-md mx-auto px-5 pt-14 pb-32"
+                className="relative z-10 max-w-md mx-auto px-5 pt-4 pb-32"
                 variants={stagger.container}
                 initial="hidden"
                 animate="show"
             >
                 {/* HEADER */}
                 <motion.div variants={stagger.item} className="mb-6">
-                    <h1 className="text-2xl font-extrabold tracking-tight text-white">Bibliothèque</h1>
-                    <p className="text-sm text-slate-500 mt-0.5">Vos chapelets & invocations</p>
+                    <h1 className="text-lg font-light text-slate-300">Bibliothèque</h1>
+                    <p className="text-xs text-slate-600 mt-0.5">Vos chapelets & invocations</p>
                 </motion.div>
 
                 {/* ACTION BUTTONS */}
@@ -153,7 +153,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                             {/* Default Presets */}
                             {filteredPresets.length > 0 && (
                                 <div className="space-y-2 mb-4">
-                                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600 px-1">Par défaut</p>
+                                    <p className="text-sm font-light text-slate-400 px-1">Par défaut</p>
                                     {filteredPresets.map((preset, index) => (
                                         <motion.div
                                             key={preset.id}
@@ -218,7 +218,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                             {/* Custom Groups */}
                             {filteredGroups.length > 0 && (
                                 <div className="space-y-2">
-                                    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600 px-1">Mes groupes</p>
+                                    <p className="text-sm font-light text-slate-400 px-1">Mes groupes</p>
                                     {filteredGroups.map((group, index) => {
                                         const totalReps = group.invocations.reduce((sum, inv) => sum + inv.repetitions, 0);
                                         const isExpanded = expandedId === group.id;

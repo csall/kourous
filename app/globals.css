@@ -88,6 +88,16 @@ canvas {
   color: var(--foreground);
 }
 
+/* Hide scrollbar for horizontal carousels */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 @keyframes float {
 
   0%,
@@ -102,4 +112,12 @@ canvas {
 
 .animate-float {
   animation: float 6s ease-in-out infinite;
+}
+
+/* Line clamp utility */
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }

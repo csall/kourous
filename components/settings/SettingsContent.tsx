@@ -5,7 +5,7 @@ import { Volume2, VolumeX, Vibrate, Moon, Info, Palette } from "lucide-react";
 import { useSessionStore } from "@/lib/store/sessionStore";
 
 export function SettingsContent() {
-    const { soundEnabled, hapticsEnabled, toggleSound, toggleHaptics, beadColor, setBeadColor, showTitle, toggleShowTitle } = useSessionStore();
+    const { soundEnabled, hapticsEnabled, toggleSound, toggleHaptics, beadColor, setBeadColor } = useSessionStore();
 
     const colors = [
         { name: "Rose", value: "#fb7185" },
@@ -17,7 +17,7 @@ export function SettingsContent() {
     ];
 
     return (
-        <div className="max-w-4xl mx-auto px-6 py-8 pb-32 space-y-8">
+        <div className="max-w-4xl mx-auto px-6 pt-4 pb-32 space-y-8">
             {/* Preferences Section */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -78,28 +78,6 @@ export function SettingsContent() {
                     </div>
                 </div>
 
-                {/* Show Title Toggle */}
-                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <Info size={20} style={{ color: showTitle ? beadColor : '#94a3b8' }} />
-                            <div>
-                                <div className="text-sm font-medium text-white">Afficher le titre</div>
-                                <div className="text-xs text-slate-400">Voir l'invocation à chaque perle</div>
-                            </div>
-                        </div>
-                        <button
-                            onClick={toggleShowTitle}
-                            onPointerDown={(e) => e.stopPropagation()}
-                            onPointerUp={(e) => e.stopPropagation()}
-                            className="w-12 h-6 rounded-full transition-all"
-                            style={{ backgroundColor: showTitle ? beadColor : '#334155' }}
-                        >
-                            <div className={`w-5 h-5 rounded-full bg-white shadow-lg transform transition-transform ${showTitle ? 'translate-x-6' : 'translate-x-0.5'
-                                }`} />
-                        </button>
-                    </div>
-                </div>
 
                 {/* Color Selection */}
                 <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
