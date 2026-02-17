@@ -74,15 +74,13 @@ const Pearl = memo(({ position, activeProgress, idx, rotation = [0, 0, 0], tapPr
 
         // 2. Weightless Float 
         if (p > 0.01 && contentRef.current) {
-            // Subtle Y-axis bobbing - use our STABLE animTime
-            const bob = Math.sin(time * 2.5 + floatOffset) * 0.15 * p;
-
             // TAP IMPACT: Pull downward (simulating user pulling the bead)
+            // Removed idle animation (bobbing/wobble) as requested
             const tapOffset = tapProgress.get() * 0.7 * Math.pow(p, 3);
-            contentRef.current.position.y = bob - tapOffset;
+            contentRef.current.position.y = -tapOffset;
 
-            // Subtle "wobble"
-            contentRef.current.rotation.x = Math.sin(time * 1.5) * 0.1 * p;
+            // Reset rotation
+            contentRef.current.rotation.x = 0;
         }
     });
 
@@ -373,7 +371,7 @@ const SceneInternal = memo(({ count, beadWindow, total, presetId, tapProgress }:
                         position={smoothedCount.to((sc: number) => {
                             const i = Math.floor(sc);
                             const f = sc - i;
-                            const gap = 1.6; // Reintroduced gap to show the empty trait
+                            const gap = 1.2; // Reduced gap for a tighter feel
 
                             // Base linear position
                             let y = (idx - sc) * spacing;
