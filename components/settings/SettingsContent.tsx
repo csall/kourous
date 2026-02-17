@@ -66,7 +66,7 @@ export function SettingsContent() {
     ];
 
     return (
-        <div className="max-w-md mx-auto px-6 pt-8 pb-32">
+        <div className="flex-1 w-full h-full flex flex-col px-6 pt-[calc(env(safe-area-inset-top)+1.5rem)] pb-[calc(env(safe-area-inset-bottom)+6rem)]">
             <AnimatePresence mode="wait">
                 {view === 'menu' ? (
                     <motion.div
@@ -74,11 +74,11 @@ export function SettingsContent() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
-                        className="space-y-8"
+                        className="flex flex-col h-full"
                     >
-                        <h1 className="text-3xl font-bold text-white">Autre</h1>
+                        <h1 className="text-3xl font-bold text-white mb-6 mt-2">Autre</h1>
 
-                        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
+                        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden mb-auto">
                             {menuItems.map((item, index) => {
                                 const Icon = item.icon;
                                 const isLast = index === menuItems.length - 1;
@@ -112,7 +112,7 @@ export function SettingsContent() {
                             })}
                         </div>
 
-                        <div className="text-center space-y-2">
+                        <div className="text-center space-y-2 mt-4 pb-2">
                             <div className="text-xs text-slate-500">
                                 Kourous v1.0.0
                             </div>

@@ -52,7 +52,7 @@ export default function ZenDashboard() {
   if (!mounted || !hasHydrated) return <div className="min-h-screen bg-slate-950" />;
 
   return (
-    <div className="h-[100dvh] bg-slate-950 text-slate-100 flex flex-col items-center overflow-hidden selection:bg-blue-500/30 relative">
+    <div className="h-[100dvh] max-h-[100dvh] bg-slate-950 text-slate-100 flex flex-col items-center overflow-hidden selection:bg-blue-500/30 relative touch-none">
       <div className="absolute inset-0 noise-bg pointer-events-none opacity-20" />
 
       {/* ── IMMERSIVE BACKGROUND ─────────────────────────── */}
@@ -81,14 +81,14 @@ export default function ZenDashboard() {
       </div>
 
       {/* ── CONTENT WRAPPER ──────────────────────────────── */}
-      <div className="flex-1 w-full flex flex-col items-center justify-between px-6 pb-[calc(env(safe-area-inset-bottom,0px)+74px)] pt-[calc(env(safe-area-inset-top,0px)+1.5rem)]">
+      <div className="flex-1 w-full max-h-full flex flex-col items-center justify-between px-6 pb-[calc(env(safe-area-inset-bottom,20px)+90px)] pt-[calc(env(safe-area-inset-top,20px)+2rem)]">
 
         {/* ── TOP GREETING ────────────────────────────────── */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col items-center text-center gap-2"
+          className="flex flex-col items-center text-center gap-1 shrink-0"
         >
           <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.06] backdrop-blur-3xl shadow-2xl">
             {greeting.icon}
@@ -104,7 +104,7 @@ export default function ZenDashboard() {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
-          className="relative flex items-center justify-center py-4"
+          className="relative flex items-center justify-center py-2 shrink-0"
         >
           {/* Breathing Aura */}
           <motion.div
@@ -117,7 +117,7 @@ export default function ZenDashboard() {
               repeat: Infinity,
               ease: "easeInOut"
             }}
-            className="absolute w-64 h-64 rounded-full blur-[60px]"
+            className="absolute w-56 h-56 rounded-full blur-[60px]"
             style={{ backgroundColor: `${beadColor}66` }}
           />
 
@@ -125,7 +125,7 @@ export default function ZenDashboard() {
           <Link href="/session" className="relative group block">
             <motion.div
               whileTap={{ scale: 0.9, rotate: 1 }}
-              className="w-56 h-56 rounded-full bg-white/[0.02] border border-white/[0.08] backdrop-blur-3xl flex flex-col items-center justify-center text-center p-8 transition-colors hover:bg-white/[0.05] relative z-10 overflow-hidden shadow-[inset_0_0_40px_rgba(255,255,255,0.02)]"
+              className="w-48 h-48 rounded-full bg-white/[0.02] border border-white/[0.08] backdrop-blur-3xl flex flex-col items-center justify-center text-center p-6 transition-colors hover:bg-white/[0.05] relative z-10 overflow-hidden shadow-[inset_0_0_40px_rgba(255,255,255,0.02)]"
             >
               <div className="absolute inset-0 opacity-10 group-hover:opacity-20 transition-opacity">
                 <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white to-transparent" />
@@ -139,10 +139,10 @@ export default function ZenDashboard() {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="flex flex-col items-center justify-center gap-4"
+                    className="flex flex-col items-center justify-center gap-3"
                   >
-                    <div className="text-[10px] font-black tracking-[0.3em] uppercase text-white/40">Continuer</div>
-                    <div className="text-5xl font-black tracking-tighter tabular-nums text-white">
+                    <div className="text-[9px] font-black tracking-[0.3em] uppercase text-white/40">Continuer</div>
+                    <div className="text-4xl font-black tracking-tighter tabular-nums text-white">
                       {Math.round(progress * 100)}<span className="text-lg opacity-30 ml-1">%</span>
                     </div>
                     <div className="text-[11px] font-medium text-slate-500 tracking-wider">
@@ -156,7 +156,7 @@ export default function ZenDashboard() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 1.1 }}
                     transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                    className="flex flex-col items-center justify-center gap-5 group/orb"
+                    className="flex flex-col items-center justify-center gap-4 group/orb"
                   >
                     {/* Circular Play Trigger */}
                     <div className="relative">
@@ -171,9 +171,9 @@ export default function ZenDashboard() {
                           backgroundColor: beadColor,
                           boxShadow: `0 0 40px -10px ${beadColor}80`
                         }}
-                        className="relative w-16 h-16 rounded-full flex items-center justify-center text-white shadow-2xl z-10 border border-white/20 backdrop-blur-md"
+                        className="relative w-14 h-14 rounded-full flex items-center justify-center text-white shadow-2xl z-10 border border-white/20 backdrop-blur-md"
                       >
-                        <PrayingHands size={28} className="ml-0.5 relative z-10" />
+                        <PrayingHands size={24} className="ml-0.5 relative z-10" />
 
                         {/* Inner Gloss */}
                         <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/30 to-transparent rounded-t-full opacity-60" />
@@ -181,8 +181,8 @@ export default function ZenDashboard() {
                     </div>
 
                     {/* Text Label */}
-                    <div className="flex flex-col items-center gap-1.5">
-                      <span className="text-[11px] font-black uppercase tracking-[0.3em] text-white group-hover/orb:tracking-[0.4em] transition-all duration-500">
+                    <div className="flex flex-col items-center gap-1">
+                      <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white group-hover/orb:tracking-[0.4em] transition-all duration-500">
                         Commencer
                       </span>
                       <div className="h-px w-6 bg-white/20 group-hover/orb:w-12 transition-all duration-500" />

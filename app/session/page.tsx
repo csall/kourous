@@ -274,7 +274,7 @@ function SessionContent() {
   }
 
   return (
-    <div className="fixed inset-0 h-[100dvh] bg-slate-950 text-slate-100 overflow-hidden font-sans select-none flex flex-col">
+    <div className="fixed inset-0 h-[100dvh] max-h-[100dvh] bg-slate-950 text-slate-100 overflow-hidden font-sans select-none flex flex-col touch-none">
       {/* Immersive mesh glows */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10 bg-slate-950/20">
         <motion.div

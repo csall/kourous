@@ -20,7 +20,7 @@ export const viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: "cover",
-  themeColor: "#05070c",
+  themeColor: "#020617", // slate-950
 };
 
 export const metadata: Metadata = {
@@ -32,6 +32,7 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "black-translucent",
     title: "Kourous",
+    startupImage: [],
   },
   formatDetection: {
     telephone: false,
