@@ -134,24 +134,10 @@ const Pearl = memo(({ position, activeProgress, idx, rotation = [0, 0, 0], tapPr
 });
 Pearl.displayName = "Pearl";
 
-const ConnectionString = memo(({ radius }: { radius: number }) => {
-    const curve = useMemo(() => {
-        const points = [];
-        const segments = 128;
-        for (let i = 0; i < segments; i++) {
-            const angle = (i / segments) * Math.PI * 2;
-            const y = Math.sin(angle) * radius;
-            const z = (Math.cos(angle) * radius) - radius;
-            points.push(new THREE.Vector3(0, y, z));
-        }
-        const c = new THREE.CatmullRomCurve3(points);
-        c.closed = true;
-        return c;
-    }, [radius]);
-
+const ConnectionString = memo(() => {
     return (
         <mesh castShadow>
-            <tubeGeometry args={[curve, 128, 0.02, 8, true]} />
+            <cylinderGeometry args={[0.012, 0.012, 20, 8]} />
             <meshPhysicalMaterial
                 color="#64748b"
                 roughness={0.8}
@@ -318,7 +304,7 @@ const ActiveBeadCounter = ({ countSpring }: { countSpring: any }) => {
     });
 
     return (
-        <group position={[0, 1.6, -1]}>
+        <group position={[0, 2.4, -1]}>
             {/* Minimalist Counter */}
             <Text
                 ref={textRef}
@@ -366,8 +352,7 @@ const SceneInternal = memo(({ count, beadWindow, total, presetId, tapProgress }:
         lastCount.current = count;
     }, [count, presetId, api]);
 
-    const radius = 8; // Tighter radius for closer look
-    const angleStep = 0.1; // Maximum condensation for a dense holy look
+    const spacing = 0.61; // Beads are 0.6 in diameter, this makes them 'stuck'
     const [beadColor, setBeadColor] = useState(useSessionStore.getState().beadColor);
     useEffect(() => {
         return useSessionStore.subscribe((state) => {
@@ -376,9 +361,9 @@ const SceneInternal = memo(({ count, beadWindow, total, presetId, tapProgress }:
     }, []);
 
     return (
-        <group position={[0, -1.2, 0]}>
-            {/* The Rosary String - Fixed Arc */}
-            <ConnectionString radius={radius} />
+        <group position={[0, -1.8, 0]}>
+            {/* The Rosary String - Straight Vertical */}
+            <ConnectionString />
 
 
             {beadWindow.map((idx: number) => {
@@ -386,16 +371,23 @@ const SceneInternal = memo(({ count, beadWindow, total, presetId, tapProgress }:
                     <animated.group
                         key={idx}
                         position={smoothedCount.to((sc: number) => {
-                            // Position on vertical wheel
-                            const angle = (idx - sc) * angleStep;
-                            const z = (Math.cos(angle) * radius) - radius;
-                            const y = Math.sin(angle) * radius;
+                            const i = Math.floor(sc);
+                            const f = sc - i;
+                            const gap = 1.4; // Slightly more compact separation
 
-                            return [0, y, z];
-                        })}
-                        rotation={smoothedCount.to((sc: number) => {
-                            const angle = (idx - sc) * angleStep;
-                            return [angle, 0, 0];
+                            // Base linear position
+                            let y = (idx - sc) * spacing;
+
+                            // Apply gap to future beads
+                            if (idx > i + 1) {
+                                y += gap;
+                            } else if (idx === i + 1) {
+                                // Smoothly transition the pulling bead across the gap
+                                y += gap * (1 - f);
+                            }
+                            // Already counted/active beads stay 'pushed down'
+
+                            return [0, y, 0];
                         })}
                     >
                         <Pearl
@@ -403,8 +395,8 @@ const SceneInternal = memo(({ count, beadWindow, total, presetId, tapProgress }:
                             idx={idx}
                             tapProgress={tapProgress}
                             activeProgress={smoothedCount.to((sc: number) => {
-                                let dist = Math.abs(idx - sc);
-                                // Extremely sharp falloff for exclusive highlight on active bead
+                                // Highlight the "next" bead (the one at the top of the gap to be pulled)
+                                let dist = Math.abs(idx - (sc + 1));
                                 return Math.pow(Math.max(0, 1 - dist * 1.5), 4);
                             })}
                         />
