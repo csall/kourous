@@ -20,8 +20,8 @@ export function BottomNav() {
     if (hiddenRoutes.includes(pathname)) return null;
 
     return (
-        <nav className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-[calc(env(safe-area-inset-bottom,0px)+8px)] pointer-events-none">
-            <div className="max-w-md mx-auto pointer-events-auto">
+        <nav className="fixed bottom-0 left-0 right-0 z-50 px-4 pb-[calc(env(safe-area-inset-bottom,0px)+8px)] pointer-events-none transform-gpu">
+            <div className="max-w-md mx-auto pointer-events-auto touch-none">
                 <div className="bg-slate-900/40 backdrop-blur-2xl border border-white/10 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-center justify-around px-2 py-2">
                     {navItems.map((item) => {
                         const Icon = item.icon;
