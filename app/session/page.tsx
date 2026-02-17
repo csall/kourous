@@ -46,100 +46,92 @@ const SessionHeader = memo(({
   const progress = useSessionProgress();
 
   return (
-    <div className="absolute top-0 left-0 right-0 z-50 pointer-events-none">
+    <div className="relative z-50 w-full">
       <AnimatePresence>
         {!isComplete && progress && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full pt-[env(safe-area-inset-top,20px)] px-6 flex flex-col items-center gap-1 sm:gap-2 relative"
+            className="w-full pt-[calc(env(safe-area-inset-top,20px)+12px)] pb-12 px-6 flex flex-col items-center gap-4 relative"
           >
-            {/* Top Controls Row: Sound - Restart - Vibrate */}
-            <div className="w-full flex items-center justify-center gap-8 pointer-events-auto min-h-[48px]">
+            {/* Top Control Bar */}
+            <div className="w-full flex items-center justify-between pointer-events-auto">
               <button
                 onClick={toggleSound}
-                className={`p-3 rounded-full backdrop-blur-md transition-all duration-300 ${soundEnabled ? 'bg-white/10 text-white' : 'bg-transparent text-slate-500 hover:text-slate-300'}`}
+                className={`w-11 h-11 flex items-center justify-center rounded-full backdrop-blur-xl transition-all active:scale-95 ${soundEnabled ? 'bg-white/10 text-white border border-white/10' : 'bg-white/5 text-white/30 border border-white/5'}`}
               >
-                {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
+                {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
               </button>
 
               <motion.button
-                whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
                 onClick={() => {
                   hapticMedium();
                   reset();
                 }}
-                className="flex items-center justify-center w-12 h-12 rounded-full bg-white/10 border border-white/20 text-slate-300 hover:text-white transition-all backdrop-blur-3xl group shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95"
+                className="flex items-center justify-center w-11 h-11 rounded-full bg-white/10 border border-white/20 text-white/80 transition-all backdrop-blur-xl active:bg-white/20"
               >
-                <RotateCcw size={20} className="group-hover:rotate-[-45deg] transition-transform duration-500" />
+                <RotateCcw size={18} />
               </motion.button>
 
               <button
                 onClick={toggleHaptics}
-                className={`p-3 rounded-full backdrop-blur-md transition-all duration-300 ${hapticsEnabled ? 'bg-white/10 text-white' : 'bg-transparent text-slate-500 hover:text-slate-300'}`}
+                className={`w-11 h-11 flex items-center justify-center rounded-full backdrop-blur-xl transition-all active:scale-95 ${hapticsEnabled ? 'bg-white/10 text-white border border-white/10' : 'bg-white/5 text-white/30 border border-white/5'}`}
               >
-                {hapticsEnabled ? <Vibrate size={20} /> : <VibrateOff size={20} />}
+                {hapticsEnabled ? <Vibrate size={18} /> : <VibrateOff size={18} />}
               </button>
             </div>
 
-            {/* Collection Name */}
-            <div className="w-full flex items-center justify-center pointer-events-auto min-h-[16px]">
+            {/* Middle: Collection & Progress Counter */}
+            <div className="flex flex-col items-center gap-1">
               {preset && preset.sequence.length > 1 && (
-                <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-slate-500 truncate max-w-[250px] text-center">
+                <span className="text-[9px] font-bold tracking-[0.25em] uppercase text-white/40 mb-1">
                   {preset.name}
                 </span>
               )}
-            </div>
 
-            <div className="flex flex-col items-center">
-              {/* Title / Label */}
               <h1
-                className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 leading-none mb-2"
+                className="text-[10px] font-black tracking-[0.45em] uppercase opacity-70 leading-none mb-6"
                 style={{ color: beadColor }}
               >
-                <span className="tabular-nums">{progress.cycleTotal}</span> × {progress.label}
+                {progress.cycleTotal} × {progress.label}
               </h1>
 
-              {/* Circular Progress & Counter */}
-              <div className="relative flex items-center justify-center h-20 w-20">
-                {/* Ring Background */}
-                <div className="absolute inset-0 rounded-full border border-white/[0.03] bg-white/[0.01] backdrop-blur-3xl" />
+              {/* Counter Ring */}
+              <div className="relative flex items-center justify-center h-[96px] w-[96px]">
+                <div className="absolute inset-0 rounded-full border border-white/[0.05] bg-white/[0.02] backdrop-blur-3xl shadow-[0_0_30px_rgba(0,0,0,0.3)]" />
 
                 <svg className="absolute inset-0 w-full h-full -rotate-90 p-1">
                   <circle
                     cx="50%" cy="50%" r="46%"
                     fill="none"
-                    stroke={beadColor} strokeWidth="1.5"
+                    stroke={beadColor} strokeWidth="2"
                     className="opacity-10"
                   />
                   <motion.circle
                     cx="50%" cy="50%" r="46%"
                     fill="none"
-                    stroke={beadColor} strokeWidth="2.5"
+                    stroke={beadColor} strokeWidth="3.5"
                     strokeLinecap="round" strokeDasharray="100 100"
                     pathLength="100"
                     initial={{ strokeDashoffset: 100 }}
                     animate={{ strokeDashoffset: 100 - (progress.cycleProgress / progress.cycleTotal * 100) }}
                     transition={{ type: "spring", stiffness: 45, damping: 15 }}
-                    className="opacity-90"
-                    style={{ filter: `drop-shadow(0 0 8px ${beadColor}60)` }}
+                    style={{ filter: `drop-shadow(0 0 12px ${beadColor})` }}
                   />
                 </svg>
 
-                {/* Counter Text */}
                 <AnimatePresence mode="popLayout">
                   <motion.div
                     key={progress.cycleProgress}
-                    initial={{ opacity: 0, scale: 0.8, filter: "blur(4px)" }}
-                    animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-                    exit={{ opacity: 0, scale: 1.2, filter: "blur(4px)" }}
-                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                    className="relative flex items-center justify-center"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 1.2 }}
+                    className="relative flex flex-col items-center"
                   >
-                    <span className="text-2xl font-black tabular-nums tracking-tighter text-white">
+                    <span className="text-4xl font-black tabular-nums tracking-tighter text-white">
                       {progress.cycleProgress}
                     </span>
                   </motion.div>
@@ -312,9 +304,11 @@ function SessionContent() {
 
       <SessionHeader isComplete={isComplete} />
 
-      {/* Main interactive area positioned to be at the limit of the counter area */}
-      <div className={`flex-1 relative z-0 mt-[14rem] sm:mt-64 transition-all duration-1000 ${isAnyUIOpen ? 'pointer-events-none opacity-40 blur-sm grayscale' : 'opacity-100'}`}>
-        <BeadLayer />
+      {/* Main interactive area - Bead Scene area taking remaining vertical space */}
+      <div className={`flex-1 relative z-0 transition-all duration-1000 ${isAnyUIOpen ? 'pointer-events-none opacity-40 blur-sm grayscale' : 'opacity-100'}`}>
+        <div className="absolute inset-0 top-0 h-full">
+          <BeadLayer />
+        </div>
       </div>
 
       <FullscreenModal isOpen={isLibraryOpen} onClose={closeLibrary} title="Bibliothèque">

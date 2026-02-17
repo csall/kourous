@@ -222,6 +222,109 @@ const ShootingStar = () => {
     );
 };
 
+const DescendingSmoke = memo(({ trigger, color }: { trigger: number, color: string }) => {
+    const pointsRef = useRef<THREE.Points>(null);
+    const particleCount = 200;
+    const [active, setActive] = useState(false);
+    const lastTrigger = useRef(trigger);
+
+    // Initial positions and velocities
+    const particles = useMemo(() => {
+        const pos = new Float32Array(particleCount * 3);
+        const vel = new Float32Array(particleCount * 3);
+        const sizes = new Float32Array(particleCount);
+
+        for (let i = 0; i < particleCount; i++) {
+            // Burst from top/center
+            pos[i * 3] = (Math.random() - 0.5) * 4;
+            pos[i * 3 + 1] = 4 + (Math.random() - 0.5) * 2;
+            pos[i * 3 + 2] = -2 + (Math.random() - 0.5) * 4;
+
+            vel[i * 3] = (Math.random() - 0.5) * 0.05;
+            vel[i * 3 + 1] = -0.05 - Math.random() * 0.1; // Downward
+            vel[i * 3 + 2] = (Math.random() - 0.5) * 0.05;
+
+            sizes[i] = 1 + Math.random() * 4;
+        }
+        return { pos, vel, sizes };
+    }, []);
+
+    useEffect(() => {
+        if (trigger > lastTrigger.current) {
+            setActive(true);
+            // Reset positions and opacities on trigger
+            if (pointsRef.current) {
+                const positions = pointsRef.current.geometry.attributes.position.array as Float32Array;
+                const opacities = pointsRef.current.geometry.attributes.opacity.array as Float32Array;
+                for (let i = 0; i < particleCount; i++) {
+                    positions[i * 3] = (Math.random() - 0.5) * 3;
+                    positions[i * 3 + 1] = 5;
+                    positions[i * 3 + 2] = -2 + (Math.random() - 0.5) * 2;
+                    opacities[i] = 0.4;
+                }
+                pointsRef.current.geometry.attributes.position.needsUpdate = true;
+                pointsRef.current.geometry.attributes.opacity.needsUpdate = true;
+            }
+
+            const timer = setTimeout(() => setActive(false), 2500);
+            return () => clearTimeout(timer);
+        }
+        // Always sync the last trigger to handle resets (trigger goes back to 0)
+        lastTrigger.current = trigger;
+    }, [trigger]);
+
+    useFrame((state, delta) => {
+        if (!active || !pointsRef.current) return;
+
+        const positions = pointsRef.current.geometry.attributes.position.array as Float32Array;
+        const opacityAttr = pointsRef.current.geometry.attributes.opacity.array as Float32Array;
+
+        for (let i = 0; i < particleCount; i++) {
+            // Apply velocity
+            positions[i * 3] += particles.vel[i * 3] * delta * 60;
+            positions[i * 3 + 1] += particles.vel[i * 3 + 1] * delta * 40;
+            positions[i * 3 + 2] += particles.vel[i * 3 + 2] * delta * 60;
+
+            // Fading logic
+            opacityAttr[i] = Math.max(0, 0.4 - (state.clock.elapsedTime % 2.5) * 0.2);
+        }
+
+        pointsRef.current.geometry.attributes.position.needsUpdate = true;
+        pointsRef.current.geometry.attributes.opacity.needsUpdate = true;
+    });
+
+    return (
+        <points ref={pointsRef} visible={active}>
+            <bufferGeometry>
+                <bufferAttribute
+                    attach="attributes-position"
+                    count={particles.pos.length / 3}
+                    array={particles.pos}
+                    itemSize={3}
+                    args={[particles.pos, 3]}
+                />
+                <bufferAttribute
+                    attach="attributes-opacity"
+                    count={particleCount}
+                    array={new Float32Array(particleCount).fill(0.4)}
+                    itemSize={1}
+                    args={[new Float32Array(particleCount).fill(0.4), 1]}
+                />
+            </bufferGeometry>
+            <pointsMaterial
+                size={0.15}
+                color={color}
+                transparent
+                depthWrite={false}
+                blending={THREE.AdditiveBlending}
+                opacity={0.3}
+            />
+        </points>
+    );
+});
+
+DescendingSmoke.displayName = "DescendingSmoke";
+
 const StarryNightBackground = memo(() => {
     const [theme, setTheme] = useState(useSessionStore.getState().theme);
 
@@ -385,12 +488,14 @@ export const BeadScene = memo(({ presetId, count, total, onAdvance }: BeadSceneP
     const isInteractiveRef = useRef(!useSessionStore.getState().isUiOpen && !useSessionStore.getState().isComplete);
     const [isUiOpen, setIsUiOpen] = useState(useSessionStore.getState().isUiOpen);
     const [theme, setThemeState] = useState(useSessionStore.getState().theme);
+    const [beadColor, setBeadColor] = useState(useSessionStore.getState().beadColor);
 
     useEffect(() => {
         return useSessionStore.subscribe((state) => {
             isInteractiveRef.current = !state.isUiOpen && !state.isComplete;
             setIsUiOpen(state.isUiOpen);
             setThemeState(state.theme);
+            setBeadColor(state.beadColor);
         });
     }, []);
 
@@ -494,8 +599,9 @@ export const BeadScene = memo(({ presetId, count, total, onAdvance }: BeadSceneP
                     tapProgress={tapProgress}
                 />
 
+                <DescendingSmoke trigger={count} color={isLight ? "#6366f1" : (beadColor as string)} />
                 <StarryNightBackground />
-                <fog attach="fog" args={[isLight ? '#eeeef2' : '#020617', isLight ? 6 : 4, isLight ? 30 : 25]} />
+                <fog attach="fog" args={[isLight ? '#eeeef2' : '#05070c', isLight ? 6 : 4, isLight ? 30 : 25]} />
             </Canvas>
         </div>
     );
