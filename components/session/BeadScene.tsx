@@ -249,7 +249,6 @@ const StarryNightBackground = memo(() => {
 
     return (
         <group>
-            <color attach="background" args={['#020617']} />
             {/* Deep Universe background - Reduced for mobile */}
             <Stars radius={250} depth={100} count={1500} factor={4} saturation={1} fade speed={0.1} />
             <Stars radius={100} depth={50} count={500} factor={3} saturation={0} fade speed={0.5} />
@@ -477,11 +476,7 @@ export const BeadScene = memo(({ presetId, count, total, onAdvance }: BeadSceneP
                 }}
                 dpr={[1, 2]}
                 onCreated={(state) => {
-                    if (isLight) {
-                        state.gl.setClearColor(0x000000, 0); // Transparent
-                    } else {
-                        state.gl.setClearColor('#020617', 1);
-                    }
+                    state.gl.setClearColor(0x000000, 0); // Always transparent to show page mesh glows
                 }}
                 style={{ width: '100%', height: '100%' }}
             >
@@ -500,7 +495,7 @@ export const BeadScene = memo(({ presetId, count, total, onAdvance }: BeadSceneP
                 />
 
                 <StarryNightBackground />
-                <fog attach="fog" args={[isLight ? '#eeeef2' : '#0f172a', isLight ? 6 : 4, isLight ? 30 : 25]} />
+                <fog attach="fog" args={[isLight ? '#eeeef2' : '#020617', isLight ? 6 : 4, isLight ? 30 : 25]} />
             </Canvas>
         </div>
     );

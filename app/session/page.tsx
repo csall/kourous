@@ -7,7 +7,7 @@ import { useClickSound } from "@/lib/hooks/useClickSound";
 import { useEffect, useState, Suspense, useCallback, useRef, memo } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { RefreshCw, Volume2, VolumeX, RotateCcw } from "lucide-react";
+import { RefreshCw, Volume2, VolumeX, RotateCcw, Vibrate, VibrateOff } from "lucide-react";
 import { FullscreenModal } from "@/components/ui/FullscreenModal";
 import { LibraryContent } from "@/components/library/LibraryContent";
 import { SettingsContent } from "@/components/settings/SettingsContent";
@@ -39,6 +39,10 @@ const SessionHeader = memo(({
   const beadColor = useSessionStore(state => state.beadColor);
   const preset = useSessionStore(state => state.preset);
   const reset = useSessionStore(state => state.reset);
+  const soundEnabled = useSessionStore(state => state.soundEnabled);
+  const hapticsEnabled = useSessionStore(state => state.hapticsEnabled);
+  const toggleSound = useSessionStore(state => state.toggleSound);
+  const toggleHaptics = useSessionStore(state => state.toggleHaptics);
   const progress = useSessionProgress();
 
   return (
@@ -50,10 +54,39 @@ const SessionHeader = memo(({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full pt-[env(safe-area-inset-top,20px)] px-6 flex flex-col items-center gap-4"
+            className="w-full pt-[env(safe-area-inset-top,20px)] px-6 flex flex-col items-center gap-1 sm:gap-2 relative"
           >
-            {/* Top Bar: Collection Name (only if it's a collection) */}
-            <div className="w-full flex items-center justify-center pointer-events-auto">
+            {/* Top Controls Row: Sound - Restart - Vibrate */}
+            <div className="w-full flex items-center justify-center gap-8 pointer-events-auto min-h-[48px]">
+              <button
+                onClick={toggleSound}
+                className={`p-3 rounded-full backdrop-blur-md transition-all duration-300 ${soundEnabled ? 'bg-white/10 text-white' : 'bg-transparent text-slate-500 hover:text-slate-300'}`}
+              >
+                {soundEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
+              </button>
+
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => {
+                  hapticMedium();
+                  reset();
+                }}
+                className="flex items-center justify-center w-12 h-12 rounded-full bg-white/10 border border-white/20 text-slate-300 hover:text-white transition-all backdrop-blur-3xl group shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95"
+              >
+                <RotateCcw size={20} className="group-hover:rotate-[-45deg] transition-transform duration-500" />
+              </motion.button>
+
+              <button
+                onClick={toggleHaptics}
+                className={`p-3 rounded-full backdrop-blur-md transition-all duration-300 ${hapticsEnabled ? 'bg-white/10 text-white' : 'bg-transparent text-slate-500 hover:text-slate-300'}`}
+              >
+                {hapticsEnabled ? <Vibrate size={20} /> : <VibrateOff size={20} />}
+              </button>
+            </div>
+
+            {/* Collection Name */}
+            <div className="w-full flex items-center justify-center pointer-events-auto min-h-[16px]">
               {preset && preset.sequence.length > 1 && (
                 <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-slate-500 truncate max-w-[250px] text-center">
                   {preset.name}
@@ -64,7 +97,7 @@ const SessionHeader = memo(({
             <div className="flex flex-col items-center">
               {/* Title / Label */}
               <h1
-                className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 leading-none mb-4"
+                className="text-[10px] font-black tracking-[0.3em] uppercase opacity-40 leading-none mb-2"
                 style={{ color: beadColor }}
               >
                 <span className="tabular-nums">{progress.cycleTotal}</span> × {progress.label}
@@ -112,19 +145,6 @@ const SessionHeader = memo(({
                   </motion.div>
                 </AnimatePresence>
               </div>
-
-              {/* Restart Button Below Counter - Positioned at the boundary */}
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => {
-                  hapticMedium();
-                  reset();
-                }}
-                className="mt-6 pointer-events-auto flex items-center justify-center w-12 h-12 rounded-full bg-white/10 border border-white/20 text-slate-300 hover:text-white transition-all backdrop-blur-3xl group shadow-[0_0_20px_rgba(255,255,255,0.1)] active:scale-95"
-              >
-                <RotateCcw size={20} className="group-hover:rotate-[-45deg] transition-transform duration-500" />
-              </motion.button>
             </div>
           </motion.div>
         )}
@@ -293,7 +313,7 @@ function SessionContent() {
       <SessionHeader isComplete={isComplete} />
 
       {/* Main interactive area positioned to be at the limit of the counter area */}
-      <div className={`flex-1 relative z-0 mt-[18rem] sm:mt-64 transition-all duration-1000 ${isAnyUIOpen ? 'pointer-events-none opacity-40 blur-sm grayscale' : 'opacity-100'}`}>
+      <div className={`flex-1 relative z-0 mt-[14rem] sm:mt-64 transition-all duration-1000 ${isAnyUIOpen ? 'pointer-events-none opacity-40 blur-sm grayscale' : 'opacity-100'}`}>
         <BeadLayer />
       </div>
 
