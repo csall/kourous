@@ -18,9 +18,10 @@ interface PearlProps {
     idx: number;
     rotation?: [number, number, number];
     tapProgress: any; // SpringValue<number>
+    smoothedCount: any; // SpringValue<number>
 }
 
-const Pearl = memo(({ position, activeProgress, idx, rotation = [0, 0, 0], tapProgress }: PearlProps) => {
+const Pearl = memo(({ position, activeProgress, idx, rotation = [0, 0, 0], tapProgress, smoothedCount }: PearlProps) => {
     // Read color directly from the store — changes are picked up in useFrame
     const [beadColor, setBeadColor] = useState(useSessionStore.getState().beadColor);
     const isInteractiveRef = useRef(!useSessionStore.getState().isUiOpen && !useSessionStore.getState().isComplete);
@@ -49,10 +50,18 @@ const Pearl = memo(({ position, activeProgress, idx, rotation = [0, 0, 0], tapPr
     const envMapIntensity = activeProgress.to((p: number) => 1 + (6 * p)); // High reflection on active
 
     // Smoothly interpolate between base gray and active color
-    const interpolatedColor = activeProgress.to((p: number) => {
+    const interpolatedColor = to([activeProgress, smoothedCount], (p, sc) => {
         const c1 = new THREE.Color("#52525b");
         const c2 = new THREE.Color(color);
-        return "#" + c1.lerp(c2, p).getHexString();
+
+        // Calculate mix based on position relative to count
+        // Active (idx ~ sc + 1) -> ~0.5 mix from position, but 'p' is 1.0 -> Max is 1.0
+        // History (idx <= sc) -> >= 1.5 mix -> Max is 1.0
+        // Future (idx > sc + 1) -> < 0.5 mix -> Max is close to 0
+        const historyMix = Math.min(1, Math.max(0, sc - idx + 1.2));
+        const finalMix = Math.max(p, historyMix);
+
+        return "#" + c1.lerp(c2, finalMix).getHexString();
     });
 
     const floatOffset = useMemo(() => (idx * 0.77) % (Math.PI * 2), [idx]);
@@ -392,6 +401,7 @@ const SceneInternal = memo(({ count, beadWindow, total, presetId, tapProgress }:
                             position={[0, 0, 0]}
                             idx={idx}
                             tapProgress={tapProgress}
+                            smoothedCount={smoothedCount}
                             activeProgress={smoothedCount.to((sc: number) => {
                                 // Highlight the "next" bead (the one at the top of the gap to be pulled)
                                 let dist = Math.abs(idx - (sc + 1));
