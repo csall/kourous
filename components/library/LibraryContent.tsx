@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { Search, Sparkles, BookOpen, Trash2, Plus, ChevronDown, Pencil, Play, Star } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -64,6 +64,11 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
         setEditingGroup(null);
     };
 
+    const { scrollY } = useScroll();
+    const titleOpacity = useTransform(scrollY, [0, 40], [1, 0]);
+    const titleScale = useTransform(scrollY, [0, 40], [1, 0.95]);
+    const titleY = useTransform(scrollY, [0, 40], [0, -10]);
+
     return (
         <div className="max-w-lg mx-auto px-5 pt-4 pb-36 space-y-6 sm:space-y-8">
             {/* Immersive Mesh Glows */}
@@ -87,83 +92,109 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                 transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
                 className="space-y-6"
             >
-                <div className="space-y-3">
+                {/* ── MOBILE NATIVE HEADER ─────────────────────────── */}
+                <div className="space-y-6">
+                    {/* Toolbar Row: Search + Add */}
                     <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center">
-                            <Sparkles size={20} style={{ color: beadColor }} />
-                        </div>
-                        <h2 className="text-2xl font-bold text-white tracking-tight">Bibliothèque</h2>
-                    </div>
-                    <p className="text-sm text-slate-400 leading-relaxed">Découvrez et gérez vos rituels et moments de prière.</p>
-                </div>
-
-                {/* ── TABS ─────────────────────────── */}
-                <div className="flex gap-1.5 p-1.5 bg-white/[0.04] rounded-2xl border border-white/5 backdrop-blur-xl">
-                    {[
-                        { key: "invocations" as const, label: "Invocations", count: invocations.length, icon: BookOpen },
-                        { key: "collections" as const, label: "Collections", count: prayerPresets.length + groups.length, icon: Sparkles },
-                        { key: "favorites" as const, label: "Favoris", count: favoriteIds.length, icon: Star },
-                    ].map(tab => (
-                        <button
-                            key={tab.key}
-                            onClick={() => setActiveTab(tab.key)}
-                            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3.5 rounded-xl text-xs font-bold transition-all duration-300 ${activeTab === tab.key
-                                ? 'bg-white/[0.15] text-white shadow-lg shadow-white/5'
-                                : 'text-slate-500 hover:text-slate-400 hover:bg-white/[0.02]'
-                                }`}
-                        >
-                            <tab.icon size={14} strokeWidth={2.5} />
-                            <span className="tracking-wide">{tab.label}</span>
-                            <span className={`min-w-[18px] h-[18px] px-1.5 rounded-full flex items-center justify-center text-[9px] font-black transition-all ${activeTab === tab.key ? "bg-white/25 text-white" : "bg-white/5 text-slate-600"}`}>
-                                {tab.count}
-                            </span>
-                        </button>
-                    ))}
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-4 sm:items-center">
-                    <div className="relative flex-1 group">
-                        <div className="absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-300">
-                            <Search
-                                size={18}
-                                className="text-slate-500 group-focus-within:text-white transition-colors"
+                        <div className="relative flex-1 group">
+                            <div className="absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-300">
+                                <Search
+                                    size={18}
+                                    className="text-slate-500 group-focus-within:text-white transition-colors"
+                                    style={{
+                                        filter: searchQuery ? `drop-shadow(0 0 8px ${beadColor}40)` : 'none'
+                                    }}
+                                />
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="Rechercher..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full bg-white/[0.04] border border-white/10 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-white placeholder:text-slate-500 outline-none transition-all duration-300 hover:bg-white/[0.07] focus:bg-white/[0.08] focus:border-white/20"
                                 style={{
-                                    filter: searchQuery ? `drop-shadow(0 0 8px ${beadColor}40)` : 'none'
+                                    boxShadow: `0 0 0 0px ${beadColor}00`
                                 }}
+                                onFocus={(e) => e.target.style.boxShadow = `0 0 25px -10px ${beadColor}50`}
+                                onBlur={(e) => e.target.style.boxShadow = `0 0 0 0px ${beadColor}00`}
                             />
                         </div>
-                        <input
-                            type="text"
-                            placeholder="Rechercher..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-white/[0.04] border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-slate-500 outline-none transition-all duration-300 hover:bg-white/[0.07] focus:bg-white/[0.08] focus:border-white/20"
-                            style={{
-                                boxShadow: `0 0 0 0px ${beadColor}00`
-                            }}
-                            onFocus={(e) => e.target.style.boxShadow = `0 0 25px -10px ${beadColor}50`}
-                            onBlur={(e) => e.target.style.boxShadow = `0 0 0 0px ${beadColor}00`}
-                        />
+
+                        <button
+                            onClick={() => activeTab === "invocations" ? setIsCreateInvocationModalOpen(true) : setIsCreateGroupModalOpen(true)}
+                            className="relative group overflow-hidden touch-target w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
+                        >
+                            <div
+                                className="absolute inset-0 transition-opacity duration-300 opacity-100 group-hover:opacity-90"
+                                style={{
+                                    background: `linear-gradient(135deg, ${beadColor}, ${beadColor}dd)`,
+                                    boxShadow: `0 10px 30px -8px ${beadColor}50, 0 0 0 1px ${beadColor}20`
+                                }}
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                            <Plus size={24} className="text-white relative z-10" strokeWidth={2.5} />
+                        </button>
                     </div>
 
-                    <button
-                        onClick={() => activeTab === "invocations" ? setIsCreateInvocationModalOpen(true) : setIsCreateGroupModalOpen(true)}
-                        className="relative group overflow-hidden touch-target sm:w-auto"
+                    {/* Large Title + Subtitle */}
+                    <motion.div
+                        style={{ opacity: titleOpacity, scale: titleScale, y: titleY }}
+                        className="space-y-1 px-1 origin-left"
                     >
-                        <div
-                            className="absolute inset-0 transition-opacity duration-300 opacity-100 group-hover:opacity-90"
-                            style={{
-                                background: `linear-gradient(135deg, ${beadColor}, ${beadColor}dd)`,
-                                boxShadow: `0 10px 30px -8px ${beadColor}50, 0 0 0 1px ${beadColor}20`
-                            }}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                        <div className="relative flex items-center justify-center gap-2.5 px-8 h-full text-white">
-                            <Plus size={16} strokeWidth={3} />
-                            <span className="font-black text-[11px] uppercase tracking-[0.1em]">Ajouter</span>
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
+                                <Sparkles size={16} style={{ color: beadColor }} />
+                            </div>
+                            <h2 className="text-3xl font-bold text-white tracking-tight">Bibliothèque</h2>
                         </div>
-                    </button>
+                        <p className="text-sm text-slate-400 font-medium pl-11">Vos rituels et collections</p>
+                    </motion.div>
                 </div>
+
+                {/* ── STICKY TABS ─────────────────────────── */}
+                {/* ── STICKY TABS ─────────────────────────── */}
+                <motion.div
+                    className="sticky top-0 z-40 -mx-5 px-5 py-3 mb-6 transition-all"
+                    style={{
+                        backgroundColor: useTransform(scrollY, [0, 50], ["rgba(2, 6, 23, 0.8)", "rgba(2, 6, 23, 0.95)"]),
+                        backdropFilter: "blur(20px)",
+                        borderBottom: "1px solid",
+                        borderColor: useTransform(scrollY, [0, 50], ["rgba(255, 255, 255, 0.05)", "rgba(255, 255, 255, 0.1)"])
+                    }}
+                >
+                    <div className="flex gap-1.5 p-1 bg-white/[0.04] rounded-xl border border-white/5">
+                        {[
+                            { key: "invocations" as const, label: "Invocations", count: invocations.length, icon: BookOpen },
+                            { key: "collections" as const, label: "Collections", count: prayerPresets.length + groups.length, icon: Sparkles },
+                            { key: "favorites" as const, label: "Favoris", count: favoriteIds.length, icon: Star },
+                        ].map(tab => (
+                            <button
+                                key={tab.key}
+                                onClick={() => setActiveTab(tab.key)}
+                                className={`relative flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-[11px] font-bold transition-all duration-300 ${activeTab === tab.key
+                                    ? 'text-white shadow-sm'
+                                    : 'text-slate-500 hover:text-slate-400 hover:bg-white/[0.02]'
+                                    }`}
+                            >
+                                {activeTab === tab.key && (
+                                    <motion.div
+                                        layoutId="activeTabBg"
+                                        className="absolute inset-0 bg-white/[0.15] rounded-lg"
+                                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                    />
+                                )}
+                                <span className="relative z-10 flex items-center gap-2">
+                                    <tab.icon size={14} strokeWidth={2.5} />
+                                    <span className="tracking-wide hidden sm:inline">{tab.label}</span>
+                                    <span className="tracking-wide sm:hidden">{tab.label.slice(0, 4)}.</span>
+                                    {tab.count > 0 && <span className={`min-w-[16px] h-[16px] px-1 rounded-full flex items-center justify-center text-[9px] font-black transition-all ${activeTab === tab.key ? "bg-white/25 text-white" : "bg-white/5 text-slate-600"}`}>
+                                        {tab.count}
+                                    </span>}
+                                </span>
+                            </button>
+                        ))}
+                    </div>
+                </motion.div>
 
                 {/* ── CONTENT ─────────────────────── */}
                 <div className="min-h-[400px]">
@@ -260,11 +291,11 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                         )}
                     </AnimatePresence>
                 </div>
-            </motion.div>
+            </motion.div >
 
             <CreateInvocationModal isOpen={isCreateInvocationModalOpen} onClose={() => setIsCreateInvocationModalOpen(false)} />
             <CreateGroupModal isOpen={isCreateGroupModalOpen} onClose={handleCloseGroupModal} editGroup={editingGroup} />
-        </div>
+        </div >
     );
 }
 
