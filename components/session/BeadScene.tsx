@@ -39,7 +39,7 @@ const Pearl = memo(({ position, activeProgress, idx, rotation = [0, 0, 0], tapPr
     const animTimeRef = useRef(0);
 
     // Constant base size
-    const BASE_SCALE = 0.3;
+    const BASE_SCALE = 0.28;
 
     const roughness = activeProgress.to((p: number) => 0.15 - (0.1 * p));
     const metalness = activeProgress.to((p: number) => 0.1 + (0.05 * p));
@@ -108,7 +108,7 @@ const Pearl = memo(({ position, activeProgress, idx, rotation = [0, 0, 0], tapPr
                     castShadow
                     receiveShadow
                 >
-                    <sphereGeometry args={[1, 64, 64]} />
+                    <sphereGeometry args={[1, 32, 32]} />
                     <animated.meshPhysicalMaterial
                         color={interpolatedColor}
                         roughness={roughness}
@@ -352,7 +352,7 @@ const SceneInternal = memo(({ count, beadWindow, total, presetId, tapProgress }:
         lastCount.current = count;
     }, [count, presetId, api]);
 
-    const spacing = 0.61; // Beads are 0.6 in diameter, this makes them 'stuck'
+    const spacing = 0.58; // Beads are 0.56 in diameter, this makes them 'stuck'
     const [beadColor, setBeadColor] = useState(useSessionStore.getState().beadColor);
     useEffect(() => {
         return useSessionStore.subscribe((state) => {
@@ -361,7 +361,7 @@ const SceneInternal = memo(({ count, beadWindow, total, presetId, tapProgress }:
     }, []);
 
     return (
-        <group position={[0, -1.8, 0]}>
+        <group position={[0, -0.85, 0]}>
             {/* The Rosary String - Straight Vertical */}
             <ConnectionString />
 
@@ -373,7 +373,7 @@ const SceneInternal = memo(({ count, beadWindow, total, presetId, tapProgress }:
                         position={smoothedCount.to((sc: number) => {
                             const i = Math.floor(sc);
                             const f = sc - i;
-                            const gap = 1.4; // Slightly more compact separation
+                            const gap = 1.6; // Reintroduced gap to show the empty trait
 
                             // Base linear position
                             let y = (idx - sc) * spacing;
@@ -452,8 +452,8 @@ export const BeadScene = memo(({ presetId, count, total, onAdvance }: BeadSceneP
 
     const beadWindow = useMemo(() => {
         const window: number[] = [];
-        const range = 8;
-        for (let i = count - range; i <= count + range; i++) {
+        // Total 8 beads: 4 history (count-3 to count), 1 active (count+1), 3 future (count+2 to count+4)
+        for (let i = count - 3; i <= count + 4; i++) {
             window.push(i);
         }
         return window;
