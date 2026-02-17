@@ -1,10 +1,20 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Volume2, VolumeX, Vibrate, Moon, Sun, Smartphone, Info, Palette } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+    Volume2, VolumeX, Vibrate, Moon, Sun, Smartphone,
+    Palette, ChevronRight, ArrowLeft,
+    HelpCircle, Mail, Shield, FileText, Settings,
+    MoreHorizontal
+} from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 import { useSessionStore } from "@/lib/store/sessionStore";
 
+type SettingsView = 'menu' | 'preferences';
+
 export function SettingsContent() {
+    const [view, setView] = useState<SettingsView>('menu');
     const { soundEnabled, hapticsEnabled, toggleSound, toggleHaptics, beadColor, setBeadColor, theme, setTheme } = useSessionStore();
 
     const colors = [
@@ -22,157 +32,227 @@ export function SettingsContent() {
         { key: 'auto' as const, label: 'Auto', icon: <Smartphone size={14} /> },
     ];
 
+    const menuItems = [
+        {
+            icon: HelpCircle,
+            label: "Aide",
+            href: "/support",
+            external: false
+        },
+        {
+            icon: Mail,
+            label: "Contactez-nous",
+            href: "mailto:contact@kourous.app",
+            external: true
+        },
+        {
+            icon: Shield,
+            label: "Confidentialité",
+            href: "/privacy",
+            external: false
+        },
+        {
+            icon: Settings,
+            label: "Mes préférences",
+            action: () => setView('preferences'),
+            external: false
+        },
+        {
+            icon: FileText,
+            label: "Conditions Générales d'Utilisation",
+            href: "/terms",
+            external: false
+        }
+    ];
+
     return (
-        <div className="max-w-4xl mx-auto px-6 pt-4 pb-32 space-y-8">
-            {/* Preferences Section */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="space-y-4"
-            >
-                <h2 className="text-lg font-light text-slate-300">Préférences</h2>
+        <div className="max-w-md mx-auto px-6 pt-8 pb-32">
+            <AnimatePresence mode="wait">
+                {view === 'menu' ? (
+                    <motion.div
+                        key="menu"
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        className="space-y-8"
+                    >
+                        <h1 className="text-3xl font-bold text-white">Autre</h1>
 
-                {/* Sound Toggle */}
-                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            {soundEnabled ? (
-                                <Volume2 size={20} style={{ color: beadColor }} />
-                            ) : (
-                                <VolumeX size={20} className="text-slate-400" />
-                            )}
-                            <div>
-                                <div className="text-sm font-medium text-white">Son</div>
-                                <div className="text-xs text-slate-400">Feedback audio lors des interactions</div>
-                            </div>
-                        </div>
+                        <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
+                            {menuItems.map((item, index) => {
+                                const Icon = item.icon;
+                                const isLast = index === menuItems.length - 1;
 
-                        <button
-                            onClick={toggleSound}
-                            onPointerDown={(e) => e.stopPropagation()}
-                            onPointerUp={(e) => e.stopPropagation()}
-                            className="w-12 h-6 rounded-full transition-all"
-                            style={{ backgroundColor: soundEnabled ? beadColor : '#334155' }}
-                        >
-                            <div className={`w-5 h-5 rounded-full bg-white shadow-lg transform transition-transform ${soundEnabled ? 'translate-x-6' : 'translate-x-0.5'
-                                }`} />
-                        </button>
-                    </div>
-                </div>
-
-                {/* Haptics Toggle */}
-                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                            <Vibrate size={20} style={{ color: hapticsEnabled ? beadColor : '#94a3b8' }} />
-                            <div>
-                                <div className="text-sm font-medium text-white">Vibrations</div>
-                                <div className="text-xs text-slate-400">Retour haptique lors des interactions</div>
-                            </div>
-                        </div>
-
-                        <button
-                            onClick={toggleHaptics}
-                            onPointerDown={(e) => e.stopPropagation()}
-                            onPointerUp={(e) => e.stopPropagation()}
-                            className="w-12 h-6 rounded-full transition-all"
-                            style={{ backgroundColor: hapticsEnabled ? beadColor : '#334155' }}
-                        >
-                            <div className={`w-5 h-5 rounded-full bg-white shadow-lg transform transition-transform ${hapticsEnabled ? 'translate-x-6' : 'translate-x-0.5'
-                                }`} />
-                        </button>
-                    </div>
-                </div>
-
-                {/* Theme Selector */}
-                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
-                    <div className="space-y-3">
-                        <div className="flex items-center gap-3">
-                            <Moon size={20} style={{ color: beadColor }} />
-                            <div>
-                                <div className="text-sm font-medium text-white">Thème</div>
-                                <div className="text-xs text-slate-400">Apparence de l&apos;application</div>
-                            </div>
-                        </div>
-
-                        <div className="flex gap-1 p-1 bg-white/[0.04] rounded-xl">
-                            {themes.map((t) => (
-                                <button
-                                    key={t.key}
-                                    onClick={() => setTheme(t.key)}
-                                    className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${theme === t.key
-                                        ? 'bg-white/10 text-white shadow-sm'
-                                        : 'text-slate-500'
-                                        }`}
-                                >
-                                    {t.icon}
-                                    {t.label}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Color Selection */}
-                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-3">
-                            <Palette size={20} style={{ color: beadColor }} />
-                            <div>
-                                <div className="text-sm font-medium text-white">Couleur des perles</div>
-                                <div className="text-xs text-slate-400">Personnalisez l'aspect de votre chapelet</div>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-wrap gap-3 pt-2">
-                            {colors.map((c) => (
-                                <button
-                                    key={c.value}
-                                    onClick={() => setBeadColor(c.value)}
-                                    onPointerDown={(e) => e.stopPropagation()}
-                                    onPointerUp={(e) => e.stopPropagation()}
-                                    className={`relative w-8 h-8 rounded-full transition-all active:scale-90 ${beadColor === c.value ? 'ring-2 ring-white ring-offset-2 ring-offset-slate-900 scale-110' : 'opacity-70 hover:opacity-100'
-                                        }`}
-                                    style={{ backgroundColor: c.value }}
-                                    aria-label={c.name}
-                                >
-                                    {beadColor === c.value && (
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                            <div className="w-2 h-2 rounded-full bg-white" />
+                                const Content = (
+                                    <div className={`flex items-center justify-between p-4 hover:bg-white/5 transition-colors group cursor-pointer`}>
+                                        <div className="flex items-center gap-4">
+                                            <Icon size={20} className="text-slate-400 group-hover:text-white transition-colors" />
+                                            <span className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">
+                                                {item.label}
+                                            </span>
                                         </div>
-                                    )}
-                                </button>
-                            ))}
+                                        <ChevronRight size={18} className="text-slate-600 group-hover:text-slate-400 transition-colors" />
+                                    </div>
+                                );
+
+                                return (
+                                    <div key={item.label}>
+                                        {item.action ? (
+                                            <div onClick={item.action}>
+                                                {Content}
+                                            </div>
+                                        ) : (
+                                            <Link href={item.href!} target={item.external ? "_blank" : undefined}>
+                                                {Content}
+                                            </Link>
+                                        )}
+                                        {!isLast && <div className="h-px bg-white/5 mx-4" />}
+                                    </div>
+                                );
+                            })}
                         </div>
-                    </div>
-                </div>
 
-
-            </motion.div>
-
-            {/* About Section */}
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="space-y-4"
-            >
-                <h2 className="text-lg font-light text-slate-300">À propos</h2>
-
-                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4 space-y-3">
-                    <div className="flex items-center gap-3">
-                        <Info size={20} className="text-slate-400" />
-                        <div>
-                            <div className="text-sm font-medium text-white">Kourous</div>
-                            <div className="text-xs text-slate-400">Version 1.0.0</div>
+                        <div className="text-center space-y-2">
+                            <div className="text-xs text-slate-500">
+                                Kourous v1.0.0
+                            </div>
+                            <div className="text-[10px] text-slate-600">
+                                Fabriqué pour la paix intérieure.
+                            </div>
                         </div>
-                    </div>
-                    <div className="text-xs text-slate-500 leading-relaxed">
-                        Kourous est votre compagnon spirituel pour la pratique du chapelet et des invocations.
-                        Une expérience immersive en 3D pour accompagner votre méditation.
-                    </div>
-                </div>
-            </motion.div>
+                    </motion.div>
+                ) : (
+                    <motion.div
+                        key="preferences"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 20 }}
+                        className="space-y-6"
+                    >
+                        <button
+                            onClick={() => setView('menu')}
+                            className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
+                        >
+                            <ArrowLeft size={20} />
+                            <span>Retour</span>
+                        </button>
+
+                        <h2 className="text-2xl font-bold text-white">Mes préférences</h2>
+
+                        {/* Existing Preferences Content */}
+                        <div className="space-y-4">
+                            {/* Sound Toggle */}
+                            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        {soundEnabled ? (
+                                            <Volume2 size={20} style={{ color: beadColor }} />
+                                        ) : (
+                                            <VolumeX size={20} className="text-slate-400" />
+                                        )}
+                                        <div>
+                                            <div className="text-sm font-medium text-white">Son</div>
+                                            <div className="text-xs text-slate-400">Feedback audio</div>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        onClick={toggleSound}
+                                        className="w-12 h-6 rounded-full transition-all"
+                                        style={{ backgroundColor: soundEnabled ? beadColor : '#334155' }}
+                                    >
+                                        <div className={`w-5 h-5 rounded-full bg-white shadow-lg transform transition-transform ${soundEnabled ? 'translate-x-6' : 'translate-x-0.5'
+                                            }`} />
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Haptics Toggle */}
+                            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <Vibrate size={20} style={{ color: hapticsEnabled ? beadColor : '#94a3b8' }} />
+                                        <div>
+                                            <div className="text-sm font-medium text-white">Vibrations</div>
+                                            <div className="text-xs text-slate-400">Retour haptique</div>
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        onClick={toggleHaptics}
+                                        className="w-12 h-6 rounded-full transition-all"
+                                        style={{ backgroundColor: hapticsEnabled ? beadColor : '#334155' }}
+                                    >
+                                        <div className={`w-5 h-5 rounded-full bg-white shadow-lg transform transition-transform ${hapticsEnabled ? 'translate-x-6' : 'translate-x-0.5'
+                                            }`} />
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Theme Selector */}
+                            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
+                                <div className="space-y-3">
+                                    <div className="flex items-center gap-3">
+                                        <Moon size={20} style={{ color: beadColor }} />
+                                        <div>
+                                            <div className="text-sm font-medium text-white">Thème</div>
+                                            <div className="text-xs text-slate-400">Apparence de l&apos;application</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex gap-1 p-1 bg-white/[0.04] rounded-xl">
+                                        {themes.map((t) => (
+                                            <button
+                                                key={t.key}
+                                                onClick={() => setTheme(t.key)}
+                                                className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${theme === t.key
+                                                    ? 'bg-white/10 text-white shadow-sm'
+                                                    : 'text-slate-500'
+                                                    }`}
+                                            >
+                                                {t.icon}
+                                                {t.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Color Selection */}
+                            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-3">
+                                        <Palette size={20} style={{ color: beadColor }} />
+                                        <div>
+                                            <div className="text-sm font-medium text-white">Couleur des perles</div>
+                                            <div className="text-xs text-slate-400">Personnalisez votre expérience</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-wrap gap-3 pt-2">
+                                        {colors.map((c) => (
+                                            <button
+                                                key={c.value}
+                                                onClick={() => setBeadColor(c.value)}
+                                                className={`relative w-8 h-8 rounded-full transition-all active:scale-90 ${beadColor === c.value ? 'ring-2 ring-white ring-offset-2 ring-offset-slate-900 scale-110' : 'opacity-70 hover:opacity-100'
+                                                    }`}
+                                                style={{ backgroundColor: c.value }}
+                                                aria-label={c.name}
+                                            >
+                                                {beadColor === c.value && (
+                                                    <div className="absolute inset-0 flex items-center justify-center">
+                                                        <div className="w-2 h-2 rounded-full bg-white" />
+                                                    </div>
+                                                )}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
