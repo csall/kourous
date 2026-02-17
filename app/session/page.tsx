@@ -101,6 +101,33 @@ const SessionHeader = memo(({
 
               {/* Counter Ring */}
               <div className="relative flex items-center justify-center h-[96px] w-[96px]">
+                {/* Breathing Halo - Continuous Pulse */}
+                <motion.div
+                  animate={{
+                    scale: [1, 1.4, 1],
+                    opacity: [0.1, 0.4, 0.1]
+                  }}
+                  transition={{
+                    duration: 3,
+                    ease: "easeInOut",
+                    repeat: Infinity
+                  }}
+                  className="absolute inset-0 rounded-full"
+                  style={{ backgroundColor: beadColor, filter: 'blur(25px)' }}
+                />
+
+                {/* Impact Pulse (on increment) */}
+                <AnimatePresence mode="popLayout">
+                  <motion.div
+                    key={`pulse-${progress.cycleProgress}`}
+                    initial={{ scale: 1, opacity: 0.6 }}
+                    animate={{ scale: 1.8, opacity: 0 }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
+                    className="absolute inset-0 rounded-full"
+                    style={{ backgroundColor: beadColor, filter: 'blur(15px)' }}
+                  />
+                </AnimatePresence>
+
                 <div className="absolute inset-0 rounded-full border border-white/[0.05] bg-white/[0.02] backdrop-blur-3xl shadow-[0_0_30px_rgba(0,0,0,0.3)]" />
 
                 <svg className="absolute inset-0 w-full h-full -rotate-90 p-1">

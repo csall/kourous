@@ -11,6 +11,7 @@ import { useSessionStore } from "@/lib/store/sessionStore";
 const AnimatedSparkles = animated(Sparkles);
 const AnimatedText = animated(Text);
 
+
 interface PearlProps {
     position: [number, number, number];
     activeProgress: any; // SpringValue<number>
@@ -33,6 +34,7 @@ const Pearl = memo(({ position, activeProgress, idx, rotation = [0, 0, 0], tapPr
 
     const color = beadColor;
     const meshRef = useRef<THREE.Mesh>(null);
+    const contentRef = useRef<THREE.Group>(null);
     const groupRef = useRef<THREE.Group>(null);
     const animTimeRef = useRef(0);
 
@@ -66,26 +68,24 @@ const Pearl = memo(({ position, activeProgress, idx, rotation = [0, 0, 0], tapPr
         const time = animTimeRef.current;
         const p = activeProgress.get();
 
-        // 1. Dynamic rotation speed
-        const rotationSpeed = 1 + (p * 4);
-        meshRef.current.rotation.y += 0.005 * rotationSpeed * (isInteractiveRef.current ? 1 : 0);
-        meshRef.current.rotation.z += 0.002 * rotationSpeed * (isInteractiveRef.current ? 1 : 0);
+        // 1. Static rotation
+        meshRef.current.rotation.y = 0;
+        meshRef.current.rotation.z = 0;
 
         // 2. Weightless Float 
-        if (p > 0.01) {
+        if (p > 0.01 && contentRef.current) {
             // Subtle Y-axis bobbing - use our STABLE animTime
             const bob = Math.sin(time * 2.5 + floatOffset) * 0.15 * p;
 
             // TAP IMPACT: Pull downward (simulating user pulling the bead)
             const tapOffset = tapProgress.get() * 0.7 * Math.pow(p, 3);
-            meshRef.current.position.y = bob - tapOffset;
+            contentRef.current.position.y = bob - tapOffset;
 
             // Subtle "wobble"
-            meshRef.current.rotation.x = Math.sin(time * 1.5) * 0.1 * p;
+            contentRef.current.rotation.x = Math.sin(time * 1.5) * 0.1 * p;
         }
     });
 
-    // Tap effects (shrink and flash) are now isolated to the active bead using activeProgress as a mask
     const animatedScale = to([activeProgress, tapProgress], (ap, tp) => {
         const tapImpact = tp * Math.pow(ap, 3); // Sharp falloff
         const s = BASE_SCALE * (1 - (Math.max(0, tapImpact) * 0.35));
@@ -101,41 +101,34 @@ const Pearl = memo(({ position, activeProgress, idx, rotation = [0, 0, 0], tapPr
                 color={color}
             />
 
-            <animated.mesh
-                ref={meshRef}
-                scale={animatedScale as any}
-                castShadow
-                receiveShadow
-            >
-                <sphereGeometry args={[1, 64, 64]} />
-                <animated.meshPhysicalMaterial
-                    color={interpolatedColor}
-                    roughness={roughness}
-                    metalness={metalness}
-                    transmission={transmission}
-                    thickness={thickness}
-                    envMapIntensity={envMapIntensity}
-                    clearcoat={1}
-                    clearcoatRoughness={0.05}
-                    reflectivity={1}
-                    emissive={interpolatedColor}
-                    emissiveIntensity={to([activeProgress, tapProgress], (ap, tp) => {
-                        // Base core light + Tap flash (masked for active only)
-                        return ap * 0.5 + (tp * 5 * Math.pow(ap, 3));
-                    })}
-                />
+            <group ref={contentRef}>
+                <animated.mesh
+                    ref={meshRef}
+                    scale={animatedScale as any}
+                    castShadow
+                    receiveShadow
+                >
+                    <sphereGeometry args={[1, 64, 64]} />
+                    <animated.meshPhysicalMaterial
+                        color={interpolatedColor}
+                        roughness={roughness}
+                        metalness={metalness}
+                        transmission={transmission}
+                        thickness={thickness}
+                        envMapIntensity={envMapIntensity}
+                        clearcoat={1}
+                        clearcoatRoughness={0.05}
+                        reflectivity={1}
+                        emissive={interpolatedColor}
+                        emissiveIntensity={to([activeProgress, tapProgress], (ap, tp) => {
+                            // Base core light + Tap flash (masked for active only)
+                            return ap * 0.5 + (tp * 5 * Math.pow(ap, 3));
+                        })}
+                    />
 
-                {/* Concentrated Spiritual Particles for active bead */}
-                <AnimatedSparkles
-                    count={activeProgress.to((p: number) => Math.floor(p * 20) + 4)}
-                    scale={activeProgress.to((p: number) => 0.8 + p * 0.5)}
-                    size={activeProgress.to((p: number) => 1.5 + p * 1.5)}
-                    speed={activeProgress.to((p: number) => 0.4 + p * 0.8)}
-                    opacity={activeProgress.to((p: number) => 0.2 + p * 0.6)}
-                    color={color}
-                />
+                </animated.mesh>
 
-            </animated.mesh>
+            </group>
         </group>
     );
 });
@@ -216,114 +209,47 @@ const ShootingStar = () => {
         >
             <mesh ref={ref}>
                 <sphereGeometry args={[0.2, 8, 8]} />
-                <meshStandardMaterial color="#fbbf24" emissive="#fbbf24" emissiveIntensity={5} toneMapped={false} />
             </mesh>
         </Trail>
     );
 };
 
-const DescendingSmoke = memo(({ trigger, color }: { trigger: number, color: string }) => {
-    const pointsRef = useRef<THREE.Points>(null);
-    const particleCount = 200;
+const ZenRipple = memo(({ trigger, color }: { trigger: number; color: string }) => {
+    const meshRef = useRef<THREE.Mesh>(null);
     const [active, setActive] = useState(false);
     const lastTrigger = useRef(trigger);
-
-    // Initial positions and velocities
-    const particles = useMemo(() => {
-        const pos = new Float32Array(particleCount * 3);
-        const vel = new Float32Array(particleCount * 3);
-        const sizes = new Float32Array(particleCount);
-
-        for (let i = 0; i < particleCount; i++) {
-            // Burst from top/center
-            pos[i * 3] = (Math.random() - 0.5) * 4;
-            pos[i * 3 + 1] = 4 + (Math.random() - 0.5) * 2;
-            pos[i * 3 + 2] = -2 + (Math.random() - 0.5) * 4;
-
-            vel[i * 3] = (Math.random() - 0.5) * 0.05;
-            vel[i * 3 + 1] = -0.05 - Math.random() * 0.1; // Downward
-            vel[i * 3 + 2] = (Math.random() - 0.5) * 0.05;
-
-            sizes[i] = 1 + Math.random() * 4;
-        }
-        return { pos, vel, sizes };
-    }, []);
 
     useEffect(() => {
         if (trigger > lastTrigger.current) {
             setActive(true);
-            // Reset positions and opacities on trigger
-            if (pointsRef.current) {
-                const positions = pointsRef.current.geometry.attributes.position.array as Float32Array;
-                const opacities = pointsRef.current.geometry.attributes.opacity.array as Float32Array;
-                for (let i = 0; i < particleCount; i++) {
-                    positions[i * 3] = (Math.random() - 0.5) * 3;
-                    positions[i * 3 + 1] = 5;
-                    positions[i * 3 + 2] = -2 + (Math.random() - 0.5) * 2;
-                    opacities[i] = 0.4;
-                }
-                pointsRef.current.geometry.attributes.position.needsUpdate = true;
-                pointsRef.current.geometry.attributes.opacity.needsUpdate = true;
-            }
-
-            const timer = setTimeout(() => setActive(false), 2500);
+            const timer = setTimeout(() => setActive(false), 2000);
             return () => clearTimeout(timer);
         }
-        // Always sync the last trigger to handle resets (trigger goes back to 0)
         lastTrigger.current = trigger;
     }, [trigger]);
 
     useFrame((state, delta) => {
-        if (!active || !pointsRef.current) return;
-
-        const positions = pointsRef.current.geometry.attributes.position.array as Float32Array;
-        const opacityAttr = pointsRef.current.geometry.attributes.opacity.array as Float32Array;
-
-        for (let i = 0; i < particleCount; i++) {
-            // Apply velocity
-            positions[i * 3] += particles.vel[i * 3] * delta * 60;
-            positions[i * 3 + 1] += particles.vel[i * 3 + 1] * delta * 40;
-            positions[i * 3 + 2] += particles.vel[i * 3 + 2] * delta * 60;
-
-            // Fading logic
-            opacityAttr[i] = Math.max(0, 0.4 - (state.clock.elapsedTime % 2.5) * 0.2);
-        }
-
-        pointsRef.current.geometry.attributes.position.needsUpdate = true;
-        pointsRef.current.geometry.attributes.opacity.needsUpdate = true;
+        if (!active || !meshRef.current) return;
+        meshRef.current.scale.addScalar(delta * 12);
+        const mat = meshRef.current.material as THREE.MeshBasicMaterial;
+        mat.opacity = Math.max(0, 0.15 - (meshRef.current.scale.x / 12) * 0.15);
     });
 
+    useEffect(() => {
+        if (active && meshRef.current) {
+            meshRef.current.scale.set(0.1, 0.1, 0.1);
+        }
+    }, [active]);
+
     return (
-        <points ref={pointsRef} visible={active}>
-            <bufferGeometry>
-                <bufferAttribute
-                    attach="attributes-position"
-                    count={particles.pos.length / 3}
-                    array={particles.pos}
-                    itemSize={3}
-                    args={[particles.pos, 3]}
-                />
-                <bufferAttribute
-                    attach="attributes-opacity"
-                    count={particleCount}
-                    array={new Float32Array(particleCount).fill(0.4)}
-                    itemSize={1}
-                    args={[new Float32Array(particleCount).fill(0.4), 1]}
-                />
-            </bufferGeometry>
-            <pointsMaterial
-                size={0.15}
-                color={color}
-                transparent
-                depthWrite={false}
-                blending={THREE.AdditiveBlending}
-                opacity={0.3}
-            />
-        </points>
+        <mesh ref={meshRef} position={[0, 0, -5]} visible={active}>
+            <ringGeometry args={[0.95, 1, 64]} />
+            <meshBasicMaterial color={color} transparent opacity={0.15} depthWrite={false} blending={THREE.AdditiveBlending} />
+        </mesh>
     );
 });
 
-DescendingSmoke.displayName = "DescendingSmoke";
+
 
 const StarryNightBackground = memo(() => {
     const [theme, setTheme] = useState(useSessionStore.getState().theme);
@@ -442,6 +368,12 @@ const SceneInternal = memo(({ count, beadWindow, total, presetId, tapProgress }:
 
     const radius = 8; // Tighter radius for closer look
     const angleStep = 0.1; // Maximum condensation for a dense holy look
+    const [beadColor, setBeadColor] = useState(useSessionStore.getState().beadColor);
+    useEffect(() => {
+        return useSessionStore.subscribe((state) => {
+            setBeadColor(state.beadColor);
+        });
+    }, []);
 
     return (
         <group position={[0, -1.2, 0]}>
@@ -472,12 +404,14 @@ const SceneInternal = memo(({ count, beadWindow, total, presetId, tapProgress }:
                             tapProgress={tapProgress}
                             activeProgress={smoothedCount.to((sc: number) => {
                                 let dist = Math.abs(idx - sc);
-                                return Math.max(0, 1 - dist * 0.8);
+                                // Extremely sharp falloff for exclusive highlight on active bead
+                                return Math.pow(Math.max(0, 1 - dist * 1.5), 4);
                             })}
                         />
                     </animated.group>
                 );
             })}
+
         </group>
     );
 });
@@ -599,7 +533,7 @@ export const BeadScene = memo(({ presetId, count, total, onAdvance }: BeadSceneP
                     tapProgress={tapProgress}
                 />
 
-                <DescendingSmoke trigger={count} color={isLight ? "#6366f1" : (beadColor as string)} />
+                <ZenRipple trigger={count} color={isLight ? "#6366f1" : (beadColor as string)} />
                 <StarryNightBackground />
                 <fog attach="fog" args={[isLight ? '#eeeef2' : '#05070c', isLight ? 6 : 4, isLight ? 30 : 25]} />
             </Canvas>
