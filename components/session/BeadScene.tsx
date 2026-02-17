@@ -143,15 +143,31 @@ Pearl.displayName = "Pearl";
 
 const ConnectionString = memo(() => {
     return (
-        <mesh castShadow>
-            <cylinderGeometry args={[0.012, 0.012, 20, 8]} />
-            <meshPhysicalMaterial
-                color="#64748b"
-                roughness={0.8}
-                metalness={0.1}
-                clearcoat={0}
+        <group>
+            {/* The String itself - Thinner, premium metallic silk look */}
+            <mesh castShadow receiveShadow>
+                <cylinderGeometry args={[0.004, 0.004, 20, 16]} />
+                <meshPhysicalMaterial
+                    color="#e2e8f0" // Platinum/Silver
+                    roughness={0.3}
+                    metalness={0.5}
+                    clearcoat={1}
+                    clearcoatRoughness={0.1}
+                    emissive="#94a3b8"
+                    emissiveIntensity={0.1}
+                />
+            </mesh>
+
+            {/* Subtle Divine Shimmer along the string */}
+            <Sparkles
+                count={25}
+                scale={[0.05, 20, 0.05]}
+                size={2}
+                speed={0.5}
+                opacity={0.3}
+                color="#f8fafc"
             />
-        </mesh>
+        </group>
     );
 });
 

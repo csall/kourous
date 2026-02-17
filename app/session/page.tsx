@@ -57,7 +57,7 @@ const SessionHeader = memo(({
             className="w-full pt-[calc(env(safe-area-inset-top,20px)+12px)] pb-12 px-6 flex flex-col items-center gap-4 relative"
           >
             {/* Top Control Bar */}
-            <div className="w-full flex items-center justify-between pointer-events-auto">
+            <div className="w-full flex items-center justify-center gap-8 pointer-events-auto">
               <button
                 onClick={toggleSound}
                 className={`w-11 h-11 flex items-center justify-center rounded-full backdrop-blur-xl transition-all active:scale-95 ${soundEnabled ? 'bg-white/10 text-white border border-white/10' : 'bg-white/5 text-white/30 border border-white/5'}`}
