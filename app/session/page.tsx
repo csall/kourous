@@ -13,7 +13,7 @@ import { LibraryContent } from "@/components/library/LibraryContent";
 import { SettingsContent } from "@/components/settings/SettingsContent";
 import { CompletionView } from "@/components/session/CompletionView";
 import confetti from "canvas-confetti";
-import { hapticLight, hapticMedium, hapticSuccess } from "@/lib/utils/haptics";
+import { hapticLight, hapticMedium, hapticSuccess, hapticHeavy, hapticCelebration } from "@/lib/utils/haptics";
 
 const BeadScene = dynamic(
   () => import("@/components/session/BeadScene").then((mod) => mod.BeadScene),
@@ -260,7 +260,7 @@ function SessionContent() {
   useEffect(() => {
     if (isComplete) {
       if (soundEnabled) playFinalSuccess();
-      hapticSuccess();
+      hapticCelebration();
     }
   }, [isComplete, soundEnabled, playFinalSuccess]);
 
@@ -285,7 +285,7 @@ function SessionContent() {
       const isIntermediary = progress.cycleIndex < (preset.sequence.length - 1);
       if (isIntermediary) {
         if (soundEnabled) playSuccess();
-        hapticMedium();
+        hapticHeavy();
         confetti({
           particleCount: 40,
           spread: 70,

@@ -15,7 +15,7 @@ export async function hapticLight() {
         const { Haptics, ImpactStyle } = await import('@capacitor/haptics');
         await Haptics.impact({ style: ImpactStyle.Light });
     } catch {
-        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(15);
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(25);
     }
 }
 
@@ -25,7 +25,7 @@ export async function hapticMedium() {
         const { Haptics, ImpactStyle } = await import('@capacitor/haptics');
         await Haptics.impact({ style: ImpactStyle.Medium });
     } catch {
-        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(30);
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(40);
     }
 }
 
@@ -35,6 +35,28 @@ export async function hapticSuccess() {
         const { Haptics, NotificationType } = await import('@capacitor/haptics');
         await Haptics.notification({ type: NotificationType.Success });
     } catch {
-        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate([50, 50, 100]);
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate([60, 60, 150]);
+    }
+}
+
+export async function hapticHeavy() {
+    if (!isMobile()) return;
+    try {
+        const { Haptics } = await import('@capacitor/haptics');
+        // Stronger vibration for cycle completion
+        await Haptics.vibrate({ duration: 300 });
+    } catch {
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(300);
+    }
+}
+
+export async function hapticCelebration() {
+    if (!isMobile()) return;
+    try {
+        const { Haptics } = await import('@capacitor/haptics');
+        // Very strong vibration for session completion
+        await Haptics.vibrate({ duration: 2000 });
+    } catch {
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 1000]);
     }
 }
