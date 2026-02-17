@@ -186,12 +186,18 @@ body {
   margin-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-/* Touch-friendly buttons */
+/* Touch-friendly buttons & targets */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .touch-manipulation {
   touch-action: manipulation;
   -webkit-tap-highlight-color: transparent;
-  min-height: 44px;
-  min-width: 44px;
 }
 
 /* 3D Canvas container overrides */
@@ -262,9 +268,10 @@ canvas {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
+
 .premium-button-active {
   transform: scale(0.95) translateY(2px);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
 .victory-glow {
@@ -273,9 +280,17 @@ canvas {
 }
 
 @keyframes victory-pop {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
 }
 
 .animate-victory {
