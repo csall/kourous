@@ -83,6 +83,8 @@ export const useInvocationStore = create<InvocationStoreState>()(
                         ...group,
                         invocations: group.invocations.filter((inv) => inv.invocationId !== id),
                     })),
+                    // Remove from favorites if present
+                    favoriteIds: state.favoriteIds.filter((favId) => favId !== id),
                 }));
             },
 
@@ -113,6 +115,8 @@ export const useInvocationStore = create<InvocationStoreState>()(
             deleteGroup: (id) => {
                 set((state) => ({
                     groups: state.groups.filter((grp) => grp.id !== id),
+                    // Remove from favorites if present
+                    favoriteIds: state.favoriteIds.filter((favId) => favId !== id),
                 }));
             },
 

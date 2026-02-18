@@ -165,7 +165,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                         {[
                             { key: "collections" as const, label: "Collections", count: groups.length },
                             { key: "invocations" as const, label: "Invocations", count: invocations.length },
-                            { key: "favorites" as const, label: "Favoris", count: favoriteIds.length },
+                            { key: "favorites" as const, label: "Favoris", count: favoriteInvocations.length + favoriteGroups.length },
                         ].map(tab => (
                             <button
                                 key={tab.key}
