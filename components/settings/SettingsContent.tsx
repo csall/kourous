@@ -8,14 +8,24 @@ import {
     MoreHorizontal
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSessionStore } from "@/lib/store/sessionStore";
+
+import { useSearchParams } from "next/navigation";
 
 type SettingsView = 'menu' | 'preferences';
 
-export function SettingsContent() {
-    const [view, setView] = useState<SettingsView>('menu');
+
+
+function SettingsInner() {
+    const searchParams = useSearchParams();
+    const paramView = searchParams.get('view') === 'preferences' ? 'preferences' : 'menu';
+    const [view, setView] = useState<SettingsView>(paramView);
     const { soundEnabled, hapticsEnabled, toggleSound, toggleHaptics, beadColor, setBeadColor, theme, setTheme } = useSessionStore();
+
+    useEffect(() => {
+        setView(paramView);
+    }, [paramView]);
 
     const colors = [
         { name: "Rose", value: "#fb7185" },
@@ -52,12 +62,6 @@ export function SettingsContent() {
             external: false
         },
         {
-            icon: Settings,
-            label: "Mes préférences",
-            action: () => setView('preferences'),
-            external: false
-        },
-        {
             icon: FileText,
             label: "Conditions Générales d'Utilisation",
             href: "/terms",
@@ -83,29 +87,19 @@ export function SettingsContent() {
                                 const Icon = item.icon;
                                 const isLast = index === menuItems.length - 1;
 
-                                const Content = (
-                                    <div className={`flex items-center justify-between p-4 hover:bg-white/5 transition-colors group cursor-pointer`}>
-                                        <div className="flex items-center gap-4">
-                                            <Icon size={20} className="text-slate-400 group-hover:text-white transition-colors" />
-                                            <span className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">
-                                                {item.label}
-                                            </span>
-                                        </div>
-                                        <ChevronRight size={18} className="text-slate-600 group-hover:text-slate-400 transition-colors" />
-                                    </div>
-                                );
-
                                 return (
                                     <div key={item.label}>
-                                        {item.action ? (
-                                            <div onClick={item.action}>
-                                                {Content}
+                                        <Link href={item.href} target={item.external ? "_blank" : undefined}>
+                                            <div className={`flex items-center justify-between p-4 hover:bg-white/5 transition-colors group cursor-pointer`}>
+                                                <div className="flex items-center gap-4">
+                                                    <Icon size={20} className="text-slate-400 group-hover:text-white transition-colors" />
+                                                    <span className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">
+                                                        {item.label}
+                                                    </span>
+                                                </div>
+                                                <ChevronRight size={18} className="text-slate-600 group-hover:text-slate-400 transition-colors" />
                                             </div>
-                                        ) : (
-                                            <Link href={item.href!} target={item.external ? "_blank" : undefined}>
-                                                {Content}
-                                            </Link>
-                                        )}
+                                        </Link>
                                         {!isLast && <div className="h-px bg-white/5 mx-4" />}
                                     </div>
                                 );
@@ -129,13 +123,7 @@ export function SettingsContent() {
                         exit={{ opacity: 0, x: 20 }}
                         className="space-y-6"
                     >
-                        <button
-                            onClick={() => setView('menu')}
-                            className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
-                        >
-                            <ArrowLeft size={20} />
-                            <span>Retour</span>
-                        </button>
+
 
                         <h2 className="text-2xl font-bold text-white">Mes préférences</h2>
 
@@ -254,5 +242,13 @@ export function SettingsContent() {
                 )}
             </AnimatePresence>
         </div>
+    );
+}
+
+export function SettingsContent() {
+    return (
+        <Suspense fallback={<div className="flex-1 w-full h-full bg-slate-950" />}>
+            <SettingsInner />
+        </Suspense>
     );
 }
