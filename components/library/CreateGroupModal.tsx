@@ -124,26 +124,26 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModa
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.95, opacity: 0, y: 30 }}
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                        className="relative overflow-hidden bg-slate-900 border border-white/10 rounded-[2.5rem] p-8 sm:p-10 max-w-lg w-full shadow-2xl flex flex-col max-h-[80dvh]"
+                        className="relative overflow-hidden bg-slate-900 border border-white/10 rounded-[2rem] p-6 sm:p-8 max-w-lg w-full shadow-2xl flex flex-col max-h-[85dvh]"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Decoration */}
                         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-20" />
                         <div className="absolute -top-24 -right-24 w-64 h-64 blur-[100px] rounded-full pointer-events-none opacity-20" style={{ backgroundColor: beadColor }} />
 
-                        <div className="flex items-center justify-between mb-8 relative z-10 shrink-0 touch-none">
+                        <div className="flex items-center justify-between mb-5 relative z-10 shrink-0 touch-none">
                             <div>
-                                <div className="flex items-center gap-2 mb-2" style={{ color: beadColor }}>
-                                    <Sparkles size={14} className="animate-pulse" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.25em]">{isEditing ? "Édition" : "Création"}</span>
+                                <div className="flex items-center gap-2 mb-1" style={{ color: beadColor }}>
+                                    <Sparkles size={12} className="animate-pulse" />
+                                    <span className="text-[9px] font-black uppercase tracking-[0.25em]">{isEditing ? "Édition" : "Création"}</span>
                                 </div>
-                                <h2 className="text-3xl font-black tracking-tight text-white leading-tight">Collection</h2>
+                                <h2 className="text-2xl font-black tracking-tight text-white leading-tight">Collection</h2>
                             </div>
                             <button
                                 onClick={handleClose}
-                                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+                                className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
                             >
-                                <X size={20} />
+                                <X size={18} />
                             </button>
                         </div>
 
@@ -158,7 +158,7 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModa
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
                                         placeholder="Ex: Rituel du Matin"
-                                        className="w-full px-6 py-4.5 bg-white/[0.03] border border-white/10 rounded-2xl text-white text-lg placeholder:text-slate-700 focus:outline-none focus:border-white/20 transition-all font-bold"
+                                        className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white text-base placeholder:text-slate-700 focus:outline-none focus:border-white/20 transition-all font-bold"
                                     />
                                     {errors.name && (
                                         <p className="text-[11px] font-bold text-rose-500 px-1">{errors.name}</p>
@@ -185,25 +185,25 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModa
                                                         initial={{ opacity: 0, x: -20 }}
                                                         animate={{ opacity: 1, x: 0 }}
                                                         exit={{ opacity: 0, x: 20 }}
-                                                        className="flex items-center gap-4 p-4 bg-white/[0.03] border border-white/5 rounded-2xl group transition-all"
+                                                        className="flex items-center gap-3 p-3 bg-white/[0.03] border border-white/5 rounded-xl group transition-all"
                                                     >
-                                                        <GripVertical size={16} className="text-slate-700 shrink-0" />
+                                                        <GripVertical size={14} className="text-slate-700 shrink-0" />
                                                         <div className="flex-1 min-w-0">
                                                             <p className="text-sm font-bold text-white truncate">{invocation.name}</p>
                                                         </div>
-                                                        <div className="flex items-center gap-3">
+                                                        <div className="flex items-center gap-2">
                                                             <input
                                                                 type="number"
                                                                 value={sel.repetitions}
                                                                 onChange={(e) => handleUpdateRepetitions(index, parseInt(e.target.value) || 1)}
-                                                                className="w-14 h-10 bg-white/5 border border-white/5 rounded-xl text-white text-[13px] font-black text-center focus:outline-none focus:border-white/20"
+                                                                className="w-12 h-9 bg-white/5 border border-white/5 rounded-lg text-white text-xs font-black text-center focus:outline-none focus:border-white/20"
                                                             />
                                                             <button
                                                                 type="button"
                                                                 onClick={() => handleRemoveInvocation(index)}
-                                                                className="w-10 h-10 rounded-xl bg-rose-500/5 flex items-center justify-center text-rose-500/60 hover:text-rose-500 transition-colors"
+                                                                className="w-9 h-9 rounded-lg bg-rose-500/5 flex items-center justify-center text-rose-500/60 hover:text-rose-500 transition-colors"
                                                             >
-                                                                <Trash2 size={16} />
+                                                                <Trash2 size={14} />
                                                             </button>
                                                         </div>
                                                     </motion.div>
@@ -232,7 +232,7 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModa
                                                     e.target.value = "";
                                                 }
                                             }}
-                                            className="w-full appearance-none px-6 py-4 bg-white/[0.02] border-2 border-dashed border-white/10 rounded-2xl text-slate-500 text-[13px] font-black focus:outline-none transition-all cursor-pointer hover:border-white/20 hover:text-slate-400"
+                                            className="w-full appearance-none px-4 py-3.5 bg-white/[0.02] border-2 border-dashed border-white/10 rounded-xl text-slate-500 text-xs font-black focus:outline-none transition-all cursor-pointer hover:border-white/20 hover:text-slate-400"
                                         >
                                             <option value="">+ AJOUTER UNE ÉTAPE</option>
                                             {availableInvocations.map((inv) => (
@@ -241,13 +241,13 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModa
                                                 </option>
                                             ))}
                                         </select>
-                                        <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-30">
-                                            <Plus size={16} />
+                                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-30">
+                                            <Plus size={14} />
                                         </div>
                                     </div>
                                 ) : ( // Only show if we actually have invocations to add, otherwise showing "All added" is fine but maybe less sticky? 
                                     // User said "ajouter une etape doit toujours etre visible". If all added, we can show the "All added" message sticky.
-                                    <div className="text-center py-4 border-2 border-dashed border-white/5 rounded-2xl bg-white/[0.02]">
+                                    <div className="text-center py-3.5 border-2 border-dashed border-white/5 rounded-xl bg-white/[0.02]">
                                         <p className="text-[10px] font-bold uppercase tracking-widest text-slate-700">Toutes les étapes ajoutées</p>
                                     </div>
                                 )}
@@ -258,10 +258,10 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModa
                                         backgroundColor: beadColor,
                                         boxShadow: `0 10px 30px -10px ${beadColor}80`
                                     }}
-                                    className="w-full py-5 rounded-[1.5rem] text-white font-black text-sm tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2 shrink-0"
+                                    className="w-full py-4 rounded-[1.2rem] text-white font-black text-xs tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2 shrink-0"
                                 >
-                                    <Check size={18} strokeWidth={4} />
-                                    {isEditing ? "ENREGISTRER LA COLLECTION" : "CRÉER LA COLLECTION"}
+                                    <Check size={16} strokeWidth={4} />
+                                    {isEditing ? "ENREGISTRER" : "CRÉER"}
                                 </button>
                             </div>
                         </form>

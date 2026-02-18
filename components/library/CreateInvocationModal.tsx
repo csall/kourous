@@ -106,26 +106,26 @@ export function CreateInvocationModal({ isOpen, onClose, editInvocation }: Creat
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.95, opacity: 0, y: 30 }}
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                        className="relative overflow-hidden bg-slate-900 border border-white/10 rounded-[2.5rem] p-8 sm:p-10 max-w-md w-full shadow-2xl flex flex-col max-h-[80dvh]"
+                        className="relative overflow-hidden bg-slate-900 border border-white/10 rounded-[2rem] p-6 sm:p-8 max-w-md w-full shadow-2xl flex flex-col max-h-[85dvh]"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Premium Glow Decoration */}
-                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-20" />
+                        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-20" />
                         <div className="absolute -top-24 -right-24 w-64 h-64 blur-[100px] rounded-full pointer-events-none opacity-20" style={{ backgroundColor: beadColor }} />
 
-                        <div className="flex items-center justify-between mb-8 relative z-10 shrink-0 touch-none">
+                        <div className="flex items-center justify-between mb-5 relative z-10 shrink-0 touch-none">
                             <div>
-                                <div className="flex items-center gap-2 mb-2" style={{ color: beadColor }}>
-                                    <Sparkles size={14} className="animate-pulse" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.25em]">{isEditing ? "Édition" : "Personnalisation"}</span>
+                                <div className="flex items-center gap-2 mb-1" style={{ color: beadColor }}>
+                                    <Sparkles size={12} className="animate-pulse" />
+                                    <span className="text-[9px] font-black uppercase tracking-[0.25em]">{isEditing ? "Édition" : "Personnalisation"}</span>
                                 </div>
-                                <h2 className="text-2xl font-black tracking-tight text-white leading-tight">{isEditing ? "Modifier l'Invocation" : "Nouvelle Invocation"}</h2>
+                                <h2 className="text-2xl font-black tracking-tight text-white leading-tight">{isEditing ? "Modifier Invocation" : "Nouvelle Invocation"}</h2>
                             </div>
                             <button
                                 onClick={handleClose}
-                                className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+                                className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
                             >
-                                <X size={20} />
+                                <X size={18} />
                             </button>
                         </div>
 
@@ -139,7 +139,7 @@ export function CreateInvocationModal({ isOpen, onClose, editInvocation }: Creat
                                     onChange={(e) => setName(e.target.value)}
                                     placeholder="Ex: Al-Hamdulillah"
                                     autoFocus
-                                    className="w-full px-6 py-4.5 bg-white/[0.03] border border-white/10 rounded-2xl text-white text-lg placeholder:text-slate-700 focus:outline-none focus:border-white/20 transition-all font-bold"
+                                    className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white text-base placeholder:text-slate-700 focus:outline-none focus:border-white/20 transition-all font-bold"
                                 />
                                 {errors.name && (
                                     <p className="text-[11px] font-bold text-rose-500 px-1">{errors.name}</p>
@@ -154,7 +154,7 @@ export function CreateInvocationModal({ isOpen, onClose, editInvocation }: Creat
                                     onChange={(e) => setDescription(e.target.value)}
                                     placeholder="Signification ou rappel..."
                                     rows={2}
-                                    className="w-full px-6 py-4 bg-white/[0.03] border border-white/10 rounded-2xl text-white text-sm placeholder:text-slate-700 focus:outline-none focus:border-white/20 transition-all font-medium resize-none"
+                                    className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white text-sm placeholder:text-slate-700 focus:outline-none focus:border-white/20 transition-all font-medium resize-none"
                                 />
                             </div>
 
@@ -200,7 +200,7 @@ export function CreateInvocationModal({ isOpen, onClose, editInvocation }: Creat
                                     backgroundColor: beadColor,
                                     boxShadow: `0 10px 30px -10px ${beadColor}80`
                                 }}
-                                className="w-full py-5 rounded-[1.5rem] text-white font-black text-sm tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2 mt-4"
+                                className="w-full py-4 rounded-[1.2rem] text-white font-black text-xs tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2 mt-4"
                             >
                                 <Plus size={18} strokeWidth={4} className={isEditing ? "rotate-45" : ""} />
                                 {isEditing ? "ENREGISTRER" : "CRÉER L'INVOCATION"}
