@@ -69,7 +69,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
 
 
     return (
-        <div className="flex flex-col h-[100dvh] bg-slate-50 dark:bg-slate-950/20 px-5 pt-4 overflow-hidden">
+        <div className="flex flex-col h-[100dvh] bg-slate-50 dark:bg-slate-950/20 px-5 pt-[calc(env(safe-area-inset-top,20px)+2rem)] overflow-hidden">
             {/* Immersive Mesh Glows */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
                 <motion.div
