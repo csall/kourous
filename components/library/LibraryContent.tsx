@@ -15,7 +15,7 @@ interface LibraryContentProps {
 
 export function LibraryContent({ onSessionStart }: LibraryContentProps) {
     const [searchQuery, setSearchQuery] = useState("");
-    const [activeTab, setActiveTab] = useState<"collections" | "invocations" | "favorites">("invocations");
+    const [activeTab, setActiveTab] = useState<"collections" | "invocations" | "favorites">("collections");
     const [isCreateInvocationModalOpen, setIsCreateInvocationModalOpen] = useState(false);
     const [isCreateGroupModalOpen, setIsCreateGroupModalOpen] = useState(false);
     const [editingGroup, setEditingGroup] = useState<InvocationGroup | null>(null);
@@ -130,20 +130,6 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                         <div className="grid grid-cols-2 gap-3 pt-2">
                             <button
                                 onClick={() => {
-                                    setEditingInvocation(null);
-                                    setIsCreateInvocationModalOpen(true);
-                                }}
-                                className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 active:scale-95 transition-all group"
-                            >
-                                <div className="relative">
-                                    <BookOpen size={18} className="text-indigo-400 group-hover:text-indigo-300" />
-                                    <Plus size={10} strokeWidth={4} className="absolute -bottom-1.5 -right-1.5 text-indigo-400 group-hover:text-indigo-300" />
-                                </div>
-                                <span className="text-sm font-bold text-indigo-400 group-hover:text-indigo-300">Invocation</span>
-                            </button>
-
-                            <button
-                                onClick={() => {
                                     setEditingGroup(null);
                                     setIsCreateGroupModalOpen(true);
                                 }}
@@ -155,6 +141,20 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                 </div>
                                 <span className="text-sm font-bold text-emerald-400 group-hover:text-emerald-300">Collection</span>
                             </button>
+
+                            <button
+                                onClick={() => {
+                                    setEditingInvocation(null);
+                                    setIsCreateInvocationModalOpen(true);
+                                }}
+                                className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 active:scale-95 transition-all group"
+                            >
+                                <div className="relative">
+                                    <BookOpen size={18} className="text-indigo-400 group-hover:text-indigo-300" />
+                                    <Plus size={10} strokeWidth={4} className="absolute -bottom-1.5 -right-1.5 text-indigo-400 group-hover:text-indigo-300" />
+                                </div>
+                                <span className="text-sm font-bold text-indigo-400 group-hover:text-indigo-300">Invocation</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -163,8 +163,8 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                 <div>
                     <div className="flex p-1 bg-[#1C1C1E] rounded-xl border border-white/10">
                         {[
-                            { key: "invocations" as const, label: "Invocations", count: invocations.length },
                             { key: "collections" as const, label: "Collections", count: groups.length },
+                            { key: "invocations" as const, label: "Invocations", count: invocations.length },
                             { key: "favorites" as const, label: "Favoris", count: favoriteIds.length },
                         ].map(tab => (
                             <button
@@ -199,23 +199,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
             {/* ── SCROLLABLE CONTENT ─────────────────────── */}
             <div className="flex-1 overflow-y-auto no-scrollbar pb-36 -mx-5 px-5">
                 <AnimatePresence mode="wait">
-                    {activeTab === "invocations" ? (
-                        <motion.div
-                            className="space-y-6"
-                        >
-                            <FavoriteSection
-                                invocations={filteredInvocations}
-                                onSessionStart={onSessionStart}
-                                onDelete={deleteInvocation}
-                                onEdit={handleEditInvocation}
-                                onToggleFavorite={toggleFavorite}
-                                isFavorite={isFavorite}
-                                beadColor={beadColor}
-                                expandedId={expandedId}
-                                onToggleExpand={toggleExpand}
-                            />
-                        </motion.div>
-                    ) : activeTab === "collections" ? (
+                    {activeTab === "collections" ? (
                         <motion.div
                             key="collections"
                             initial={{ opacity: 0, y: 10 }}
@@ -237,6 +221,22 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                 getInvocationById={getInvocationById}
                             />
                         </motion.div>
+                    ) : activeTab === "invocations" ? (
+                        <motion.div
+                            className="space-y-6"
+                        >
+                            <FavoriteSection
+                                invocations={filteredInvocations}
+                                onSessionStart={onSessionStart}
+                                onDelete={deleteInvocation}
+                                onEdit={handleEditInvocation}
+                                onToggleFavorite={toggleFavorite}
+                                isFavorite={isFavorite}
+                                beadColor={beadColor}
+                                expandedId={expandedId}
+                                onToggleExpand={toggleExpand}
+                            />
+                        </motion.div>
                     ) : (
                         <motion.div
                             key="favorites"
@@ -248,22 +248,6 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                         >
                             {favoriteIds.length > 0 ? (
                                 <div className="space-y-8">
-                                    {favoriteInvocations.length > 0 && (
-                                        <div className="space-y-4">
-                                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 px-1">Invocations</h3>
-                                            <FavoriteSection
-                                                invocations={favoriteInvocations}
-                                                onSessionStart={onSessionStart}
-                                                onDelete={deleteInvocation}
-                                                onEdit={handleEditInvocation}
-                                                onToggleFavorite={toggleFavorite}
-                                                isFavorite={isFavorite}
-                                                beadColor={beadColor}
-                                                expandedId={expandedId}
-                                                onToggleExpand={toggleExpand}
-                                            />
-                                        </div>
-                                    )}
                                     {favoriteGroups.length > 0 && (
                                         <div className="space-y-4">
                                             <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 px-1">Collections</h3>
@@ -278,6 +262,22 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                                 isFavorite={isFavorite}
                                                 beadColor={beadColor}
                                                 getInvocationById={getInvocationById}
+                                            />
+                                        </div>
+                                    )}
+                                    {favoriteInvocations.length > 0 && (
+                                        <div className="space-y-4">
+                                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 px-1">Invocations</h3>
+                                            <FavoriteSection
+                                                invocations={favoriteInvocations}
+                                                onSessionStart={onSessionStart}
+                                                onDelete={deleteInvocation}
+                                                onEdit={handleEditInvocation}
+                                                onToggleFavorite={toggleFavorite}
+                                                isFavorite={isFavorite}
+                                                beadColor={beadColor}
+                                                expandedId={expandedId}
+                                                onToggleExpand={toggleExpand}
                                             />
                                         </div>
                                     )}

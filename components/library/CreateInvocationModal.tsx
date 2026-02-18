@@ -106,14 +106,14 @@ export function CreateInvocationModal({ isOpen, onClose, editInvocation }: Creat
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.95, opacity: 0, y: 30 }}
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                        className="relative overflow-hidden bg-slate-900 border border-white/10 rounded-[2.5rem] p-8 sm:p-10 max-w-md w-full shadow-2xl flex flex-col"
+                        className="relative overflow-hidden bg-slate-900 border border-white/10 rounded-[2.5rem] p-8 sm:p-10 max-w-md w-full shadow-2xl flex flex-col max-h-[80dvh]"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Premium Glow Decoration */}
                         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-20" />
                         <div className="absolute -top-24 -right-24 w-64 h-64 blur-[100px] rounded-full pointer-events-none opacity-20" style={{ backgroundColor: beadColor }} />
 
-                        <div className="flex items-center justify-between mb-8 relative z-10">
+                        <div className="flex items-center justify-between mb-8 relative z-10 shrink-0 touch-none">
                             <div>
                                 <div className="flex items-center gap-2 mb-2" style={{ color: beadColor }}>
                                     <Sparkles size={14} className="animate-pulse" />
@@ -129,7 +129,7 @@ export function CreateInvocationModal({ isOpen, onClose, editInvocation }: Creat
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+                        <form onSubmit={handleSubmit} className="space-y-6 relative z-10 flex-1 overflow-y-auto min-h-0 -mr-4 pr-4 pb-6">
                             {/* Name Input */}
                             <div className="space-y-3">
                                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Nom de l'invocation</label>

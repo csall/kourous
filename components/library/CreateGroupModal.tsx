@@ -124,14 +124,14 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModa
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.95, opacity: 0, y: 30 }}
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                        className="relative overflow-hidden bg-slate-900 border border-white/10 rounded-[2.5rem] p-8 sm:p-10 max-w-lg w-full shadow-2xl flex flex-col max-h-[90vh]"
+                        className="relative overflow-hidden bg-slate-900 border border-white/10 rounded-[2.5rem] p-8 sm:p-10 max-w-lg w-full shadow-2xl flex flex-col max-h-[80dvh]"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Decoration */}
                         <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-20" />
                         <div className="absolute -top-24 -right-24 w-64 h-64 blur-[100px] rounded-full pointer-events-none opacity-20" style={{ backgroundColor: beadColor }} />
 
-                        <div className="flex items-center justify-between mb-8 relative z-10">
+                        <div className="flex items-center justify-between mb-8 relative z-10 shrink-0 touch-none">
                             <div>
                                 <div className="flex items-center gap-2 mb-2" style={{ color: beadColor }}>
                                     <Sparkles size={14} className="animate-pulse" />
@@ -147,7 +147,7 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModa
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-6 relative z-10 flex-1 flex flex-col min-h-0 overflow-y-auto pr-1 -mr-1 scrollbar-hide">
+                        <form onSubmit={handleSubmit} className="space-y-6 relative z-10 flex-1 flex flex-col min-h-0 overflow-y-auto pr-1 -mr-1 scrollbar-hide pb-6">
                             {/* Name Input */}
                             <div className="space-y-3 shrink-0">
                                 <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Nom de la collection</label>
