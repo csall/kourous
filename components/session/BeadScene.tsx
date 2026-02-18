@@ -58,8 +58,14 @@ const Pearl = memo(({ position, activeProgress, idx, rotation = [0, 0, 0], tapPr
         // Active (idx ~ sc + 1) -> ~0.5 mix from position, but 'p' is 1.0 -> Max is 1.0
         // History (idx <= sc) -> >= 1.5 mix -> Max is 1.0
         // Future (idx > sc + 1) -> < 0.5 mix -> Max is close to 0
-        const historyMix = Math.min(1, Math.max(0, sc - idx + 1.2));
-        const finalMix = Math.max(p, historyMix);
+
+        // INVERTED LOGIC: Only TOP beads (Future) are colored
+        // Future (idx > sc) -> Positive value -> 1 -> Color
+        // Past (idx <= sc) -> Negative value -> 0 -> Gray
+        const futureMix = Math.min(1, Math.max(0, (idx - sc) + 0.2));
+
+        // Active bead also gets colored by 'p' (activeProgress) if needed
+        const finalMix = Math.max(p, futureMix);
 
         return "#" + c1.lerp(c2, finalMix).getHexString();
     });
@@ -144,9 +150,9 @@ Pearl.displayName = "Pearl";
 const ConnectionString = memo(() => {
     return (
         <group>
-            {/* The String itself - Thinner, premium metallic silk look */}
+            {/* The String itself - Much Thicker for clear visibility */}
             <mesh castShadow receiveShadow>
-                <cylinderGeometry args={[0.004, 0.004, 20, 16]} />
+                <cylinderGeometry args={[0.04, 0.04, 20, 16]} />
                 <meshPhysicalMaterial
                     color="#e2e8f0" // Platinum/Silver
                     roughness={0.3}
@@ -154,7 +160,7 @@ const ConnectionString = memo(() => {
                     clearcoat={1}
                     clearcoatRoughness={0.1}
                     emissive="#94a3b8"
-                    emissiveIntensity={0.1}
+                    emissiveIntensity={0.5}
                 />
             </mesh>
 
