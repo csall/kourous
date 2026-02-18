@@ -69,7 +69,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
 
 
     return (
-        <div className="flex flex-col h-[100dvh] bg-slate-50 dark:bg-slate-950/20 px-5 pt-[calc(env(safe-area-inset-top,20px)+2rem)] overflow-hidden">
+        <div className="flex flex-col h-[100dvh] bg-slate-50 dark:bg-slate-950/20 px-5 pt-[calc(env(safe-area-inset-top,20px)+2rem)] overflow-hidden touch-none">
             {/* Immersive Mesh Glows */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
                 <motion.div
@@ -195,7 +195,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
             </div>
 
             {/* ── SCROLLABLE CONTENT ─────────────────────── */}
-            <div className="flex-1 overflow-y-auto no-scrollbar pb-36 -mx-5 px-5">
+            <div className="flex-1 overflow-y-auto w-full no-scrollbar pb-36 -mx-5 px-5 touch-pan-y overscroll-contain">
                 <AnimatePresence mode="wait">
                     {activeTab === "collections" ? (
                         <motion.div
