@@ -69,7 +69,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
 
 
     return (
-        <div className="flex flex-col h-[100dvh] bg-slate-950/20 px-5 pt-4 overflow-hidden">
+        <div className="flex flex-col h-[100dvh] bg-slate-50 dark:bg-slate-950/20 px-5 pt-4 overflow-hidden">
             {/* Immersive Mesh Glows */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
                 <motion.div
@@ -95,9 +95,9 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                             <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
                                 <Sparkles size={16} style={{ color: beadColor }} />
                             </div>
-                            <h2 className="text-3xl font-bold text-white tracking-tight">Bibliothèque</h2>
+                            <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Bibliothèque</h2>
                         </div>
-                        <p className="text-sm text-slate-400 font-medium pl-11">Vos rituels et collections</p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium pl-11">Vos rituels et collections</p>
                     </div>
 
                     {/* Toolbar Row: Search + Add */}
@@ -117,7 +117,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                 placeholder="Rechercher..."
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full bg-white/[0.04] border border-white/10 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-white placeholder:text-slate-500 outline-none transition-all duration-300 hover:bg-white/[0.07] focus:bg-white/[0.08] focus:border-white/20"
+                                className="w-full bg-slate-200/50 dark:bg-white/[0.04] border border-black/5 dark:border-white/10 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-slate-900 dark:text-white placeholder:text-slate-500 outline-none transition-all duration-300 hover:bg-slate-200/80 dark:hover:bg-white/[0.07] focus:bg-slate-200 dark:focus:bg-white/[0.08] focus:border-black/10 dark:focus:border-white/20"
                                 style={{
                                     boxShadow: `0 0 0 0px ${beadColor}00`
                                 }}
@@ -161,7 +161,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
 
                 {/* ── TABS ─────────────────────────── */}
                 <div>
-                    <div className="flex p-1 bg-[#1C1C1E] rounded-xl border border-white/10">
+                    <div className="flex p-1 bg-slate-200/60 dark:bg-[#1C1C1E] rounded-xl border border-black/5 dark:border-white/10">
                         {[
                             { key: "collections" as const, label: "Collections", count: groups.length },
                             { key: "invocations" as const, label: "Invocations", count: invocations.length },
@@ -171,20 +171,20 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                 key={tab.key}
                                 onClick={() => setActiveTab(tab.key)}
                                 className={`relative flex-1 flex items-center justify-center gap-2 py-2 rounded-[9px] text-[13px] font-medium transition-all duration-300 ${activeTab === tab.key
-                                    ? 'text-white'
-                                    : 'text-slate-500 hover:text-slate-300'
+                                    ? 'text-slate-900 dark:text-white'
+                                    : 'text-slate-600 dark:text-slate-500 hover:text-slate-900 dark:hover:text-slate-300'
                                     }`}
                             >
                                 {activeTab === tab.key && (
                                     <motion.div
                                         layoutId="activeTabBg"
-                                        className="absolute inset-0 bg-[#3A3A3C] rounded-[9px] shadow-sm border border-white/10"
+                                        className="absolute inset-0 bg-white dark:bg-[#3A3A3C] rounded-[9px] shadow-sm border border-black/5 dark:border-white/10"
                                         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                                     />
                                 )}
                                 <span className="relative z-10 flex items-center gap-2">
                                     <span>{tab.label}</span>
-                                    <span className={`text-[10px] font-bold opacity-60 ${activeTab === tab.key ? "text-white" : "text-slate-500"}`}>
+                                    <span className={`text-[10px] font-bold opacity-60 ${activeTab === tab.key ? "text-slate-900 dark:text-white" : "text-slate-600 dark:text-slate-500"}`}>
                                         {tab.count}
                                     </span>
                                 </span>
