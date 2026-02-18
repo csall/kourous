@@ -21,6 +21,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
     const [editingGroup, setEditingGroup] = useState<InvocationGroup | null>(null);
     const [editingInvocation, setEditingInvocation] = useState<Invocation | null>(null);
     const [expandedId, setExpandedId] = useState<string | null>(null);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const { invocations, groups, deleteInvocation, deleteGroup, getInvocationById, loadDefaultData, toggleFavorite, isFavorite, favoriteIds } = useInvocationStore();
     const beadColor = useSessionStore((s) => s.beadColor);
@@ -124,28 +125,81 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                             />
                         </div>
 
-                        <button
-                            onClick={() => {
-                                if (activeTab === "invocations") {
-                                    setEditingInvocation(null);
-                                    setIsCreateInvocationModalOpen(true);
-                                } else {
-                                    setEditingGroup(null);
-                                    setIsCreateGroupModalOpen(true);
-                                }
-                            }}
-                            className="relative group overflow-hidden touch-target w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
-                        >
-                            <div
-                                className="absolute inset-0 transition-opacity duration-300 opacity-100 group-hover:opacity-90"
-                                style={{
-                                    background: `linear-gradient(135deg, ${beadColor}, ${beadColor}dd)`,
-                                    boxShadow: `0 10px 30px -8px ${beadColor}50, 0 0 0 1px ${beadColor}20`
-                                }}
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                            <Plus size={24} className="text-white relative z-10" strokeWidth={2.5} />
-                        </button>
+
+                        <div className="relative z-50">
+                            <button
+                                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                                className="relative group overflow-hidden touch-target w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
+                            >
+                                <div
+                                    className="absolute inset-0 transition-opacity duration-300 opacity-100"
+                                    style={{
+                                        background: `linear-gradient(135deg, ${beadColor}, ${beadColor}dd)`,
+                                        boxShadow: `0 10px 30px -8px ${beadColor}50, 0 0 0 1px ${beadColor}20`
+                                    }}
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                <motion.div
+                                    animate={{ rotate: isMenuOpen ? 45 : 0 }}
+                                    transition={{ duration: 0.2 }}
+                                >
+                                    <Plus size={24} className="text-white relative z-10" strokeWidth={2.5} />
+                                </motion.div>
+                            </button>
+
+                            <AnimatePresence>
+                                {isMenuOpen && (
+                                    <>
+                                        <div
+                                            className="fixed inset-0 z-40"
+                                            onClick={() => setIsMenuOpen(false)}
+                                        />
+                                        <motion.div
+                                            initial={{ opacity: 0, scale: 0.9, y: 10, x: 10 }}
+                                            animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
+                                            exit={{ opacity: 0, scale: 0.9, y: 10, x: 10 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="absolute right-0 top-14 w-56 p-2 bg-[#1C1C1E] border border-white/10 rounded-2xl shadow-2xl z-50 backdrop-blur-xl origin-top-right"
+                                        >
+                                            <div className="space-y-1">
+                                                <button
+                                                    onClick={() => {
+                                                        setEditingInvocation(null);
+                                                        setIsCreateInvocationModalOpen(true);
+                                                        setIsMenuOpen(false);
+                                                    }}
+                                                    className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/10 transition-colors text-left group"
+                                                >
+                                                    <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400 group-hover:text-indigo-300 group-hover:bg-indigo-500/30 transition-colors">
+                                                        <BookOpen size={16} />
+                                                    </div>
+                                                    <div>
+                                                        <div className="text-sm font-semibold text-white">Invocation</div>
+                                                        <div className="text-[10px] text-slate-400">Créer une nouvelle invocation</div>
+                                                    </div>
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        setEditingGroup(null);
+                                                        setIsCreateGroupModalOpen(true);
+                                                        setIsMenuOpen(false);
+                                                    }}
+                                                    className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/10 transition-colors text-left group"
+                                                >
+                                                    <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:text-emerald-300 group-hover:bg-emerald-500/30 transition-colors">
+                                                        <Sparkles size={16} />
+                                                    </div>
+                                                    <div>
+                                                        <div className="text-sm font-semibold text-white">Collection</div>
+                                                        <div className="text-[10px] text-slate-400">Grouper des invocations</div>
+                                                    </div>
+                                                </button>
+                                            </div>
+                                        </motion.div>
+                                    </>
+                                )}
+                            </AnimatePresence>
+                        </div>
                     </div>
 
                     {/* Large Title + Subtitle */}
@@ -166,42 +220,42 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                 {/* ── STICKY TABS ─────────────────────────── */}
                 {/* ── STICKY TABS ─────────────────────────── */}
                 <motion.div
-                    className="sticky top-0 z-40 -mx-5 px-5 py-3 mb-6 transition-all"
+                    className="sticky top-0 z-30 -mx-5 px-5 py-2 mb-6"
                     style={{
-                        backgroundColor: useTransform(scrollY, [0, 50], ["rgba(2, 6, 23, 0.8)", "rgba(2, 6, 23, 0.95)"]),
+                        backgroundColor: useTransform(scrollY, [0, 50], ["rgba(2, 6, 23, 0.8)", "rgba(2, 6, 23, 0.98)"]),
                         backdropFilter: "blur(20px)",
                         borderBottom: "1px solid",
                         borderColor: useTransform(scrollY, [0, 50], ["rgba(255, 255, 255, 0.05)", "rgba(255, 255, 255, 0.1)"])
                     }}
                 >
-                    <div className="flex gap-1.5 p-1 bg-white/[0.04] rounded-xl border border-white/5">
+                    <div className="flex p-1 bg-[#1C1C1E] rounded-xl border border-white/10">
                         {[
-                            { key: "invocations" as const, label: "Invocations", count: invocations.length, icon: BookOpen },
-                            { key: "collections" as const, label: "Collections", count: groups.length, icon: Sparkles },
-                            { key: "favorites" as const, label: "Favoris", count: favoriteIds.length, icon: Star },
+                            { key: "invocations" as const, label: "Invocations", count: invocations.length },
+                            { key: "collections" as const, label: "Collections", count: groups.length },
+                            { key: "favorites" as const, label: "Favoris", count: favoriteIds.length },
                         ].map(tab => (
                             <button
                                 key={tab.key}
                                 onClick={() => setActiveTab(tab.key)}
-                                className={`relative flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-[11px] font-bold transition-all duration-300 ${activeTab === tab.key
-                                    ? 'text-white shadow-sm'
-                                    : 'text-slate-500 hover:text-slate-400 hover:bg-white/[0.02]'
+                                className={`relative flex-1 flex items-center justify-center gap-2 py-2 rounded-[9px] text-[13px] font-medium transition-all duration-300 ${activeTab === tab.key
+                                    ? 'text-white'
+                                    : 'text-slate-500 hover:text-slate-300'
                                     }`}
                             >
                                 {activeTab === tab.key && (
                                     <motion.div
                                         layoutId="activeTabBg"
-                                        className="absolute inset-0 bg-white/[0.15] rounded-lg"
+                                        className="absolute inset-0 bg-[#3A3A3C] rounded-[9px] shadow-sm border border-white/10"
                                         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                                     />
                                 )}
                                 <span className="relative z-10 flex items-center gap-2">
-                                    <tab.icon size={14} strokeWidth={2.5} />
-                                    <span className="tracking-wide hidden sm:inline">{tab.label}</span>
-                                    <span className="tracking-wide sm:hidden">{tab.label.slice(0, 4)}.</span>
-                                    {tab.count > 0 && <span className={`min-w-[16px] h-[16px] px-1 rounded-full flex items-center justify-center text-[9px] font-black transition-all ${activeTab === tab.key ? "bg-white/25 text-white" : "bg-white/5 text-slate-600"}`}>
-                                        {tab.count}
-                                    </span>}
+                                    <span>{tab.label}</span>
+                                    {tab.count > 0 && (
+                                        <span className={`text-[10px] font-bold opacity-60 ${activeTab === tab.key ? "text-white" : "text-slate-500"}`}>
+                                            {tab.count}
+                                        </span>
+                                    )}
                                 </span>
                             </button>
                         ))}
@@ -223,6 +277,8 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                     onToggleFavorite={toggleFavorite}
                                     isFavorite={isFavorite}
                                     beadColor={beadColor}
+                                    expandedId={expandedId}
+                                    onToggleExpand={toggleExpand}
                                 />
                             </motion.div>
                         ) : activeTab === "collections" ? (
@@ -269,6 +325,8 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                                     onToggleFavorite={toggleFavorite}
                                                     isFavorite={isFavorite}
                                                     beadColor={beadColor}
+                                                    expandedId={expandedId}
+                                                    onToggleExpand={toggleExpand}
                                                 />
                                             </div>
                                         )}
@@ -320,58 +378,95 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
 
 // ── SUB-COMPONENTS ─────────────────────────────────────────────────────────
 
-function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onToggleFavorite, isFavorite, beadColor }: any) {
+function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onToggleFavorite, isFavorite, beadColor, expandedId, onToggleExpand }: any) {
     return (
         <div className="space-y-4">
             {invocations.length > 0 ? (
-                invocations.map((invocation: any) => (
-                    <Link key={invocation.id} href={`/session?invocation=${invocation.id}`} onClick={onSessionStart} className="group block">
-                        <motion.div
-                            whileHover={{ scale: 1.01 }}
-                            whileTap={{ scale: 0.98 }}
-                            className="bg-white/[0.06] backdrop-blur-xl border border-white/10 rounded-[1.25rem] p-5 flex items-center gap-5 transition-all duration-300 hover:bg-white/[0.09] hover:border-white/20 hover:shadow-lg hover:shadow-white/5"
-                            style={{
-                                boxShadow: `0 0 0 0px ${beadColor}00`
-                            }}
-                        >
-                            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-slate-400 group-hover:border-white/20 transition-all duration-300">
-                                <BookOpen size={18} style={{ color: invocation.id.startsWith("inv-default-") ? beadColor : undefined }} />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <h4 className="text-[15px] font-bold text-white group-hover:text-white transition-colors leading-tight mb-1">{invocation.name}</h4>
-                                {invocation.description && (
-                                    <p className="text-xs text-slate-500 line-clamp-1 mb-2">{invocation.description}</p>
-                                )}
-                                <p className="text-[10px] text-slate-400 uppercase tracking-[0.15em] font-black">{invocation.repetitions} répétitions</p>
-                            </div>
-                            <div className="flex items-center gap-1.5 ml-auto">
-                                <button
-                                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggleFavorite(invocation.id); }}
-                                    className="touch-target rounded-xl flex items-center justify-center transition-all active:scale-75 hover:bg-white/5"
+                invocations.map((invocation: any) => {
+                    const isExpanded = expandedId === invocation.id;
+
+                    return (
+                        <div key={invocation.id} className="group relative">
+                            <motion.div
+                                whileHover={{ scale: isExpanded ? 1 : 1.005 }}
+                                className={`bg-white/[0.06] backdrop-blur-xl border border-white/10 rounded-[1.25rem] overflow-hidden transition-all duration-500 ${isExpanded ? "ring-2 ring-white/20 shadow-xl shadow-white/5" : "hover:border-white/20"}`}
+                            >
+                                <div
+                                    className="flex items-center gap-5 p-5 cursor-pointer active:bg-white/[0.04] transition-all"
+                                    onClick={() => onToggleExpand(invocation.id)}
                                 >
-                                    <Star
-                                        size={20}
-                                        fill={isFavorite(invocation.id) ? beadColor : "none"}
-                                        className={isFavorite(invocation.id) ? "" : "text-slate-700"}
-                                        style={{ color: isFavorite(invocation.id) ? beadColor : undefined }}
-                                    />
-                                </button>
-                                <button
-                                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); onEdit(invocation); }}
-                                    className="touch-target rounded-xl flex items-center justify-center text-slate-700 hover:text-white active:scale-75 transition-all hover:bg-white/5"
-                                >
-                                    <Pencil size={18} />
-                                </button>
-                                <button
-                                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(invocation.id); }}
-                                    className="touch-target rounded-xl flex items-center justify-center text-slate-700 hover:text-rose-500 active:scale-75 transition-all hover:bg-white/5"
-                                >
-                                    <Trash2 size={19} />
-                                </button>
-                            </div>
-                        </motion.div>
-                    </Link>
-                ))
+                                    <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-slate-400 group-hover:border-white/20 transition-all duration-300">
+                                        <BookOpen size={18} style={{ color: invocation.id.startsWith("inv-default-") ? beadColor : undefined }} />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <h4 className="text-[15px] font-bold text-white group-hover:text-white transition-colors leading-tight mb-1">{invocation.name}</h4>
+                                        {invocation.description && (
+                                            <p className="text-xs text-slate-500 line-clamp-1 mb-2">{invocation.description}</p>
+                                        )}
+                                        <p className="text-[10px] text-slate-400 uppercase tracking-[0.15em] font-black">{invocation.repetitions} répétitions</p>
+                                    </div>
+                                    <div className="flex items-center gap-1.5 ml-auto">
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); onToggleFavorite(invocation.id); }}
+                                            className="touch-target rounded-xl flex items-center justify-center transition-all active:scale-75 hover:bg-white/5"
+                                        >
+                                            <Star
+                                                size={20}
+                                                fill={isFavorite(invocation.id) ? beadColor : "none"}
+                                                className={isFavorite(invocation.id) ? "" : "text-slate-700"}
+                                                style={{ color: isFavorite(invocation.id) ? beadColor : undefined }}
+                                            />
+                                        </button>
+                                        <div className={`touch-target rounded-xl flex items-center justify-center text-slate-700 transition-all duration-500 ${isExpanded ? "rotate-180 bg-white/10 text-white" : ""}`}>
+                                            <ChevronDown size={18} />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <AnimatePresence>
+                                    {isExpanded && (
+                                        <motion.div
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: "auto", opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                                            className="border-t border-white/5 bg-white/[0.02]"
+                                        >
+                                            <div className="p-6 pt-4 flex gap-3">
+                                                <Link
+                                                    href={`/session?invocation=${invocation.id}`}
+                                                    onClick={onSessionStart}
+                                                    style={{
+                                                        backgroundColor: beadColor,
+                                                        boxShadow: `0 12px 35px -8px ${beadColor}50, 0 0 0 1px ${beadColor}30`
+                                                    }}
+                                                    className="flex-1 flex items-center justify-center gap-2.5 py-4.5 rounded-xl text-white text-xs font-black hover:scale-[1.01] active:scale-[0.98] transition-all duration-300"
+                                                >
+                                                    <Play size={15} fill="currentColor" />
+                                                    LANCER
+                                                </Link>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); onEdit(invocation); }}
+                                                        className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/10 transition-all"
+                                                    >
+                                                        <Pencil size={18} />
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); onDelete(invocation.id); }}
+                                                        className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-500 hover:text-rose-500 hover:bg-white/10 transition-all"
+                                                    >
+                                                        <Trash2 size={18} />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </motion.div>
+                        </div>
+                    );
+                })
             ) : (
                 <div className="text-center py-16 px-6 bg-white/[0.03] border border-dashed border-white/10 rounded-[2rem]">
                     <div className="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-5 opacity-40">
