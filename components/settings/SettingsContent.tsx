@@ -94,7 +94,7 @@ function SettingsInner() {
                         </div>
 
                         {/* ── SCROLLABLE CONTENT ─────────────────────── */}
-                        <div className="flex-1 overflow-y-auto w-full no-scrollbar pb-36 touch-pan-y overscroll-contain">
+                        <div className="flex-1 overflow-hidden w-full px-1 pt-4 pb-20 touch-none">
                             <div className="bg-white/[0.04] backdrop-blur-xl border border-white/5 rounded-2xl overflow-hidden mb-auto">
                                 {menuItems.map((item, index) => {
                                     const Icon = item.icon;
@@ -151,7 +151,7 @@ function SettingsInner() {
                         </div>
 
                         {/* ── SCROLLABLE CONTENT ─────────────────────── */}
-                        <div className="flex-1 overflow-y-auto w-full no-scrollbar pb-36 touch-pan-y overscroll-contain">
+                        <div className="flex-1 overflow-hidden w-full px-1 pt-4 pb-20 touch-none">
                             <div className="space-y-4">
                                 {/* Sound Toggle */}
                                 <div className="bg-white/[0.04] backdrop-blur-xl border border-white/5 rounded-2xl p-5">
