@@ -63,7 +63,7 @@ export const useInvocationStore = create<InvocationStoreState>()(
                     createdAt: new Date().toISOString(),
                 };
                 set((state) => ({
-                    invocations: [...state.invocations, newInvocation],
+                    invocations: [newInvocation, ...state.invocations],
                 }));
             },
 

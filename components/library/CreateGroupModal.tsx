@@ -147,107 +147,123 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModa
                             </button>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-6 relative z-10 flex-1 flex flex-col min-h-0 overflow-y-auto pr-1 -mr-1 scrollbar-hide pb-6">
-                            {/* Name Input */}
-                            <div className="space-y-3 shrink-0">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Nom de la collection</label>
-                                <input
-                                    type="text"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
-                                    placeholder="Ex: Rituel du Matin"
-                                    className="w-full px-6 py-4.5 bg-white/[0.03] border border-white/10 rounded-2xl text-white text-lg placeholder:text-slate-700 focus:outline-none focus:border-white/20 transition-all font-bold"
-                                />
-                                {errors.name && (
-                                    <p className="text-[11px] font-bold text-rose-500 px-1">{errors.name}</p>
-                                )}
-                            </div>
-
-                            {/* Sequence List */}
-                            <div className="space-y-4 flex-1 flex flex-col min-h-0">
-                                <div className="flex items-center justify-between px-1">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Séquence d'étapes</label>
-                                    <span className="text-[10px] font-bold text-slate-600 bg-white/5 px-3 py-1 rounded-full">{selectedInvocations.length} étape{selectedInvocations.length > 1 ? 's' : ''}</span>
-                                </div>
-
-                                <div className="space-y-2.5 overflow-y-auto px-1 -mx-1 scrollbar-hide py-1 flex-1">
-                                    <AnimatePresence mode="popLayout">
-                                        {selectedInvocations.map((sel, index) => {
-                                            const invocation = getInvocationById(sel.invocationId);
-                                            if (!invocation) return null;
-
-                                            return (
-                                                <motion.div
-                                                    key={`${sel.invocationId}-${index}`}
-                                                    layout
-                                                    className="flex items-center gap-4 p-4 bg-white/[0.03] border border-white/5 rounded-2xl group transition-all"
-                                                >
-                                                    <GripVertical size={16} className="text-slate-700 shrink-0" />
-                                                    <div className="flex-1 min-w-0">
-                                                        <p className="text-sm font-bold text-white truncate">{invocation.name}</p>
-                                                    </div>
-                                                    <div className="flex items-center gap-3">
-                                                        <input
-                                                            type="number"
-                                                            value={sel.repetitions}
-                                                            onChange={(e) => handleUpdateRepetitions(index, parseInt(e.target.value) || 1)}
-                                                            className="w-14 h-10 bg-white/5 border border-white/5 rounded-xl text-white text-[13px] font-black text-center focus:outline-none focus:border-white/20"
-                                                        />
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => handleRemoveInvocation(index)}
-                                                            className="w-10 h-10 rounded-xl bg-rose-500/5 flex items-center justify-center text-rose-500/60 hover:text-rose-500 transition-colors"
-                                                        >
-                                                            <Trash2 size={16} />
-                                                        </button>
-                                                    </div>
-                                                </motion.div>
-                                            );
-                                        })}
-                                    </AnimatePresence>
-
-                                    {/* Add Step Dropdown */}
-                                    {availableInvocations.length > 0 ? (
-                                        <div className="relative pt-2">
-                                            <select
-                                                onChange={(e) => {
-                                                    if (e.target.value) {
-                                                        handleAddInvocation(e.target.value);
-                                                        e.target.value = "";
-                                                    }
-                                                }}
-                                                className="w-full appearance-none px-6 py-4 bg-white/[0.02] border-2 border-dashed border-white/10 rounded-2xl text-slate-500 text-[13px] font-black focus:outline-none transition-all cursor-pointer hover:border-white/20 hover:text-slate-400"
-                                            >
-                                                <option value="">+ AJOUTER UNE ÉTAPE</option>
-                                                {availableInvocations.map((inv) => (
-                                                    <option key={inv.id} value={inv.id} className="bg-slate-900 text-white">
-                                                        {inv.name}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                            <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-30">
-                                                <Plus size={16} />
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="text-center py-6 border-2 border-dashed border-white/5 rounded-2xl">
-                                            <p className="text-[10px] font-bold uppercase tracking-widest text-slate-700">Toutes les étapes ont été ajoutées</p>
-                                        </div>
+                        <form onSubmit={handleSubmit} className="space-y-4 relative z-10 flex-1 flex flex-col min-h-0 pb-6">
+                            {/* Scrollable Content */}
+                            <div className="flex-1 overflow-y-auto min-h-0 pr-1 -mr-1 scrollbar-hide space-y-6">
+                                {/* Name Input */}
+                                <div className="space-y-3 shrink-0">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Nom de la collection</label>
+                                    <input
+                                        type="text"
+                                        value={name}
+                                        onChange={(e) => setName(e.target.value)}
+                                        placeholder="Ex: Rituel du Matin"
+                                        className="w-full px-6 py-4.5 bg-white/[0.03] border border-white/10 rounded-2xl text-white text-lg placeholder:text-slate-700 focus:outline-none focus:border-white/20 transition-all font-bold"
+                                    />
+                                    {errors.name && (
+                                        <p className="text-[11px] font-bold text-rose-500 px-1">{errors.name}</p>
                                     )}
                                 </div>
+
+                                {/* Sequence List */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center justify-between px-1">
+                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Séquence d'étapes</label>
+                                        <span className="text-[10px] font-bold text-slate-600 bg-white/5 px-3 py-1 rounded-full">{selectedInvocations.length} étape{selectedInvocations.length > 1 ? 's' : ''}</span>
+                                    </div>
+
+                                    <div className="space-y-2.5">
+                                        <AnimatePresence mode="popLayout">
+                                            {selectedInvocations.map((sel, index) => {
+                                                const invocation = getInvocationById(sel.invocationId);
+                                                if (!invocation) return null;
+
+                                                return (
+                                                    <motion.div
+                                                        key={`${sel.invocationId}-${index}`}
+                                                        layout
+                                                        initial={{ opacity: 0, x: -20 }}
+                                                        animate={{ opacity: 1, x: 0 }}
+                                                        exit={{ opacity: 0, x: 20 }}
+                                                        className="flex items-center gap-4 p-4 bg-white/[0.03] border border-white/5 rounded-2xl group transition-all"
+                                                    >
+                                                        <GripVertical size={16} className="text-slate-700 shrink-0" />
+                                                        <div className="flex-1 min-w-0">
+                                                            <p className="text-sm font-bold text-white truncate">{invocation.name}</p>
+                                                        </div>
+                                                        <div className="flex items-center gap-3">
+                                                            <input
+                                                                type="number"
+                                                                value={sel.repetitions}
+                                                                onChange={(e) => handleUpdateRepetitions(index, parseInt(e.target.value) || 1)}
+                                                                className="w-14 h-10 bg-white/5 border border-white/5 rounded-xl text-white text-[13px] font-black text-center focus:outline-none focus:border-white/20"
+                                                            />
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => handleRemoveInvocation(index)}
+                                                                className="w-10 h-10 rounded-xl bg-rose-500/5 flex items-center justify-center text-rose-500/60 hover:text-rose-500 transition-colors"
+                                                            >
+                                                                <Trash2 size={16} />
+                                                            </button>
+                                                        </div>
+                                                    </motion.div>
+                                                );
+                                            })}
+                                        </AnimatePresence>
+                                        {selectedInvocations.length === 0 && (
+                                            <div className="text-center py-8 border-2 border-dashed border-white/5 rounded-2xl">
+                                                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-700">Aucune étape</p>
+                                                <p className="text-[10px] text-slate-600 mt-1">Ajoutez une invocation ci-dessous</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
 
-                            <button
-                                type="submit"
-                                style={{
-                                    backgroundColor: beadColor,
-                                    boxShadow: `0 10px 30px -10px ${beadColor}80`
-                                }}
-                                className="w-full py-5 rounded-[1.5rem] text-white font-black text-sm tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2 shrink-0"
-                            >
-                                <Check size={18} strokeWidth={4} />
-                                {isEditing ? "ENREGISTRER LA COLLECTION" : "CRÉER LA COLLECTION"}
-                            </button>
+                            {/* Fixed Bottom Section: Add Step + Submit */}
+                            <div className="shrink-0 space-y-4 pt-2">
+                                {/* Add Step Dropdown */}
+                                {availableInvocations.length > 0 ? (
+                                    <div className="relative">
+                                        <select
+                                            onChange={(e) => {
+                                                if (e.target.value) {
+                                                    handleAddInvocation(e.target.value);
+                                                    e.target.value = "";
+                                                }
+                                            }}
+                                            className="w-full appearance-none px-6 py-4 bg-white/[0.02] border-2 border-dashed border-white/10 rounded-2xl text-slate-500 text-[13px] font-black focus:outline-none transition-all cursor-pointer hover:border-white/20 hover:text-slate-400"
+                                        >
+                                            <option value="">+ AJOUTER UNE ÉTAPE</option>
+                                            {availableInvocations.map((inv) => (
+                                                <option key={inv.id} value={inv.id} className="bg-slate-900 text-white">
+                                                    {inv.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none opacity-30">
+                                            <Plus size={16} />
+                                        </div>
+                                    </div>
+                                ) : ( // Only show if we actually have invocations to add, otherwise showing "All added" is fine but maybe less sticky? 
+                                    // User said "ajouter une etape doit toujours etre visible". If all added, we can show the "All added" message sticky.
+                                    <div className="text-center py-4 border-2 border-dashed border-white/5 rounded-2xl bg-white/[0.02]">
+                                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-700">Toutes les étapes ajoutées</p>
+                                    </div>
+                                )}
+
+                                <button
+                                    type="submit"
+                                    style={{
+                                        backgroundColor: beadColor,
+                                        boxShadow: `0 10px 30px -10px ${beadColor}80`
+                                    }}
+                                    className="w-full py-5 rounded-[1.5rem] text-white font-black text-sm tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2 shrink-0"
+                                >
+                                    <Check size={18} strokeWidth={4} />
+                                    {isEditing ? "ENREGISTRER LA COLLECTION" : "CRÉER LA COLLECTION"}
+                                </button>
+                            </div>
                         </form>
                     </motion.div>
                 </motion.div>

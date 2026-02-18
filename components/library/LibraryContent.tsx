@@ -184,11 +184,9 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                 )}
                                 <span className="relative z-10 flex items-center gap-2">
                                     <span>{tab.label}</span>
-                                    {tab.count > 0 && (
-                                        <span className={`text-[10px] font-bold opacity-60 ${activeTab === tab.key ? "text-white" : "text-slate-500"}`}>
-                                            {tab.count}
-                                        </span>
-                                    )}
+                                    <span className={`text-[10px] font-bold opacity-60 ${activeTab === tab.key ? "text-white" : "text-slate-500"}`}>
+                                        {tab.count}
+                                    </span>
                                 </span>
                             </button>
                         ))}
