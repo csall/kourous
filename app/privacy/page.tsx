@@ -19,7 +19,7 @@ export default function PrivacyPage() {
                     >
                         <ArrowLeft size={20} />
                     </Link>
-                    <h1 className="text-lg font-bold text-white tracking-tight">Politique de Confidentialité</h1>
+                    <h1 className="text-lg font-bold text-white tracking-tight">Politique de confidentialité</h1>
                 </div>
             </header>
 

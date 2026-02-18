@@ -42,30 +42,44 @@ function SettingsInner() {
         { key: 'auto' as const, label: 'Auto', icon: <Smartphone size={14} /> },
     ];
 
-    const menuItems = [
+    const menuGroups = [
         {
-            icon: HelpCircle,
-            label: "Aide",
-            href: "/support",
-            external: false
+            title: "Support",
+            items: [
+                {
+                    icon: HelpCircle,
+                    label: "Aide",
+                    href: "/support",
+                    external: false,
+                    color: "bg-blue-500"
+                },
+                {
+                    icon: Mail,
+                    label: "Contactez-nous",
+                    href: "mailto:cheikh.sall@icloud.com",
+                    external: true,
+                    color: "bg-sky-500"
+                }
+            ]
         },
         {
-            icon: Mail,
-            label: "Contactez-nous",
-            href: "mailto:contact@kourous.app",
-            external: true
-        },
-        {
-            icon: Shield,
-            label: "Confidentialité",
-            href: "/privacy",
-            external: false
-        },
-        {
-            icon: FileText,
-            label: "Conditions Générales d'Utilisation",
-            href: "/terms",
-            external: false
+            title: "Informations Légales",
+            items: [
+                {
+                    icon: Shield,
+                    label: "Politique de confidentialité",
+                    href: "/privacy",
+                    external: false,
+                    color: "bg-gray-500"
+                },
+                {
+                    icon: FileText,
+                    label: "Conditions Générales d'Utilisation",
+                    href: "/terms",
+                    external: false,
+                    color: "bg-slate-500"
+                }
+            ]
         }
     ];
 
@@ -95,37 +109,39 @@ function SettingsInner() {
 
                         {/* ── SCROLLABLE CONTENT ─────────────────────── */}
                         <div className="flex-1 overflow-hidden w-full px-1 pt-4 pb-20 touch-none">
-                            <div className="bg-white/[0.04] backdrop-blur-xl border border-white/5 rounded-2xl overflow-hidden mb-auto">
-                                {menuItems.map((item, index) => {
-                                    const Icon = item.icon;
-                                    const isLast = index === menuItems.length - 1;
+                            <div className="space-y-6">
+                                {menuGroups.map((group, groupIndex) => (
+                                    <div key={group.title}>
+                                        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 pl-4">
+                                            {group.title}
+                                        </h3>
+                                        <div className="bg-white/[0.04] backdrop-blur-xl border border-white/5 rounded-2xl overflow-hidden mb-auto">
+                                            {group.items.map((item, index) => {
+                                                const Icon = item.icon;
+                                                const isLast = index === group.items.length - 1;
 
-                                    return (
-                                        <div key={item.label}>
-                                            <Link href={item.href} target={item.external ? "_blank" : undefined}>
-                                                <div className={`flex items-center justify-between p-4 hover:bg-white/5 transition-colors group cursor-pointer`}>
-                                                    <div className="flex items-center gap-4">
-                                                        <Icon size={20} className="text-slate-400 group-hover:text-white transition-colors" />
-                                                        <span className="text-sm font-medium text-slate-200 group-hover:text-white transition-colors">
-                                                            {item.label}
-                                                        </span>
+                                                return (
+                                                    <div key={item.label}>
+                                                        <Link href={item.href} target={item.external ? "_blank" : undefined}>
+                                                            <div className="flex items-center justify-between p-4 bg-transparent active:bg-white/[0.08] transition-colors cursor-pointer group">
+                                                                <div className="flex items-center gap-4">
+                                                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${item.color} text-white shadow-lg shadow-black/20`}>
+                                                                        <Icon size={18} />
+                                                                    </div>
+                                                                    <span className="text-[15px] font-medium text-white group-hover:text-white transition-colors">
+                                                                        {item.label}
+                                                                    </span>
+                                                                </div>
+                                                                <ChevronRight size={16} className="text-slate-500 group-hover:text-slate-400 transition-colors opacity-70" />
+                                                            </div>
+                                                        </Link>
+                                                        {!isLast && <div className="h-px bg-white/5 ml-[3.5rem]" />}
                                                     </div>
-                                                    <ChevronRight size={18} className="text-slate-600 group-hover:text-slate-400 transition-colors" />
-                                                </div>
-                                            </Link>
-                                            {!isLast && <div className="h-px bg-white/5 mx-4" />}
+                                                );
+                                            })}
                                         </div>
-                                    );
-                                })}
-                            </div>
-
-                            <div className="text-center space-y-2 mt-4 pb-2">
-                                <div className="text-xs text-slate-500">
-                                    Kourous v1.0.0
-                                </div>
-                                <div className="text-[10px] text-slate-600">
-                                    Fabriqué pour la paix intérieure.
-                                </div>
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     </motion.div>
