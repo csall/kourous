@@ -7,7 +7,6 @@ import { useState, useEffect } from "react";
 import { useInvocationStore, type InvocationGroup } from "@/lib/store/invocationStore";
 import { CreateInvocationModal } from "@/components/library/CreateInvocationModal";
 import { CreateGroupModal } from "@/components/library/CreateGroupModal";
-import { prayerPresets } from "@/lib/data/prayerPresets";
 import { useSessionStore } from "@/lib/store/sessionStore";
 
 interface LibraryContentProps {
@@ -25,12 +24,13 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
     const { invocations, groups, deleteInvocation, deleteGroup, getInvocationById, loadDefaultData, toggleFavorite, isFavorite, favoriteIds } = useInvocationStore();
     const beadColor = useSessionStore((s) => s.beadColor);
 
-    // Load defaults if store is empty
+    // Load defaults if store is empty OR if new defaults are missing (migration)
     useEffect(() => {
-        if (invocations.length === 0 && groups.length === 0) {
+        const hasTasbih = groups.some(g => g.name === "Tasbih après la Prière");
+        if ((invocations.length === 0 && groups.length === 0) || !hasTasbih) {
             loadDefaultData();
         }
-    }, [invocations.length, groups.length, loadDefaultData]);
+    }, [invocations.length, groups.length, loadDefaultData, groups]);
 
     const filteredInvocations = invocations.filter(inv =>
         inv.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -41,14 +41,8 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
         grp.description?.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-    const filteredPresets = prayerPresets.filter(p =>
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.description.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
     const favoriteInvocations = invocations.filter(inv => isFavorite(inv.id));
     const favoriteGroups = groups.filter(grp => isFavorite(grp.id));
-    const favoritePresets = prayerPresets.filter(p => isFavorite(p.id));
 
     const toggleExpand = (id: string) => {
         setExpandedId(expandedId === id ? null : id);
@@ -165,7 +159,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                     <div className="flex gap-1.5 p-1 bg-white/[0.04] rounded-xl border border-white/5">
                         {[
                             { key: "invocations" as const, label: "Invocations", count: invocations.length, icon: BookOpen },
-                            { key: "collections" as const, label: "Collections", count: prayerPresets.length + groups.length, icon: Sparkles },
+                            { key: "collections" as const, label: "Collections", count: groups.length, icon: Sparkles },
                             { key: "favorites" as const, label: "Favoris", count: favoriteIds.length, icon: Star },
                         ].map(tab => (
                             <button
@@ -223,7 +217,6 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                             >
                                 <CollectionSection
                                     groups={filteredGroups}
-                                    presets={filteredPresets}
                                     expandedId={expandedId}
                                     onToggleExpand={toggleExpand}
                                     onSessionStart={onSessionStart}
@@ -259,12 +252,11 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                                 />
                                             </div>
                                         )}
-                                        {(favoriteGroups.length > 0 || favoritePresets.length > 0) && (
+                                        {favoriteGroups.length > 0 && (
                                             <div className="space-y-4">
                                                 <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 px-1">Collections</h3>
                                                 <CollectionSection
                                                     groups={favoriteGroups}
-                                                    presets={favoritePresets}
                                                     expandedId={expandedId}
                                                     onToggleExpand={toggleExpand}
                                                     onSessionStart={onSessionStart}
@@ -337,14 +329,12 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onToggleFavori
                                         style={{ color: isFavorite(invocation.id) ? beadColor : undefined }}
                                     />
                                 </button>
-                                {!invocation.id.startsWith("inv-default-") && (
-                                    <button
-                                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(invocation.id); }}
-                                        className="touch-target rounded-xl flex items-center justify-center text-slate-700 hover:text-rose-500 active:scale-75 transition-all hover:bg-white/5"
-                                    >
-                                        <Trash2 size={19} />
-                                    </button>
-                                )}
+                                <button
+                                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(invocation.id); }}
+                                    className="touch-target rounded-xl flex items-center justify-center text-slate-700 hover:text-rose-500 active:scale-75 transition-all hover:bg-white/5"
+                                >
+                                    <Trash2 size={19} />
+                                </button>
                             </div>
                         </motion.div>
                     </Link>
@@ -362,10 +352,8 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onToggleFavori
     );
 }
 
-function CollectionSection({ groups, presets, expandedId, onToggleExpand, onSessionStart, onEdit, onDelete, onToggleFavorite, isFavorite, beadColor, getInvocationById }: any) {
-    const allCollections = [...presets, ...groups];
-
-    if (allCollections.length === 0) {
+function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart, onEdit, onDelete, onToggleFavorite, isFavorite, beadColor, getInvocationById }: any) {
+    if (groups.length === 0) {
         return (
             <div className="text-center py-16 px-6 bg-white/[0.03] border border-dashed border-white/10 rounded-[2rem]">
                 <div className="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-5 opacity-40">
@@ -379,85 +367,6 @@ function CollectionSection({ groups, presets, expandedId, onToggleExpand, onSess
 
     return (
         <div className="space-y-4">
-            {presets.map((preset: any) => (
-                <div key={preset.id} className="group relative">
-                    <motion.div
-                        whileHover={{ scale: expandedId === preset.id ? 1 : 1.005 }}
-                        className={`bg-white/[0.06] backdrop-blur-xl border border-white/10 rounded-[1.5rem] overflow-hidden transition-all duration-500 ${expandedId === preset.id ? "ring-2 ring-white/20 shadow-xl shadow-white/5" : "hover:border-white/20"}`}
-                    >
-                        <div
-                            className="flex items-center gap-5 p-5 cursor-pointer active:bg-white/[0.04] transition-all"
-                            onClick={() => onToggleExpand(preset.id)}
-                        >
-                            <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center shrink-0 border border-white/10 group-hover:border-white/20 transition-all">
-                                <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: beadColor, boxShadow: `0 0 12px ${beadColor}90` }} />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                                <h4 className="text-[15px] font-bold text-white group-hover:text-white transition-colors leading-tight mb-1">{preset.name}</h4>
-                                <p className="text-xs text-slate-500 line-clamp-1 mb-2">{preset.description}</p>
-                                <p className="text-[10px] text-slate-400 uppercase tracking-[0.15em] font-black">{preset.totalBeads} perles · {preset.cycles} cycle{preset.cycles > 1 ? 's' : ''}</p>
-                            </div>
-                            <div className="flex items-center gap-1.5">
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); onToggleFavorite(preset.id); }}
-                                    className="w-10 h-10 rounded-xl flex items-center justify-center transition-all active:scale-75 hover:bg-white/5"
-                                >
-                                    <Star
-                                        size={19}
-                                        fill={isFavorite(preset.id) ? beadColor : "none"}
-                                        className={isFavorite(preset.id) ? "" : "text-slate-700"}
-                                        style={{ color: isFavorite(preset.id) ? beadColor : undefined }}
-                                    />
-                                </button>
-                                <div className={`w-9 h-9 rounded-xl flex items-center justify-center text-slate-700 transition-all duration-500 ${expandedId === preset.id ? "rotate-180 bg-white/10 text-white" : ""}`}>
-                                    <ChevronDown size={16} />
-                                </div>
-                            </div>
-                        </div>
-
-                        <AnimatePresence>
-                            {expandedId === preset.id && (
-                                <motion.div
-                                    initial={{ height: 0, opacity: 0 }}
-                                    animate={{ height: "auto", opacity: 1 }}
-                                    exit={{ height: 0, opacity: 0 }}
-                                    transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                                    className="border-t border-white/5 bg-white/[0.02]"
-                                >
-                                    <div className="p-6 space-y-4">
-                                        <div className="space-y-1.5">
-                                            {preset.sequence.map((step: any, i: number) => (
-                                                <div key={i} className="flex items-center justify-between py-3 border-b border-white/[0.03] last:border-0 opacity-80 hover:opacity-100 transition-opacity">
-                                                    <div className="flex items-center gap-3.5">
-                                                        <div className="text-[10px] font-black text-slate-600 w-5">{i + 1}</div>
-                                                        <span className="text-sm font-medium text-slate-300">{step.label}</span>
-                                                    </div>
-                                                    <span className="text-[11px] font-black text-white bg-white/10 px-2.5 py-1 rounded-lg tracking-wider">{step.repetitions}×</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                        <div className="pt-2">
-                                            <Link
-                                                href="/session"
-                                                onClick={() => { useSessionStore.getState().setPreset(preset); onSessionStart?.(); }}
-                                                style={{
-                                                    backgroundColor: beadColor,
-                                                    boxShadow: `0 12px 35px -8px ${beadColor}50, 0 0 0 1px ${beadColor}30`
-                                                }}
-                                                className="flex items-center justify-center gap-2.5 w-full py-4.5 rounded-xl text-white text-xs font-black hover:scale-[1.01] active:scale-[0.98] transition-all duration-300"
-                                            >
-                                                <Play size={15} fill="currentColor" />
-                                                LANCER LA SESSION
-                                            </Link>
-                                        </div>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </motion.div>
-                </div>
-            ))}
-
             {groups.map((group: any) => {
                 const totalReps = group.invocations.reduce((sum: number, inv: any) => sum + inv.repetitions, 0);
                 const isExpanded = expandedId === group.id;
@@ -538,22 +447,21 @@ function CollectionSection({ groups, presets, expandedId, onToggleExpand, onSess
                                                     <Play size={15} fill="currentColor" />
                                                     LANCER
                                                 </Link>
-                                                {!group.id.startsWith("grp-default-") && (
-                                                    <div className="flex gap-2">
-                                                        <button
-                                                            onClick={(e) => { e.stopPropagation(); onEdit(group); }}
-                                                            className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/10 transition-all"
-                                                        >
-                                                            <Pencil size={18} />
-                                                        </button>
-                                                        <button
-                                                            onClick={(e) => { e.stopPropagation(); onDelete(group.id); }}
-                                                            className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-500 hover:text-rose-500 hover:bg-white/10 transition-all"
-                                                        >
-                                                            <Trash2 size={18} />
-                                                        </button>
-                                                    </div>
-                                                )}
+                                                {/* ENABLE EDIT/DELETE FOR ALL GROUPS */}
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); onEdit(group); }}
+                                                        className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/10 transition-all"
+                                                    >
+                                                        <Pencil size={18} />
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); onDelete(group.id); }}
+                                                        className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-500 hover:text-rose-500 hover:bg-white/10 transition-all"
+                                                    >
+                                                        <Trash2 size={18} />
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </motion.div>

@@ -70,6 +70,22 @@ export const defaultInvocations: Omit<Invocation, "id" | "createdAt">[] = [
         description: "Prières sur le Prophète ﷺ. Source de bénédictions et d'apaisement des soucis.",
         repetitions: 100,
     },
+    // CORAN (Sourates Protectrices)
+    {
+        name: "Al-Ikhlās (La Pureté)",
+        description: "Dis : Il est Allah, Unique. Sourate 112.",
+        repetitions: 3,
+    },
+    {
+        name: "Al-Falaq (L'Aube)",
+        description: "Dis : Je cherche protection auprès du Seigneur de l'aube naissante. Sourate 113.",
+        repetitions: 3,
+    },
+    {
+        name: "An-Nās (Les Hommes)",
+        description: "Dis : Je cherche protection auprès du Seigneur des hommes. Sourate 114.",
+        repetitions: 3,
+    },
 ];
 
 export const defaultGroups: Array<{
@@ -77,6 +93,33 @@ export const defaultGroups: Array<{
     description: string;
     invocationNames: Array<{ name: string; repetitions: number }>;
 }> = [
+        {
+            name: "Tasbih après la Prière",
+            description: "La sunna classique après chaque prière obligatoire.",
+            invocationNames: [
+                { name: "Subḥān Allāh", repetitions: 33 },
+                { name: "Al-ḥamdu li-llāh", repetitions: 33 },
+                { name: "Allāhu ʾAkbar", repetitions: 33 },
+            ],
+        },
+        {
+            name: "Tasbih de Fâtima",
+            description: "Recommandé avant de dormir pour la force et la sérénité.",
+            invocationNames: [
+                { name: "Allāhu ʾAkbar", repetitions: 34 },
+                { name: "Al-ḥamdu li-llāh", repetitions: 33 },
+                { name: "Subḥān Allāh", repetitions: 33 },
+            ],
+        },
+        {
+            name: "Protection du Matin",
+            description: "Courtes sourates protectrices à réciter au lever du soleil.",
+            invocationNames: [
+                { name: "Al-Ikhlās (La Pureté)", repetitions: 3 },
+                { name: "Al-Falaq (L'Aube)", repetitions: 3 },
+                { name: "An-Nās (Les Hommes)", repetitions: 3 },
+            ],
+        },
         {
             name: "Matin Paisible",
             description: "Pour commencer la journée avec sérénité et protection.",

@@ -137,23 +137,38 @@ export const useInvocationStore = create<InvocationStoreState>()(
             loadDefaultData: () => {
                 const { defaultInvocations, defaultGroups } = require("@/lib/data/defaultInvocations");
 
-                // Add default invocations
+                // Add default invocations (Idempotent: Check by name)
+                const currentInvocations = get().invocations;
+                const currentGroups = get().groups;
+
                 const invocationMap = new Map<string, string>();
                 const newInvocations: Invocation[] = [];
 
-                defaultInvocations.forEach((inv: any) => {
-                    const id = `inv-default-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-                    newInvocations.push({
-                        ...inv,
-                        id,
-                        createdAt: new Date().toISOString(),
-                    });
-                    invocationMap.set(inv.name, id);
+                // 1. Create a map of EXISTING invocations to reuse IDs
+                currentInvocations.forEach(inv => {
+                    invocationMap.set(inv.name, inv.id);
                 });
 
-                // Add default groups
+                defaultInvocations.forEach((inv: any) => {
+                    // Only add if it doesn't exist
+                    if (!invocationMap.has(inv.name)) {
+                        const id = `inv-default-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+                        const newInv = {
+                            ...inv,
+                            id,
+                            createdAt: new Date().toISOString(),
+                        };
+                        newInvocations.push(newInv);
+                        invocationMap.set(inv.name, id);
+                    }
+                });
+
+                // Add default groups (Idempotent: Check by name)
                 const newGroups: InvocationGroup[] = [];
                 defaultGroups.forEach((grp: any) => {
+                    // Check if group already exists
+                    if (currentGroups.some(g => g.name === grp.name)) return;
+
                     const invocations = grp.invocationNames
                         .map((invName: any) => {
                             const invId = invocationMap.get(invName.name);
