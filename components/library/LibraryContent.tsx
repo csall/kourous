@@ -90,7 +90,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                 {/* ── MOBILE NATIVE HEADER ─────────────────────────── */}
                 <div className="space-y-6">
                     {/* Large Title + Subtitle */}
-                    <div className="space-y-1 px-1">
+                    <div className="space-y-1">
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
                                 <Sparkles size={16} style={{ color: beadColor }} />
@@ -195,7 +195,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
             </div>
 
             {/* ── SCROLLABLE CONTENT ─────────────────────── */}
-            <div className="flex-1 overflow-y-auto w-full no-scrollbar pb-36 -mx-5 px-5 touch-pan-y overscroll-contain">
+            <div className="flex-1 overflow-y-auto w-full no-scrollbar pb-36 touch-pan-y overscroll-contain">
                 <AnimatePresence mode="wait">
                     {activeTab === "collections" ? (
                         <motion.div
@@ -311,46 +311,34 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
 
 function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onToggleFavorite, isFavorite, beadColor, expandedId, onToggleExpand }: any) {
     return (
-        <div className="space-y-4">
+        <div className="space-y-3">
             {invocations.length > 0 ? (
-                invocations.map((invocation: any) => {
+                invocations.map((invocation: any, index: number) => {
                     const isExpanded = expandedId === invocation.id;
 
                     return (
-                        <div key={invocation.id} className="group relative">
+                        <div key={invocation.id} className="relative group">
                             <motion.div
-                                whileHover={{ scale: isExpanded ? 1 : 1.005 }}
-                                className={`bg-white/[0.06] backdrop-blur-xl border border-white/10 rounded-[1.25rem] overflow-hidden transition-all duration-500 ${isExpanded ? "ring-2 ring-white/20 shadow-xl shadow-white/5" : "hover:border-white/20"}`}
+                                className={`transition-all duration-300 rounded-2xl border ${isExpanded ? "bg-white/[0.08] border-white/10" : "bg-white/[0.04] border-white/5 hover:border-white/10 hover:bg-white/[0.06] active:scale-[0.99]"}`}
                             >
                                 <div
-                                    className="flex items-center gap-5 p-5 cursor-pointer active:bg-white/[0.04] transition-all"
+                                    className="flex items-center gap-4 p-5 cursor-pointer"
                                     onClick={() => onToggleExpand(invocation.id)}
                                 >
-                                    <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-slate-400 group-hover:border-white/20 transition-all duration-300">
+                                    <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-slate-400 group-hover:border-white/20 transition-colors">
                                         <BookOpen size={18} style={{ color: invocation.id.startsWith("inv-default-") ? beadColor : undefined }} />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <h4 className="text-[15px] font-bold text-white group-hover:text-white transition-colors leading-tight mb-1">{invocation.name}</h4>
+                                        <h4 className={`text-[15px] font-semibold leading-tight transition-colors ${isExpanded ? "text-white" : "text-slate-200 group-hover:text-white"}`}>
+                                            {invocation.name}
+                                        </h4>
                                         {invocation.description && (
-                                            <p className="text-xs text-slate-500 line-clamp-1 mb-2">{invocation.description}</p>
+                                            <p className="text-[13px] text-slate-400 line-clamp-1 mt-0.5 font-medium opacity-80">{invocation.description}</p>
                                         )}
-                                        <p className="text-[10px] text-slate-400 uppercase tracking-[0.15em] font-black">{invocation.repetitions} répétitions</p>
                                     </div>
-                                    <div className="flex items-center gap-1.5 ml-auto">
-                                        <button
-                                            onClick={(e) => { e.stopPropagation(); onToggleFavorite(invocation.id); }}
-                                            className="touch-target rounded-xl flex items-center justify-center transition-all active:scale-75 hover:bg-white/5"
-                                        >
-                                            <Star
-                                                size={20}
-                                                fill={isFavorite(invocation.id) ? beadColor : "none"}
-                                                className={isFavorite(invocation.id) ? "" : "text-slate-700"}
-                                                style={{ color: isFavorite(invocation.id) ? beadColor : undefined }}
-                                            />
-                                        </button>
-                                        <div className={`touch-target rounded-xl flex items-center justify-center text-slate-700 transition-all duration-500 ${isExpanded ? "rotate-180 bg-white/10 text-white" : ""}`}>
-                                            <ChevronDown size={18} />
-                                        </div>
+                                    <div className="flex items-center gap-3">
+                                        <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider opacity-70 group-hover:opacity-100 transition-opacity">{invocation.repetitions} reps</span>
+                                        <ChevronDown size={16} className={`text-slate-500 transition-transform duration-300 ${isExpanded ? "rotate-180 text-white" : "group-hover:text-slate-300"}`} />
                                     </div>
                                 </div>
 
@@ -360,36 +348,37 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
                                             initial={{ height: 0, opacity: 0 }}
                                             animate={{ height: "auto", opacity: 1 }}
                                             exit={{ height: 0, opacity: 0 }}
-                                            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                                            className="border-t border-white/5 bg-white/[0.02]"
+                                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                                            className="overflow-hidden"
                                         >
-                                            <div className="p-6 pt-4 flex gap-3">
+                                            <div className="pb-6 px-5 pl-[3.5rem] flex items-center gap-2">
                                                 <Link
                                                     href={`/session?invocation=${invocation.id}`}
                                                     onClick={onSessionStart}
-                                                    style={{
-                                                        backgroundColor: beadColor,
-                                                        boxShadow: `0 12px 35px -8px ${beadColor}50, 0 0 0 1px ${beadColor}30`
-                                                    }}
-                                                    className="flex-1 flex items-center justify-center gap-2.5 py-4.5 rounded-xl text-white text-xs font-black hover:scale-[1.01] active:scale-[0.98] transition-all duration-300"
+                                                    style={{ backgroundColor: beadColor }}
+                                                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-white text-[13px] font-bold active:scale-[0.98] transition-transform shadow-lg shadow-black/20"
                                                 >
-                                                    <Play size={15} fill="currentColor" />
-                                                    LANCER
+                                                    <Play size={14} fill="currentColor" />
+                                                    Lancer
                                                 </Link>
-                                                <div className="flex gap-2">
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); onEdit(invocation); }}
-                                                        className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/10 transition-all"
-                                                    >
-                                                        <Pencil size={18} />
-                                                    </button>
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); onDelete(invocation.id); }}
-                                                        className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-500 hover:text-rose-500 hover:bg-white/10 transition-all"
-                                                    >
-                                                        <Trash2 size={18} />
-                                                    </button>
-                                                </div>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); onToggleFavorite(invocation.id); }}
+                                                    className={`w-11 h-11 rounded-xl flex items-center justify-center border transition-all ${isFavorite(invocation.id) ? "bg-white/10 border-transparent" : "border-white/10 text-slate-400 hover:bg-white/5"}`}
+                                                >
+                                                    <Star size={18} fill={isFavorite(invocation.id) ? beadColor : "none"} style={{ color: isFavorite(invocation.id) ? beadColor : undefined }} />
+                                                </button>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); onEdit(invocation); }}
+                                                    className="w-11 h-11 rounded-xl border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+                                                >
+                                                    <Pencil size={18} />
+                                                </button>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); onDelete(invocation.id); }}
+                                                    className="w-11 h-11 rounded-xl border border-white/10 flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-white/5 transition-all"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
                                             </div>
                                         </motion.div>
                                     )}
@@ -399,11 +388,11 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
                     );
                 })
             ) : (
-                <div className="text-center py-16 px-6 bg-white/[0.03] border border-dashed border-white/10 rounded-[2rem]">
-                    <div className="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-5 opacity-40">
-                        <BookOpen size={28} className="text-slate-400" />
+                <div className="text-center py-16 px-6 bg-transparent">
+                    <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4 opacity-40">
+                        <BookOpen size={24} className="text-slate-400" />
                     </div>
-                    <p className="text-sm font-bold text-slate-500 mb-2">Aucun résultat</p>
+                    <p className="text-sm font-bold text-slate-500 mb-1">Aucun résultat</p>
                     <p className="text-xs text-slate-600">Essayez une autre recherche</p>
                 </div>
             )}
@@ -425,46 +414,34 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
     }
 
     return (
-        <div className="space-y-4">
-            {groups.map((group: any) => {
+        <div className="space-y-3">
+            {groups.map((group: any, index: number) => {
                 const totalReps = group.invocations.reduce((sum: number, inv: any) => sum + inv.repetitions, 0);
                 const isExpanded = expandedId === group.id;
 
                 return (
-                    <div key={group.id} className="group relative">
+                    <div key={group.id} className="relative group">
                         <motion.div
-                            whileHover={{ scale: isExpanded ? 1 : 1.005 }}
-                            className={`bg-white/[0.06] backdrop-blur-xl border border-white/10 rounded-[1.5rem] overflow-hidden transition-all duration-500 ${isExpanded ? "ring-2 ring-white/20 shadow-xl shadow-white/5" : "hover:border-white/20"}`}
+                            className={`transition-all duration-300 rounded-2xl border ${isExpanded ? "bg-white/[0.08] border-white/10" : "bg-white/[0.04] border-white/5 hover:border-white/10 hover:bg-white/[0.06] active:scale-[0.99]"}`}
                         >
                             <div
-                                className="flex items-center gap-5 p-5 cursor-pointer active:bg-white/[0.04] transition-all"
+                                className="flex items-center gap-4 p-5 cursor-pointer"
                                 onClick={() => onToggleExpand(group.id)}
                             >
-                                <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center shrink-0 border border-white/10 group-hover:border-white/20 transition-all">
-                                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: beadColor, boxShadow: `0 0 12px ${beadColor}90` }} />
+                                <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center shrink-0 border border-white/10 group-hover:border-white/20 transition-colors">
+                                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: beadColor, boxShadow: `0 0 12px ${beadColor}90` }} />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <h4 className="text-[15px] font-bold text-white group-hover:text-white transition-colors leading-tight mb-1">{group.name}</h4>
+                                    <h4 className={`text-[15px] font-semibold leading-tight transition-colors ${isExpanded ? "text-white" : "text-slate-200 group-hover:text-white"}`}>
+                                        {group.name}
+                                    </h4>
                                     {group.description && (
-                                        <p className="text-xs text-slate-500 line-clamp-1 mb-2">{group.description}</p>
+                                        <p className="text-[13px] text-slate-400 line-clamp-1 mt-0.5 font-medium opacity-80">{group.description}</p>
                                     )}
-                                    <p className="text-[10px] text-slate-400 uppercase tracking-[0.15em] font-black">{totalReps} perles · {group.invocations.length} étapes</p>
                                 </div>
-                                <div className="flex items-center gap-1.5">
-                                    <button
-                                        onClick={(e) => { e.stopPropagation(); onToggleFavorite(group.id); }}
-                                        className="touch-target rounded-xl flex items-center justify-center transition-all active:scale-75 hover:bg-white/5"
-                                    >
-                                        <Star
-                                            size={20}
-                                            fill={isFavorite(group.id) ? beadColor : "none"}
-                                            className={isFavorite(group.id) ? "" : "text-slate-700"}
-                                            style={{ color: isFavorite(group.id) ? beadColor : undefined }}
-                                        />
-                                    </button>
-                                    <div className={`touch-target rounded-xl flex items-center justify-center text-slate-700 transition-all duration-500 ${isExpanded ? "rotate-180 bg-white/10 text-white" : ""}`}>
-                                        <ChevronDown size={18} />
-                                    </div>
+                                <div className="flex items-center gap-3">
+                                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider opacity-70 group-hover:opacity-100 transition-opacity">{group.invocations.length} étapes</span>
+                                    <ChevronDown size={16} className={`text-slate-500 transition-transform duration-300 ${isExpanded ? "rotate-180 text-white" : "group-hover:text-slate-300"}`} />
                                 </div>
                             </div>
 
@@ -474,53 +451,55 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                                         initial={{ height: 0, opacity: 0 }}
                                         animate={{ height: "auto", opacity: 1 }}
                                         exit={{ height: 0, opacity: 0 }}
-                                        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                                        className="border-t border-white/5 bg-white/[0.02]"
+                                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                                        className="overflow-hidden"
                                     >
-                                        <div className="p-6 space-y-4">
-                                            <div className="space-y-1.5">
-                                                {group.invocations.map((inv: any, i: number) => {
-                                                    const invData = getInvocationById(inv.invocationId);
-                                                    return (
-                                                        <div key={i} className="flex items-center justify-between py-3 border-b border-white/[0.03] last:border-0 opacity-80 hover:opacity-100 transition-opacity">
-                                                            <div className="flex items-center gap-3.5">
-                                                                <div className="text-[10px] font-black text-slate-600 w-5">{i + 1}</div>
-                                                                <span className="text-sm font-medium text-slate-300">{invData?.name || "Invocation"}</span>
-                                                            </div>
-                                                            <span className="text-[11px] font-black text-white bg-white/10 px-2.5 py-1 rounded-lg tracking-wider">{inv.repetitions}×</span>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-
-                                            <div className="pt-2 flex gap-3">
+                                        <div className="pb-6 px-5 space-y-4">
+                                            {/* Action Bar */}
+                                            <div className="flex items-center gap-2 pl-[3.5rem]">
                                                 <Link
                                                     href={`/session?group=${group.id}`}
                                                     onClick={onSessionStart}
-                                                    style={{
-                                                        backgroundColor: beadColor,
-                                                        boxShadow: `0 12px 35px -8px ${beadColor}50, 0 0 0 1px ${beadColor}30`
-                                                    }}
-                                                    className="flex-1 flex items-center justify-center gap-2.5 py-4.5 rounded-xl text-white text-xs font-black hover:scale-[1.01] active:scale-[0.98] transition-all duration-300"
+                                                    style={{ backgroundColor: beadColor }}
+                                                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-white text-[13px] font-bold active:scale-[0.98] transition-transform shadow-lg shadow-black/20"
                                                 >
-                                                    <Play size={15} fill="currentColor" />
-                                                    LANCER
+                                                    <Play size={14} fill="currentColor" />
+                                                    Lancer
                                                 </Link>
-                                                {/* ENABLE EDIT/DELETE FOR ALL GROUPS */}
-                                                <div className="flex gap-2">
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); onEdit(group); }}
-                                                        className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/10 transition-all"
-                                                    >
-                                                        <Pencil size={18} />
-                                                    </button>
-                                                    <button
-                                                        onClick={(e) => { e.stopPropagation(); onDelete(group.id); }}
-                                                        className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-500 hover:text-rose-500 hover:bg-white/10 transition-all"
-                                                    >
-                                                        <Trash2 size={18} />
-                                                    </button>
-                                                </div>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); onToggleFavorite(group.id); }}
+                                                    className={`w-11 h-11 rounded-xl flex items-center justify-center border transition-all ${isFavorite(group.id) ? "bg-white/10 border-transparent" : "border-white/10 text-slate-400 hover:bg-white/5"}`}
+                                                >
+                                                    <Star size={18} fill={isFavorite(group.id) ? beadColor : "none"} style={{ color: isFavorite(group.id) ? beadColor : undefined }} />
+                                                </button>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); onEdit(group); }}
+                                                    className="w-11 h-11 rounded-xl border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+                                                >
+                                                    <Pencil size={18} />
+                                                </button>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); onDelete(group.id); }}
+                                                    className="w-11 h-11 rounded-xl border border-white/10 flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-white/5 transition-all"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </div>
+
+                                            {/* Steps Preview */}
+                                            <div className="pl-[3.5rem] space-y-2.5 opacity-90">
+                                                {group.invocations.map((inv: any, i: number) => {
+                                                    const invData = getInvocationById(inv.invocationId);
+                                                    return (
+                                                        <div key={i} className="flex items-center justify-between text-[13px] py-1">
+                                                            <div className="flex items-center gap-3 text-slate-300">
+                                                                <span className="w-5 text-[10px] font-bold text-slate-500">{i + 1}</span>
+                                                                <span className="font-medium">{invData?.name || "Invocation"}</span>
+                                                            </div>
+                                                            <div className="bg-white/5 px-2 py-0.5 rounded text-[11px] font-mono text-slate-400">{inv.repetitions}</div>
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
                                         </div>
                                     </motion.div>

@@ -94,8 +94,8 @@ function SettingsInner() {
                         </div>
 
                         {/* ── SCROLLABLE CONTENT ─────────────────────── */}
-                        <div className="flex-1 overflow-y-auto w-full no-scrollbar pb-36 -mx-5 px-5 touch-pan-y overscroll-contain">
-                            <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden mb-auto">
+                        <div className="flex-1 overflow-y-auto w-full no-scrollbar pb-36 touch-pan-y overscroll-contain">
+                            <div className="bg-white/[0.04] backdrop-blur-xl border border-white/5 rounded-2xl overflow-hidden mb-auto">
                                 {menuItems.map((item, index) => {
                                     const Icon = item.icon;
                                     const isLast = index === menuItems.length - 1;
@@ -151,10 +151,10 @@ function SettingsInner() {
                         </div>
 
                         {/* ── SCROLLABLE CONTENT ─────────────────────── */}
-                        <div className="flex-1 overflow-y-auto w-full no-scrollbar pb-36 -mx-5 px-5 touch-pan-y overscroll-contain">
+                        <div className="flex-1 overflow-y-auto w-full no-scrollbar pb-36 touch-pan-y overscroll-contain">
                             <div className="space-y-4">
                                 {/* Sound Toggle */}
-                                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
+                                <div className="bg-white/[0.04] backdrop-blur-xl border border-white/5 rounded-2xl p-5">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             {soundEnabled ? (
@@ -180,7 +180,7 @@ function SettingsInner() {
                                 </div>
 
                                 {/* Haptics Toggle */}
-                                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
+                                <div className="bg-white/[0.04] backdrop-blur-xl border border-white/5 rounded-2xl p-5">
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center gap-3">
                                             <Vibrate size={20} style={{ color: hapticsEnabled ? beadColor : '#94a3b8' }} />
@@ -202,7 +202,7 @@ function SettingsInner() {
                                 </div>
 
                                 {/* Theme Selector */}
-                                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
+                                <div className="bg-white/[0.04] backdrop-blur-xl border border-white/5 rounded-2xl p-5">
                                     <div className="space-y-3">
                                         <div className="flex items-center gap-3">
                                             <Moon size={20} style={{ color: beadColor }} />
@@ -231,7 +231,7 @@ function SettingsInner() {
                                 </div>
 
                                 {/* Color Selection */}
-                                <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-xl p-4">
+                                <div className="bg-white/[0.04] backdrop-blur-xl border border-white/5 rounded-2xl p-5">
                                     <div className="space-y-4">
                                         <div className="flex items-center gap-3">
                                             <Palette size={20} style={{ color: beadColor }} />
