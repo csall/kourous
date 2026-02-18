@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Search, Sparkles, BookOpen, Trash2, Plus, ChevronDown, Pencil, Play, Star } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
@@ -21,7 +21,6 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
     const [editingGroup, setEditingGroup] = useState<InvocationGroup | null>(null);
     const [editingInvocation, setEditingInvocation] = useState<Invocation | null>(null);
     const [expandedId, setExpandedId] = useState<string | null>(null);
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const { invocations, groups, deleteInvocation, deleteGroup, getInvocationById, loadDefaultData, toggleFavorite, isFavorite, favoriteIds } = useInvocationStore();
     const beadColor = useSessionStore((s) => s.beadColor);
@@ -69,15 +68,10 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
 
 
 
-    const { scrollY } = useScroll();
-    const titleOpacity = useTransform(scrollY, [0, 40], [1, 0]);
-    const titleScale = useTransform(scrollY, [0, 40], [1, 0.95]);
-    const titleY = useTransform(scrollY, [0, 40], [0, -10]);
-
     return (
-        <div className="max-w-lg mx-auto px-5 pt-4 pb-36 space-y-6 sm:space-y-8">
+        <div className="flex flex-col h-[100dvh] bg-slate-950/20 px-5 pt-4 overflow-hidden">
             {/* Immersive Mesh Glows */}
-            <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10 bg-slate-950/20">
+            <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
                 <motion.div
                     animate={{
                         scale: [1, 1.3, 1],
@@ -91,17 +85,24 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                 />
             </div>
 
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-                className="space-y-6"
-            >
+            {/* ── FIXED HEADER ─────────────────────────── */}
+            <div className="flex-none space-y-6 pb-2 z-10 touch-none">
                 {/* ── MOBILE NATIVE HEADER ─────────────────────────── */}
                 <div className="space-y-6">
+                    {/* Large Title + Subtitle */}
+                    <div className="space-y-1 px-1">
+                        <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
+                                <Sparkles size={16} style={{ color: beadColor }} />
+                            </div>
+                            <h2 className="text-3xl font-bold text-white tracking-tight">Bibliothèque</h2>
+                        </div>
+                        <p className="text-sm text-slate-400 font-medium pl-11">Vos rituels et collections</p>
+                    </div>
+
                     {/* Toolbar Row: Search + Add */}
-                    <div className="flex items-center gap-3">
-                        <div className="relative flex-1 group">
+                    <div className="flex flex-col gap-3">
+                        <div className="relative w-full group">
                             <div className="absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-300">
                                 <Search
                                     size={18}
@@ -126,108 +127,40 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                         </div>
 
 
-                        <div className="relative z-50">
+                        <div className="grid grid-cols-2 gap-3 pt-2">
                             <button
-                                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                                className="relative group overflow-hidden touch-target w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
+                                onClick={() => {
+                                    setEditingInvocation(null);
+                                    setIsCreateInvocationModalOpen(true);
+                                }}
+                                className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 active:scale-95 transition-all group"
                             >
-                                <div
-                                    className="absolute inset-0 transition-opacity duration-300 opacity-100"
-                                    style={{
-                                        background: `linear-gradient(135deg, ${beadColor}, ${beadColor}dd)`,
-                                        boxShadow: `0 10px 30px -8px ${beadColor}50, 0 0 0 1px ${beadColor}20`
-                                    }}
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                                <motion.div
-                                    animate={{ rotate: isMenuOpen ? 45 : 0 }}
-                                    transition={{ duration: 0.2 }}
-                                >
-                                    <Plus size={24} className="text-white relative z-10" strokeWidth={2.5} />
-                                </motion.div>
+                                <div className="relative">
+                                    <BookOpen size={18} className="text-indigo-400 group-hover:text-indigo-300" />
+                                    <Plus size={10} strokeWidth={4} className="absolute -bottom-1.5 -right-1.5 text-indigo-400 group-hover:text-indigo-300" />
+                                </div>
+                                <span className="text-sm font-bold text-indigo-400 group-hover:text-indigo-300">Invocation</span>
                             </button>
 
-                            <AnimatePresence>
-                                {isMenuOpen && (
-                                    <>
-                                        <div
-                                            className="fixed inset-0 z-40"
-                                            onClick={() => setIsMenuOpen(false)}
-                                        />
-                                        <motion.div
-                                            initial={{ opacity: 0, scale: 0.9, y: 10, x: 10 }}
-                                            animate={{ opacity: 1, scale: 1, y: 0, x: 0 }}
-                                            exit={{ opacity: 0, scale: 0.9, y: 10, x: 10 }}
-                                            transition={{ duration: 0.2 }}
-                                            className="absolute right-0 top-14 w-56 p-2 bg-[#1C1C1E] border border-white/10 rounded-2xl shadow-2xl z-50 backdrop-blur-xl origin-top-right"
-                                        >
-                                            <div className="space-y-1">
-                                                <button
-                                                    onClick={() => {
-                                                        setEditingInvocation(null);
-                                                        setIsCreateInvocationModalOpen(true);
-                                                        setIsMenuOpen(false);
-                                                    }}
-                                                    className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/10 transition-colors text-left group"
-                                                >
-                                                    <div className="w-8 h-8 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400 group-hover:text-indigo-300 group-hover:bg-indigo-500/30 transition-colors">
-                                                        <BookOpen size={16} />
-                                                    </div>
-                                                    <div>
-                                                        <div className="text-sm font-semibold text-white">Invocation</div>
-                                                        <div className="text-[10px] text-slate-400">Créer une nouvelle invocation</div>
-                                                    </div>
-                                                </button>
-                                                <button
-                                                    onClick={() => {
-                                                        setEditingGroup(null);
-                                                        setIsCreateGroupModalOpen(true);
-                                                        setIsMenuOpen(false);
-                                                    }}
-                                                    className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-white/10 transition-colors text-left group"
-                                                >
-                                                    <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:text-emerald-300 group-hover:bg-emerald-500/30 transition-colors">
-                                                        <Sparkles size={16} />
-                                                    </div>
-                                                    <div>
-                                                        <div className="text-sm font-semibold text-white">Collection</div>
-                                                        <div className="text-[10px] text-slate-400">Grouper des invocations</div>
-                                                    </div>
-                                                </button>
-                                            </div>
-                                        </motion.div>
-                                    </>
-                                )}
-                            </AnimatePresence>
+                            <button
+                                onClick={() => {
+                                    setEditingGroup(null);
+                                    setIsCreateGroupModalOpen(true);
+                                }}
+                                className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 active:scale-95 transition-all group"
+                            >
+                                <div className="relative">
+                                    <Sparkles size={18} className="text-emerald-400 group-hover:text-emerald-300" />
+                                    <Plus size={10} strokeWidth={4} className="absolute -bottom-1.5 -right-1.5 text-emerald-400 group-hover:text-emerald-300" />
+                                </div>
+                                <span className="text-sm font-bold text-emerald-400 group-hover:text-emerald-300">Collection</span>
+                            </button>
                         </div>
                     </div>
-
-                    {/* Large Title + Subtitle */}
-                    <motion.div
-                        style={{ opacity: titleOpacity, scale: titleScale, y: titleY }}
-                        className="space-y-1 px-1 origin-left"
-                    >
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
-                                <Sparkles size={16} style={{ color: beadColor }} />
-                            </div>
-                            <h2 className="text-3xl font-bold text-white tracking-tight">Bibliothèque</h2>
-                        </div>
-                        <p className="text-sm text-slate-400 font-medium pl-11">Vos rituels et collections</p>
-                    </motion.div>
                 </div>
 
-                {/* ── STICKY TABS ─────────────────────────── */}
-                {/* ── STICKY TABS ─────────────────────────── */}
-                <motion.div
-                    className="sticky top-0 z-30 -mx-5 px-5 py-2 mb-6"
-                    style={{
-                        backgroundColor: useTransform(scrollY, [0, 50], ["rgba(2, 6, 23, 0.8)", "rgba(2, 6, 23, 0.98)"]),
-                        backdropFilter: "blur(20px)",
-                        borderBottom: "1px solid",
-                        borderColor: useTransform(scrollY, [0, 50], ["rgba(255, 255, 255, 0.05)", "rgba(255, 255, 255, 0.1)"])
-                    }}
-                >
+                {/* ── TABS ─────────────────────────── */}
+                <div>
                     <div className="flex p-1 bg-[#1C1C1E] rounded-xl border border-white/10">
                         {[
                             { key: "invocations" as const, label: "Invocations", count: invocations.length },
@@ -260,108 +193,108 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                             </button>
                         ))}
                     </div>
-                </motion.div>
-
-                {/* ── CONTENT ─────────────────────── */}
-                <div className="min-h-[400px]">
-                    <AnimatePresence mode="wait">
-                        {activeTab === "invocations" ? (
-                            <motion.div
-                                className="space-y-6"
-                            >
-                                <FavoriteSection
-                                    invocations={filteredInvocations}
-                                    onSessionStart={onSessionStart}
-                                    onDelete={deleteInvocation}
-                                    onEdit={handleEditInvocation}
-                                    onToggleFavorite={toggleFavorite}
-                                    isFavorite={isFavorite}
-                                    beadColor={beadColor}
-                                    expandedId={expandedId}
-                                    onToggleExpand={toggleExpand}
-                                />
-                            </motion.div>
-                        ) : activeTab === "collections" ? (
-                            <motion.div
-                                key="collections"
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                transition={{ duration: 0.3 }}
-                                className="space-y-6"
-                            >
-                                <CollectionSection
-                                    groups={filteredGroups}
-                                    expandedId={expandedId}
-                                    onToggleExpand={toggleExpand}
-                                    onSessionStart={onSessionStart}
-                                    onEdit={handleEditGroup}
-                                    onDelete={deleteGroup}
-                                    onToggleFavorite={toggleFavorite}
-                                    isFavorite={isFavorite}
-                                    beadColor={beadColor}
-                                    getInvocationById={getInvocationById}
-                                />
-                            </motion.div>
-                        ) : (
-                            <motion.div
-                                key="favorites"
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                transition={{ duration: 0.3 }}
-                                className="space-y-8"
-                            >
-                                {favoriteIds.length > 0 ? (
-                                    <div className="space-y-8">
-                                        {favoriteInvocations.length > 0 && (
-                                            <div className="space-y-4">
-                                                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 px-1">Invocations</h3>
-                                                <FavoriteSection
-                                                    invocations={favoriteInvocations}
-                                                    onSessionStart={onSessionStart}
-                                                    onDelete={deleteInvocation}
-                                                    onEdit={handleEditInvocation}
-                                                    onToggleFavorite={toggleFavorite}
-                                                    isFavorite={isFavorite}
-                                                    beadColor={beadColor}
-                                                    expandedId={expandedId}
-                                                    onToggleExpand={toggleExpand}
-                                                />
-                                            </div>
-                                        )}
-                                        {favoriteGroups.length > 0 && (
-                                            <div className="space-y-4">
-                                                <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 px-1">Collections</h3>
-                                                <CollectionSection
-                                                    groups={favoriteGroups}
-                                                    expandedId={expandedId}
-                                                    onToggleExpand={toggleExpand}
-                                                    onSessionStart={onSessionStart}
-                                                    onEdit={handleEditGroup}
-                                                    onDelete={deleteGroup}
-                                                    onToggleFavorite={toggleFavorite}
-                                                    isFavorite={isFavorite}
-                                                    beadColor={beadColor}
-                                                    getInvocationById={getInvocationById}
-                                                />
-                                            </div>
-                                        )}
-                                    </div>
-                                ) : (
-                                    <div className="text-center py-20 px-6 bg-white/[0.03] border border-dashed border-white/10 rounded-[2rem]">
-                                        <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6 opacity-30">
-                                            <Star size={24} className="text-slate-400" />
-                                        </div>
-                                        <p className="text-base font-bold text-white">Aucun favori</p>
-                                        <p className="text-xs text-slate-500 mt-2 max-w-[200px] mx-auto leading-relaxed">Touchez l'étoile sur une invocation ou une collection pour l'ajouter ici.</p>
-                                    </div>
-                                )}
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
                 </div>
-            </motion.div >
+            </div>
+
+            {/* ── SCROLLABLE CONTENT ─────────────────────── */}
+            <div className="flex-1 overflow-y-auto no-scrollbar pb-36 -mx-5 px-5">
+                <AnimatePresence mode="wait">
+                    {activeTab === "invocations" ? (
+                        <motion.div
+                            className="space-y-6"
+                        >
+                            <FavoriteSection
+                                invocations={filteredInvocations}
+                                onSessionStart={onSessionStart}
+                                onDelete={deleteInvocation}
+                                onEdit={handleEditInvocation}
+                                onToggleFavorite={toggleFavorite}
+                                isFavorite={isFavorite}
+                                beadColor={beadColor}
+                                expandedId={expandedId}
+                                onToggleExpand={toggleExpand}
+                            />
+                        </motion.div>
+                    ) : activeTab === "collections" ? (
+                        <motion.div
+                            key="collections"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.3 }}
+                            className="space-y-6"
+                        >
+                            <CollectionSection
+                                groups={filteredGroups}
+                                expandedId={expandedId}
+                                onToggleExpand={toggleExpand}
+                                onSessionStart={onSessionStart}
+                                onEdit={handleEditGroup}
+                                onDelete={deleteGroup}
+                                onToggleFavorite={toggleFavorite}
+                                isFavorite={isFavorite}
+                                beadColor={beadColor}
+                                getInvocationById={getInvocationById}
+                            />
+                        </motion.div>
+                    ) : (
+                        <motion.div
+                            key="favorites"
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.3 }}
+                            className="space-y-8"
+                        >
+                            {favoriteIds.length > 0 ? (
+                                <div className="space-y-8">
+                                    {favoriteInvocations.length > 0 && (
+                                        <div className="space-y-4">
+                                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 px-1">Invocations</h3>
+                                            <FavoriteSection
+                                                invocations={favoriteInvocations}
+                                                onSessionStart={onSessionStart}
+                                                onDelete={deleteInvocation}
+                                                onEdit={handleEditInvocation}
+                                                onToggleFavorite={toggleFavorite}
+                                                isFavorite={isFavorite}
+                                                beadColor={beadColor}
+                                                expandedId={expandedId}
+                                                onToggleExpand={toggleExpand}
+                                            />
+                                        </div>
+                                    )}
+                                    {favoriteGroups.length > 0 && (
+                                        <div className="space-y-4">
+                                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 px-1">Collections</h3>
+                                            <CollectionSection
+                                                groups={favoriteGroups}
+                                                expandedId={expandedId}
+                                                onToggleExpand={toggleExpand}
+                                                onSessionStart={onSessionStart}
+                                                onEdit={handleEditGroup}
+                                                onDelete={deleteGroup}
+                                                onToggleFavorite={toggleFavorite}
+                                                isFavorite={isFavorite}
+                                                beadColor={beadColor}
+                                                getInvocationById={getInvocationById}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="text-center py-20 px-6 bg-white/[0.03] border border-dashed border-white/10 rounded-[2rem]">
+                                    <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6 opacity-30">
+                                        <Star size={24} className="text-slate-400" />
+                                    </div>
+                                    <p className="text-base font-bold text-white">Aucun favori</p>
+                                    <p className="text-xs text-slate-500 mt-2 max-w-[200px] mx-auto leading-relaxed">Touchez l'étoile sur une invocation ou une collection pour l'ajouter ici.</p>
+                                </div>
+                            )}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
 
             <CreateInvocationModal
                 isOpen={isCreateInvocationModalOpen}

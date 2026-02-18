@@ -185,6 +185,7 @@ export function CreateInvocationModal({ isOpen, onClose, editInvocation }: Creat
                                     ))}
                                     <input
                                         type="number"
+                                        min="1"
                                         value={customRepetitions}
                                         onChange={(e) => setCustomRepetitions(e.target.value)}
                                         placeholder="..."
