@@ -1,26 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Sparkles, Plus } from "lucide-react";
-import { useInvocationStore } from "@/lib/store/invocationStore";
+import { useInvocationStore, type Invocation } from "@/lib/store/invocationStore";
 import { useSessionStore } from "@/lib/store/sessionStore";
 
 interface CreateInvocationModalProps {
     isOpen: boolean;
     onClose: () => void;
+    editInvocation?: Invocation | null;
 }
 
 const quickRepetitions = [33, 99, 100];
 
-export function CreateInvocationModal({ isOpen, onClose }: CreateInvocationModalProps) {
-    const { addInvocation } = useInvocationStore();
+export function CreateInvocationModal({ isOpen, onClose, editInvocation }: CreateInvocationModalProps) {
+    const { addInvocation, updateInvocation } = useInvocationStore();
     const beadColor = useSessionStore((s) => s.beadColor);
     const [name, setName] = useState("");
     const [repetitions, setRepetitions] = useState<number>(33);
     const [customRepetitions, setCustomRepetitions] = useState("");
     const [description, setDescription] = useState("");
     const [errors, setErrors] = useState<{ name?: string; repetitions?: string }>({});
+
+    // Populate form when editing
+    useEffect(() => {
+        if (editInvocation) {
+            setName(editInvocation.name);
+            setDescription(editInvocation.description || "");
+
+            // Handle repetitions logic
+            if (quickRepetitions.includes(editInvocation.repetitions)) {
+                setRepetitions(editInvocation.repetitions);
+                setCustomRepetitions("");
+            } else {
+                setRepetitions(0); // Custom
+                setCustomRepetitions(editInvocation.repetitions.toString());
+            }
+        } else {
+            setName("");
+            setRepetitions(33);
+            setCustomRepetitions("");
+            setDescription("");
+        }
+        setErrors({});
+    }, [editInvocation, isOpen]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -39,11 +63,19 @@ export function CreateInvocationModal({ isOpen, onClose }: CreateInvocationModal
             return;
         }
 
-        addInvocation({
-            name: name.trim(),
-            repetitions: finalRepetitions,
-            description: description.trim() || undefined,
-        });
+        if (editInvocation) {
+            updateInvocation(editInvocation.id, {
+                name: name.trim(),
+                repetitions: finalRepetitions,
+                description: description.trim() || undefined,
+            });
+        } else {
+            addInvocation({
+                name: name.trim(),
+                repetitions: finalRepetitions,
+                description: description.trim() || undefined,
+            });
+        }
 
         handleClose();
     };
@@ -56,6 +88,8 @@ export function CreateInvocationModal({ isOpen, onClose }: CreateInvocationModal
         setErrors({});
         onClose();
     };
+
+    const isEditing = !!editInvocation;
 
     return (
         <AnimatePresence>
@@ -83,9 +117,9 @@ export function CreateInvocationModal({ isOpen, onClose }: CreateInvocationModal
                             <div>
                                 <div className="flex items-center gap-2 mb-2" style={{ color: beadColor }}>
                                     <Sparkles size={14} className="animate-pulse" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.25em]">Personnalisation</span>
+                                    <span className="text-[10px] font-black uppercase tracking-[0.25em]">{isEditing ? "Édition" : "Personnalisation"}</span>
                                 </div>
-                                <h2 className="text-2xl font-black tracking-tight text-white leading-tight">Nouvelle Invocation</h2>
+                                <h2 className="text-2xl font-black tracking-tight text-white leading-tight">{isEditing ? "Modifier l'Invocation" : "Nouvelle Invocation"}</h2>
                             </div>
                             <button
                                 onClick={handleClose}
@@ -167,8 +201,8 @@ export function CreateInvocationModal({ isOpen, onClose }: CreateInvocationModal
                                 }}
                                 className="w-full py-5 rounded-[1.5rem] text-white font-black text-sm tracking-widest transition-all active:scale-95 flex items-center justify-center gap-2 mt-4"
                             >
-                                <Plus size={18} strokeWidth={4} />
-                                ENREGISTRER L'INVOCATION
+                                <Plus size={18} strokeWidth={4} className={isEditing ? "rotate-45" : ""} />
+                                {isEditing ? "ENREGISTRER" : "CRÉER L'INVOCATION"}
                             </button>
                         </form>
                     </motion.div>

@@ -4,7 +4,7 @@ import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
 import { Search, Sparkles, BookOpen, Trash2, Plus, ChevronDown, Pencil, Play, Star } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { useInvocationStore, type InvocationGroup } from "@/lib/store/invocationStore";
+import { useInvocationStore, type InvocationGroup, type Invocation } from "@/lib/store/invocationStore";
 import { CreateInvocationModal } from "@/components/library/CreateInvocationModal";
 import { CreateGroupModal } from "@/components/library/CreateGroupModal";
 import { useSessionStore } from "@/lib/store/sessionStore";
@@ -19,6 +19,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
     const [isCreateInvocationModalOpen, setIsCreateInvocationModalOpen] = useState(false);
     const [isCreateGroupModalOpen, setIsCreateGroupModalOpen] = useState(false);
     const [editingGroup, setEditingGroup] = useState<InvocationGroup | null>(null);
+    const [editingInvocation, setEditingInvocation] = useState<Invocation | null>(null);
     const [expandedId, setExpandedId] = useState<string | null>(null);
 
     const { invocations, groups, deleteInvocation, deleteGroup, getInvocationById, loadDefaultData, toggleFavorite, isFavorite, favoriteIds } = useInvocationStore();
@@ -53,10 +54,19 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
         setIsCreateGroupModalOpen(true);
     };
 
+
+
     const handleCloseGroupModal = () => {
         setIsCreateGroupModalOpen(false);
         setEditingGroup(null);
     };
+
+    const handleEditInvocation = (invocation: Invocation) => {
+        setEditingInvocation(invocation);
+        setIsCreateInvocationModalOpen(true);
+    };
+
+
 
     const { scrollY } = useScroll();
     const titleOpacity = useTransform(scrollY, [0, 40], [1, 0]);
@@ -115,7 +125,15 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                         </div>
 
                         <button
-                            onClick={() => activeTab === "invocations" ? setIsCreateInvocationModalOpen(true) : setIsCreateGroupModalOpen(true)}
+                            onClick={() => {
+                                if (activeTab === "invocations") {
+                                    setEditingInvocation(null);
+                                    setIsCreateInvocationModalOpen(true);
+                                } else {
+                                    setEditingGroup(null);
+                                    setIsCreateGroupModalOpen(true);
+                                }
+                            }}
                             className="relative group overflow-hidden touch-target w-12 h-12 rounded-2xl flex items-center justify-center shrink-0"
                         >
                             <div
@@ -201,6 +219,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                     invocations={filteredInvocations}
                                     onSessionStart={onSessionStart}
                                     onDelete={deleteInvocation}
+                                    onEdit={handleEditInvocation}
                                     onToggleFavorite={toggleFavorite}
                                     isFavorite={isFavorite}
                                     beadColor={beadColor}
@@ -246,6 +265,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                                     invocations={favoriteInvocations}
                                                     onSessionStart={onSessionStart}
                                                     onDelete={deleteInvocation}
+                                                    onEdit={handleEditInvocation}
                                                     onToggleFavorite={toggleFavorite}
                                                     isFavorite={isFavorite}
                                                     beadColor={beadColor}
@@ -285,7 +305,14 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                 </div>
             </motion.div >
 
-            <CreateInvocationModal isOpen={isCreateInvocationModalOpen} onClose={() => setIsCreateInvocationModalOpen(false)} />
+            <CreateInvocationModal
+                isOpen={isCreateInvocationModalOpen}
+                onClose={() => {
+                    setIsCreateInvocationModalOpen(false);
+                    setEditingInvocation(null);
+                }}
+                editInvocation={editingInvocation}
+            />
             <CreateGroupModal isOpen={isCreateGroupModalOpen} onClose={handleCloseGroupModal} editGroup={editingGroup} />
         </div >
     );
@@ -293,7 +320,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
 
 // ── SUB-COMPONENTS ─────────────────────────────────────────────────────────
 
-function FavoriteSection({ invocations, onSessionStart, onDelete, onToggleFavorite, isFavorite, beadColor }: any) {
+function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onToggleFavorite, isFavorite, beadColor }: any) {
     return (
         <div className="space-y-4">
             {invocations.length > 0 ? (
@@ -328,6 +355,12 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onToggleFavori
                                         className={isFavorite(invocation.id) ? "" : "text-slate-700"}
                                         style={{ color: isFavorite(invocation.id) ? beadColor : undefined }}
                                     />
+                                </button>
+                                <button
+                                    onClick={(e) => { e.preventDefault(); e.stopPropagation(); onEdit(invocation); }}
+                                    className="touch-target rounded-xl flex items-center justify-center text-slate-700 hover:text-white active:scale-75 transition-all hover:bg-white/5"
+                                >
+                                    <Pencil size={18} />
                                 </button>
                                 <button
                                     onClick={(e) => { e.preventDefault(); e.stopPropagation(); onDelete(invocation.id); }}
