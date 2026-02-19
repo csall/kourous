@@ -93,10 +93,10 @@ const SessionHeader = memo(({
               )}
 
               <h1
-                className="text-[10px] font-black tracking-[0.45em] uppercase opacity-70 leading-none mb-6"
+                className="text-[11px] font-black tracking-[0.2em] uppercase opacity-80 leading-snug text-center max-w-[85%] mx-auto mb-6 break-words"
                 style={{ color: beadColor }}
               >
-                {progress.cycleTotal} × {progress.label}
+                {progress.cycleTotal} <span className="opacity-50 mx-1">×</span> {progress.label}
               </h1>
 
               {/* Counter Ring */}
