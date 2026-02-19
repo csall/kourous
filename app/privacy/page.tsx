@@ -11,7 +11,7 @@ export default function PrivacyPage() {
             </div>
 
             {/* Content */}
-            <main className="relative max-w-3xl mx-auto px-6 pt-[calc(env(safe-area-inset-top)+2rem)] pb-16 space-y-12">
+            <main className="relative max-w-3xl mx-auto px-6 pt-[calc(env(safe-area-inset-top)+2rem)] pb-32 space-y-12">
                 <Link href="/settings" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors mb-8">
                     <ArrowLeft size={20} />
                     <span>Retour</span>

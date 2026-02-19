@@ -84,7 +84,7 @@ function SettingsInner() {
     ];
 
     return (
-        <div className="flex flex-col w-full h-full px-5 pt-[calc(env(safe-area-inset-top)+2rem)] overflow-hidden touch-none bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-200 transition-colors">
+        <div className="flex flex-col w-full h-full px-5 pt-[calc(env(safe-area-inset-top)+2rem)] overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-200 transition-colors">
             <AnimatePresence mode="wait">
                 {view === 'menu' ? (
                     <motion.div
@@ -95,7 +95,7 @@ function SettingsInner() {
                         className="flex flex-col h-full"
                     >
                         {/* ── FIXED HEADER ─────────────────────────── */}
-                        <div className="flex-none space-y-6 pb-6 z-10 touch-none px-1">
+                        <div className="flex-none space-y-6 pb-6 z-10 px-1">
                             <div className="space-y-1">
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-lg bg-slate-200 dark:bg-white/5 border border-slate-300 dark:border-white/10 flex items-center justify-center">
@@ -108,7 +108,7 @@ function SettingsInner() {
                         </div>
 
                         {/* ── SCROLLABLE CONTENT ─────────────────────── */}
-                        <div className="flex-1 overflow-hidden w-full px-1 pt-4 pb-20 touch-none">
+                        <div className="flex-1 overflow-y-auto no-scrollbar w-full px-1 pt-4 pb-32 touch-pan-y">
                             <div className="space-y-6">
                                 {menuGroups.map((group, groupIndex) => (
                                     <div key={group.title}>
@@ -154,7 +154,7 @@ function SettingsInner() {
                         className="flex flex-col h-full"
                     >
                         {/* ── FIXED HEADER ─────────────────────────── */}
-                        <div className="flex-none space-y-6 pb-6 z-10 touch-none px-1">
+                        <div className="flex-none space-y-6 pb-6 z-10 px-1">
                             <div className="space-y-1">
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-lg bg-slate-200 dark:bg-white/5 border border-slate-300 dark:border-white/10 flex items-center justify-center">
@@ -167,7 +167,7 @@ function SettingsInner() {
                         </div>
 
                         {/* ── SCROLLABLE CONTENT ─────────────────────── */}
-                        <div className="flex-1 overflow-hidden w-full px-1 pt-4 pb-20 touch-none">
+                        <div className="flex-1 overflow-y-auto no-scrollbar w-full px-1 pt-4 pb-32 touch-pan-y">
                             <div className="space-y-4">
                                 {/* Sound Toggle */}
                                 <div className="bg-white dark:bg-white/[0.04] backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-2xl p-5 shadow-sm dark:shadow-none">
