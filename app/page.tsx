@@ -3,11 +3,10 @@
 import Link from "next/link";
 import { useSessionStore } from "@/lib/store/sessionStore";
 import { useEffect, useState, useMemo } from "react";
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 import {
-  Sparkles,
   Moon,
   Sun,
   Sunrise,
@@ -15,105 +14,81 @@ import {
   Play,
   Infinity as InfinityIcon,
   Library,
-  ChevronRight
+  TrendingUp,
+  Sparkles,
+  ArrowRight,
+  Quote
 } from "lucide-react";
 
-/* ─── Greeting Logic ─────────────────────────────────────── */
-function getGreeting(): { label: string; sub: string; icon: React.ReactNode } {
+/* ─── Greeting & Date Logic ──────────────────────────────── */
+function getGreeting() {
   const h = new Date().getHours();
   if (h >= 5 && h < 12)
-    return { label: "Bonjour", sub: "La clarté du matin", icon: <Sunrise size={18} className="text-amber-300" /> };
+    return { label: "Bonjour", sub: "Matinée paisible", icon: <Sunrise size={20} className="text-amber-400" />, theme: "from-amber-500/20 to-orange-600/10" };
   if (h >= 12 && h < 18)
-    return { label: "Bienvenue", sub: "L'équilibre du moment", icon: <Sun size={18} className="text-orange-300" /> };
+    return { label: "Après-midi", sub: "Restez centré", icon: <Sun size={20} className="text-orange-400" />, theme: "from-orange-500/20 to-rose-600/10" };
   if (h >= 18 && h < 22)
-    return { label: "Bonsoir", sub: "Un souffle de sérénité", icon: <Sunset size={18} className="text-rose-300" /> };
-  return { label: "Douce nuit", sub: "La paix du silence", icon: <Moon size={18} className="text-indigo-200" /> };
+    return { label: "Bonsoir", sub: "Détente du soir", icon: <Sunset size={20} className="text-rose-400" />, theme: "from-rose-500/20 to-indigo-600/10" };
+  return { label: "Bonne nuit", sub: "Paix intérieure", icon: <Moon size={20} className="text-indigo-400" />, theme: "from-indigo-500/30 to-slate-900/80" };
 }
 
-/* ─── Particle Background Component ──────────────────────── */
-const ParticleBackground = ({ color }: { color: string }) => {
-  // Generate stable random positions for Client Side
-  const [particles, setParticles] = useState<Array<{ x: number, y: number, size: number, duration: number }>>([]);
+function getTodayDates() {
+  const now = new Date();
+  const gregorian = new Intl.DateTimeFormat("fr-FR", { weekday: 'long', day: 'numeric', month: 'long' }).format(now);
+  const hijri = new Intl.DateTimeFormat("fr-FR-u-ca-islamic", { day: 'numeric', month: 'long', year: 'numeric' }).format(now);
+  return { gregorian, hijri };
+}
 
-  useEffect(() => {
-    const p = Array.from({ length: 20 }).map(() => ({
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      size: Math.random() * 4 + 1,
-      duration: Math.random() * 20 + 10,
-    }));
-    setParticles(p);
-  }, []);
-
+/* ─── iOS Glass Widget Component ───────────────────────────────── */
+const GlassCard = ({ children, className = "", delay = 0, onClick }: { children: React.ReactNode, className?: string, delay?: number, onClick?: () => void }) => {
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {particles.map((p, i) => (
-        <motion.div
-          key={i}
-          className="absolute rounded-full opacity-20"
-          style={{
-            backgroundColor: color,
-            left: `${p.x}%`,
-            top: `${p.y}%`,
-            width: p.size,
-            height: p.size,
-          }}
-          animate={{
-            y: [0, -100, 0],
-            opacity: [0.1, 0.3, 0.1],
-          }}
-          transition={{
-            duration: p.duration,
-            repeat: Infinity,
-            ease: "linear",
-          }}
-        />
-      ))}
-    </div>
+    <motion.div
+      initial={{ opacity: 0, y: 40, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{
+        duration: 0.7,
+        delay,
+        type: "spring",
+        stiffness: 100,
+        damping: 20
+      }}
+      whileTap={onClick ? { scale: 0.96 } : undefined}
+      onClick={onClick}
+      className={`relative overflow-hidden bg-white/[0.05] border border-white/[0.1] shadow-2xl shadow-black/40 backdrop-blur-2xl rounded-[32px] p-6 flex flex-col ${className} ${onClick ? 'cursor-pointer hover:bg-white/[0.08] transition-colors duration-300' : ''}`}
+    >
+      {/* Glossy top overlay (reflection effect) */}
+      <div className="absolute top-0 left-0 right-0 h-1/2 bg-gradient-to-b from-white/[0.04] to-transparent pointer-events-none" />
+      {children}
+    </motion.div>
   );
 };
 
-export default function ZenDashboard() {
+/* ─── Ambient Glow ────────────────────────────────── */
+const AmbientGlow = ({ theme }: { theme: string }) => (
+  <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10 bg-slate-950">
+    <div className={`absolute top-[-10%] left-[-20%] w-[140%] h-[70%] rounded-full bg-gradient-to-br ${theme} blur-[120px] opacity-60 animate-pulse-slow`} />
+    <div className="absolute bottom-[-10%] right-[-20%] w-[100%] h-[60%] rounded-full bg-indigo-900/20 blur-[100px]" />
+    <div className="absolute inset-0 noise-bg opacity-[0.2] mix-blend-overlay" />
+  </div>
+);
+
+export default function ModernDashboard() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
+
   const hasHydrated = useSessionStore((s) => s._hasHydrated);
   const preset = useSessionStore((s) => s.preset);
   const totalCount = useSessionStore((s) => s.totalCount);
   const isComplete = useSessionStore((s) => s.isComplete);
-  const beadColor = useSessionStore((s) => s.beadColor);
   const setFreeSession = useSessionStore((s) => s.setFreeSession);
 
   useEffect(() => { setMounted(true); }, []);
 
   const greeting = useMemo(() => getGreeting(), []);
+  const dates = useMemo(() => getTodayDates(), []);
 
-  // Decide what "main action" to show
   const hasActiveSession = mounted && hasHydrated && preset && totalCount > 0 && !isComplete;
-  const progress = hasActiveSession && preset ? (totalCount / preset.totalBeads) : 0;
-
-  // ─── TILT EFFECT ──────────────────────────────────────────
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  const rotateX = useTransform(y, [-300, 300], [5, -5]); // Reduced tilt for subtle feel
-  const rotateY = useTransform(x, [-300, 300], [-5, 5]);
-
-  const springConfig = { damping: 25, stiffness: 150 };
-  const springRotateX = useSpring(rotateX, springConfig);
-  const springRotateY = useSpring(rotateY, springConfig);
-
-  function handleMouseMove(event: React.MouseEvent<HTMLDivElement>) {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const centerX = rect.left + rect.width / 2;
-    const centerY = rect.top + rect.height / 2;
-    x.set(event.clientX - centerX);
-    y.set(event.clientY - centerY);
-  }
-
-  function handleMouseLeave() {
-    x.set(0);
-    y.set(0);
-  }
+  const progress = hasActiveSession && preset && preset.totalBeads > 0 ? (totalCount / preset.totalBeads) : 0;
 
   const handleStartFreeSession = () => {
     setFreeSession();
@@ -123,196 +98,161 @@ export default function ZenDashboard() {
   if (!mounted || !hasHydrated) return <div className="min-h-screen bg-slate-950" />;
 
   return (
-    <div
-      className="h-[100dvh] max-h-[100dvh] bg-slate-950 text-slate-100 flex flex-col items-center overflow-hidden selection:bg-blue-500/30 relative touch-none perspective-1000"
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-    >
-      <div className="absolute inset-0 noise-bg pointer-events-none opacity-20" />
+    <div className="h-[100dvh] text-slate-100 flex flex-col relative overflow-hidden selection:bg-emerald-500/30 font-sans pb-[env(safe-area-inset-bottom,20px)]">
 
-      {/* ── PARTICLES LAYER ──────────────────────────────── */}
-      <ParticleBackground color={beadColor} />
+      <AmbientGlow theme={greeting.theme} />
 
-      {/* ── IMMERSIVE BACKGROUND GLOWS ────────────────────── */}
-      <div className="fixed inset-0 pointer-events-none -z-10 bg-slate-950">
+      {/* ── MAIN CONTENT ─────────────────────────────────── */}
+      {/* We use pb-24 (6rem) to account for the bottom nav bar, keeping the content above it */}
+      <main className="flex-1 px-4 pt-[calc(env(safe-area-inset-top,20px)+1rem)] pb-20 flex flex-col gap-3 z-10 max-w-lg mx-auto w-full h-full justify-between">
+
+        {/* BIG DATE DISPLAY & SETTINGS */}
         <motion.div
-          animate={{
-            scale: [1, 1.3, 1],
-            opacity: [0.1, 0.2, 0.1],
-            rotate: [0, 90, 0], // Slight rotation
-          }}
-          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[-30%] right-[-20%] w-[140%] h-[140%] blur-[160px] rounded-full mix-blend-screen"
-          style={{ backgroundColor: beadColor }}
-        />
-        <motion.div
-          animate={{
-            scale: [1.2, 1, 1.2],
-            opacity: [0.05, 0.1, 0.05],
-            x: [0, -50, 0],
-          }}
-          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute bottom-[-30%] left-[-20%] w-[120%] h-[120%] bg-indigo-900 blur-[180px] rounded-full mix-blend-screen"
-        />
-      </div>
-
-      {/* ── CONTENT WRAPPER ──────────────────────────────── */}
-      <motion.div
-        style={{ rotateX: springRotateX, rotateY: springRotateY }}
-        className="flex-1 w-full max-w-md flex flex-col items-center justify-between p-6 z-10 min-h-[100svh] pt-[calc(env(safe-area-inset-top,20px)+2rem)] pb-[calc(env(safe-area-inset-bottom,20px)+2rem)]"
-      >
-
-        {/* ── TOP GREETING ────────────────────────────────── */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className="flex flex-col items-center text-center gap-2 shrink-0"
+          initial={{ opacity: 0, filter: "blur(10px)" }}
+          animate={{ opacity: 1, filter: "blur(0px)" }}
+          transition={{ duration: 0.8, delay: 0.1 }}
+          className="px-2 mb-1 shrink-0 flex items-start justify-between"
         >
-          <div className="flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-md shadow-lg">
-            {greeting.icon}
-            <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-slate-300">{greeting.label}</span>
+          <div>
+            <h1 className="text-3xl font-light text-white tracking-tight capitalize leading-tight">
+              {dates.gregorian}
+            </h1>
+            <p className="text-emerald-400 mt-1 text-sm font-medium flex items-center gap-2">
+              <Sparkles size={16} /> {greeting.sub} <span className="text-white/30 truncate hidden sm:inline-block">({dates.hijri})</span>
+            </p>
           </div>
-          <h1 className="text-xl font-light text-white/90 tracking-tight">
-            {greeting.sub}
-          </h1>
         </motion.div>
 
-        {/* ── CENTRAL ACTION MODULE ──────────────────────── */}
-        <div className="flex-1 flex flex-col items-center justify-center gap-8 w-full">
+        {/* DAILY INSPIRATION WIDGET */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.15 }}
+          className="w-full bg-white/[0.03] border border-white/5 rounded-2xl p-3 shrink-0 backdrop-blur-md flex items-start gap-3"
+        >
+          <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center shrink-0 mt-0.5">
+            <Quote size={12} className="text-white/40" />
+          </div>
+          <div>
+            <p className="text-white/70 text-xs italic leading-tight">
+              "La paix vient de l'intérieur. Ne la cherchez pas à l'extérieur."
+            </p>
+            <p className="text-white/30 text-[10px] mt-1 font-medium">— Pensée du jour</p>
+          </div>
+        </motion.div>
 
-          {/* ORB */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, filter: "blur(10px)" }}
-            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-            className="relative flex items-center justify-center shrink-0"
-          >
-            <div className="relative group perspective-500">
+        {/* HERO WIDGET: INVOCATION / REPRENDRE */}
+        <GlassCard
+          className="flex-1 w-full min-h-0 group overflow-visible"
+          delay={0.2}
+          onClick={() => {
+            if (hasActiveSession) router.push("/session");
+            else router.push("/library");
+          }}
+        >
+          {/* Animated Gradient Behind Inner Content */}
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 via-transparent to-slate-900/80 z-0 pointer-events-none rounded-[32px] opacity-80" />
 
-              {/* Complex Pulse Aura */}
-              <motion.div
-                animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute inset-0 bg-gradient-to-tr from-indigo-500/30 to-emerald-500/30 blur-[60px] rounded-full scale-150"
-              />
-
-              {/* The ORB */}
-              <Link href={hasActiveSession ? "/session" : "/library"} className="block relative z-10">
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="w-56 h-56 sm:w-64 sm:h-64 rounded-full border border-white/10 relative flex items-center justify-center overflow-hidden shadow-2xl backdrop-blur-xl bg-white/[0.02]"
-                  style={{
-                    boxShadow: `0 20px 50px -20px ${beadColor}40, inset 0 0 80px -20px rgba(255,255,255,0.05)`
-                  }}
-                >
-                  {/* Dynamic Inner Gradient */}
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                    className="absolute inset-0 bg-gradient-to-tr from-white/5 via-transparent to-transparent opacity-50"
-                  />
-
-                  {/* Orbital Rings - Inner */}
-                  <motion.div
-                    animate={{ rotate: -360 }}
-                    transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-                    className="absolute inset-4 rounded-full border border-white/5 border-t-white/20 border-l-transparent border-r-transparent"
-                  />
-
-                  {/* Orbiting Content */}
-                  <div className="relative z-20 flex flex-col items-center justify-center gap-2 text-center p-6">
-                    {hasActiveSession ? (
-                      <>
-                        <div className="text-[10px] font-bold tracking-[0.2em] uppercase text-emerald-400">En cours</div>
-                        <div className="text-5xl font-bold tracking-tight text-white tabular-nums">
-                          {Math.round(progress * 100)}<span className="text-lg opacity-40">%</span>
-                        </div>
-                        <div className="text-sm text-white/50 max-w-[80%] truncate">{preset?.name}</div>
-                      </>
-                    ) : (
-                      <>
-                        <motion.div
-                          whileHover={{ rotate: 180 }}
-                          transition={{ duration: 0.5 }}
-                          className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center mb-1 ring-1 ring-white/10 group-hover:bg-white/10"
-                        >
-                          <Library size={24} className="text-white/80" />
-                        </motion.div>
-                        <span className="text-lg font-medium text-white tracking-wide group-hover:text-white transition-colors">
-                          Bibliothèque
-                        </span>
-                        <span className="text-[10px] uppercase tracking-widest text-white/40">Choisir une prière</span>
-                      </>
-                    )}
-                  </div>
-
-                  {/* Circular Progress (Active) */}
-                  {hasActiveSession && (
-                    <svg className="absolute inset-0 w-full h-full -rotate-90 pointer-events-none">
-                      <circle cx="50%" cy="50%" r="48%" fill="none" stroke="white" strokeWidth="1" strokeOpacity="0.1" />
-                      <motion.circle
-                        cx="50%" cy="50%" r="48%"
-                        fill="none"
-                        stroke={beadColor}
-                        strokeWidth="3"
-                        strokeLinecap="round"
-                        initial={{ pathLength: 0 }}
-                        animate={{ pathLength: progress }}
-                        transition={{ duration: 1.5, ease: "easeOut" }}
-                      />
-                    </svg>
-                  )}
-                </motion.div>
-              </Link>
-
-              {/* Orbital Ring - Outer */}
-              <div className="absolute inset-0 -m-6 border border-white/5 rounded-full animate-spin-slow pointer-events-none opacity-50" />
-              <div className="absolute inset-0 -m-2 border border-dashed border-white/10 rounded-full animate-reverse-spin pointer-events-none opacity-30" />
+          <div className="relative z-10 flex flex-col h-full">
+            <div className="flex justify-between items-center mb-6">
+              <div className="bg-emerald-500/20 text-emerald-300 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest backdrop-blur-md flex items-center gap-1.5 border border-emerald-500/20">
+                {hasActiveSession ? <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span> : null}
+                {hasActiveSession ? "En cours" : "Méditation"}
+              </div>
+              {hasActiveSession ? <Sparkles className="text-white/30" size={24} /> : <Library className="text-white/30" size={24} />}
             </div>
-          </motion.div>
 
-          {/* BUTTON (Grouped with Orb) */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.4 }}
-            className="w-full max-w-[280px]" // Limit width for better stacking
-          >
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={handleStartFreeSession}
-              className="w-full relative group overflow-hidden bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 p-3 rounded-xl flex items-center justify-between transition-all hover:bg-emerald-500/30 hover:border-emerald-500/50 hover:shadow-[0_0_20px_rgba(16,185,129,0.2)]"
-            >
-              {/* Animated Shimmer Effect */}
+            {/* Floating Orb */}
+            <div className="flex-1 min-h-0 flex items-center justify-center relative my-1">
               <motion.div
-                className="absolute inset-0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent z-0"
-                style={{
-                  skewX: "-20deg"
-                }}
-              />
+                className="w-24 h-24 relative flex items-center justify-center max-h-full aspect-square"
+                animate={{ y: [-5, 5, -5] }}
+                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+              >
+                <div className="absolute inset-0 bg-emerald-500/30 blur-[40px] rounded-full scale-125" />
 
-              <div className="flex items-center gap-3 relative z-10 px-2">
-                <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white transition-colors">
-                  <InfinityIcon size={16} />
+                {/* Glass Orb Body */}
+                <div className="absolute inset-0 rounded-full border border-white/20 shadow-[inset_0_4px_30px_rgba(255,255,255,0.15)] bg-gradient-to-tr from-white/10 to-transparent backdrop-blur-xl flex items-center justify-center z-10 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/20 to-transparent opacity-60" />
+                  {hasActiveSession ? (
+                    <div className="flex flex-col items-center">
+                      <span className="text-4xl font-bold text-white tabular-nums tracking-tighter drop-shadow-lg">{Math.round(progress * 100)}%</span>
+                    </div>
+                  ) : (
+                    <Play className="text-white ml-2 fill-white drop-shadow-lg" size={40} />
+                  )}
                 </div>
-                <div className="text-left">
-                  <h3 className="font-bold text-white text-sm">Session Libre</h3>
-                </div>
-              </div>
 
-              <div className="relative z-10 text-emerald-400/50 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all px-2">
-                <ChevronRight size={16} />
+                {/* Orbiting ring */}
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+                  className="absolute inset-[-20px] border-[1.5px] border-dashed border-emerald-500/20 rounded-full"
+                />
+                <motion.div
+                  animate={{ rotate: -360 }}
+                  transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+                  className="absolute inset-[-35px] border border-solid border-white/5 rounded-full"
+                />
+              </motion.div>
+            </div>
+
+            <div className="mt-4 flex items-end justify-between shrink-0">
+              <div>
+                <h2 className="text-2xl font-semibold text-white mb-1 tracking-tight">
+                  {hasActiveSession ? "Mon Chapelet" : "Parcourir"}
+                </h2>
+                <p className="text-white/60 text-[13px] font-medium">
+                  {hasActiveSession ? "Continuer la session" : "Choisir une invocation"}
+                </p>
               </div>
-            </motion.button>
-          </motion.div>
+              <div className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.3)] group-hover:scale-110 transition-transform">
+                <ArrowRight size={18} />
+              </div>
+            </div>
+          </div>
+        </GlassCard>
+
+        {/* ROW OF 2 WIDGETS */}
+        <div className="grid grid-cols-2 gap-3 w-full h-[100px] sm:h-[120px] shrink-0">
+
+          {/* LIBRARY WIDGET */}
+          <GlassCard
+            className="h-full group flex flex-col justify-between"
+            delay={0.3}
+            onClick={() => router.push("/library")}
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="w-10 h-10 rounded-2xl bg-indigo-500/20 border border-indigo-500/20 flex items-center justify-center text-indigo-300 shadow-inner">
+              <Library size={22} />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-white leading-tight">Biblio</h3>
+              <p className="text-indigo-200/60 text-[11px] font-medium">Invocations</p>
+            </div>
+          </GlassCard>
+
+          {/* SESSION LIBRE WIDGET */}
+          <GlassCard
+            className="h-full group flex flex-col justify-between"
+            delay={0.4}
+            onClick={handleStartFreeSession}
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div className="flex justify-between items-start">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 border border-emerald-500/20 flex items-center justify-center text-emerald-300 shadow-inner">
+                <InfinityIcon size={22} />
+              </div>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-white leading-tight">Libre</h3>
+              <p className="text-emerald-200/60 text-[11px] font-medium">Infini</p>
+            </div>
+          </GlassCard>
 
         </div>
-        {/* End Central Module */}
 
-      </motion.div>
+      </main>
     </div>
   );
 }
