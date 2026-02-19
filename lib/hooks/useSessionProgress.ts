@@ -17,19 +17,15 @@ export function useSessionProgress() {
         let currentCycleIndex = 0;
         let isTransition = false;
 
-        // Find which sequence item we are currently in, accounting for transition clicks
+        // Find which sequence item we are currently in
         for (let i = 0; i < preset.sequence.length; i++) {
             const item = preset.sequence[i];
-            const startOfItem = accumulatedBeads + i; // Offset by i for transition dead clicks
+            const startOfItem = accumulatedBeads; // No offset for transition dead clicks
             const endOfItem = startOfItem + item.repetitions;
 
             if (totalCount <= endOfItem) {
                 currentItem = item;
                 currentCycleIndex = i;
-                // If it's a new item (not the first) and we're at the very first click of its span
-                if (i > 0 && totalCount === startOfItem) {
-                    isTransition = true;
-                }
                 break;
             }
 
@@ -42,7 +38,7 @@ export function useSessionProgress() {
             }
         }
 
-        const beadsInCurrentCycle = isTransition ? 0 : totalCount - (accumulatedBeads + currentCycleIndex);
+        const beadsInCurrentCycle = totalCount - accumulatedBeads;
 
         return {
             label: currentItem.label,

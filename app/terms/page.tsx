@@ -91,33 +91,6 @@ export default function TermsPage() {
 
                 <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-white/10 to-transparent" />
 
-                {/* Contact */}
-                <section className="space-y-6 pt-4">
-                    <div className="text-center space-y-2">
-                        <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Une question ?</h3>
-                        <p className="text-slate-600 dark:text-slate-400 text-sm">N'hésitez pas à nous contacter.</p>
-                    </div>
-
-                    <div className="bg-white dark:bg-gradient-to-b dark:from-white/[0.08] dark:to-white/[0.02] border border-slate-200 dark:border-white/10 rounded-2xl p-8 text-center max-w-sm mx-auto hover:shadow-lg dark:hover:border-white/20 transition-all group relative overflow-hidden">
-                        <div className="absolute inset-0 bg-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <div className="relative z-10">
-                            <div className="w-12 h-12 bg-slate-100 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-indigo-500/10 dark:group-hover:bg-white/10 transition-colors">
-                                <Mail size={20} className="text-slate-900 dark:text-white" />
-                            </div>
-                            <h4 className="font-bold text-slate-900 dark:text-white text-lg mb-2">Cheikh Sall</h4>
-                            <p className="text-slate-600 dark:text-slate-400 text-sm mb-6 leading-relaxed">
-                                Développeur de l'application
-                            </p>
-                            <a
-                                href="mailto:chekh.sall@icloud.com"
-                                className="inline-flex items-center justify-center px-6 py-2 rounded-full bg-indigo-500 hover:bg-indigo-400 text-white font-bold text-sm transition-colors"
-                            >
-                                chekh.sall@icloud.com
-                            </a>
-                        </div>
-                    </div>
-                </section>
-
                 {/* Footer Logo */}
                 <div className="pt-8 flex flex-col items-center opacity-30">
                     <Scale size={24} className="mb-4" />
