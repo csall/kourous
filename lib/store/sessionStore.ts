@@ -7,6 +7,7 @@ export type SessionState = {
   preset: PrayerPreset | null;
   beadIndex: number; // Current bead in the cycle (0 to totalBeads - 1)
   totalCount: number; // Cumulative count
+  currentCycle: number; // Current loop number (starts at 1)
   isComplete: boolean;
   hapticsEnabled: boolean;
   soundEnabled: boolean;
@@ -26,6 +27,8 @@ export type SessionState = {
   setPresetById: (id: string) => void;
   setPresetByGroupId: (groupId: string) => void;
   setPresetByInvocationId: (invocationId: string) => void;
+  setFreeSession: (target?: number) => void;
+  updateFreeSession: (name: string, target: number) => void;
   advance: () => void;
   reset: () => void;
   toggleHaptics: () => void;
@@ -45,6 +48,7 @@ export const useSessionStore = create<SessionState>()(
       preset: prayerPresets[0], // Default to first preset
       beadIndex: 0,
       totalCount: 0,
+      currentCycle: 1,
       isComplete: false,
       hapticsEnabled: true,
       soundEnabled: true,
@@ -153,11 +157,84 @@ export const useSessionStore = create<SessionState>()(
         set({ preset, beadIndex: 0, totalCount: 0, isComplete: false });
       },
 
+      setFreeSession: (target: number = 33) => {
+        const preset: PrayerPreset = {
+          id: "free-session",
+          name: "Session Libre",
+          description: "Mode libre. Touchez le titre pour modifier.",
+          totalBeads: target,
+          cycles: 999, // Infinite loop
+          sequence: [
+            {
+              label: "Tasbih Libre",
+              repetitions: target,
+            },
+          ],
+        };
+        set({ preset, beadIndex: 0, totalCount: 0, currentCycle: 1, isComplete: false });
+      },
+
+      updateFreeSession: (name: string, target: number) => {
+        const { preset, totalCount } = get();
+        if (!preset || preset.id !== "free-session") return;
+
+        const newPreset: PrayerPreset = {
+          ...preset,
+          name,
+          totalBeads: target,
+          sequence: [
+            {
+              ...preset.sequence[0],
+              repetitions: target,
+            }
+          ]
+        };
+
+        // If we reduce the bead count below current progress during a cycle, detailed logic might be needed
+        // For now, we update the preset which drives the view.
+        set({ preset: newPreset, beadIndex: 0, totalCount: 0, currentCycle: 1 });
+      },
+
       advance: () => {
-        const { preset, totalCount, isComplete, stats } = get();
+        const { preset, totalCount, isComplete, stats, currentCycle } = get();
         if (!preset || isComplete) return;
 
         const nextTotal = totalCount + 1;
+
+        // Custom Logic for Free Session (Infinite Loop)
+        if (preset.id === "free-session") {
+          let nextTotal = totalCount + 1;
+          let nextCycle = currentCycle || 1;
+          const target = preset.totalBeads;
+
+          // If we exceed target, wrap around to 1 (new loop)
+          if (nextTotal > target) {
+            nextTotal = 1;
+            nextCycle += 1;
+          }
+
+          const updates: Partial<SessionState> = {
+            totalCount: nextTotal,
+            beadIndex: nextTotal,
+            currentCycle: nextCycle,
+          };
+
+          // Stats update logic
+          const today = new Date().toISOString().split('T')[0];
+
+          // Only increment streak daily logic here...
+          // For simplicity, we just add repetition.
+          updates.stats = {
+            ...stats,
+            totalRepetitions: stats.totalRepetitions + 1,
+            lastSessionDate: today,
+          };
+
+          set(updates);
+          return;
+        }
+
+        // Regular Session Logic
         // Total steps = Sum of repetitions + (number of items - 1) for transitions
         const totalSteps = preset.totalBeads + (preset.sequence.length - 1);
         const completed = nextTotal >= totalSteps;
@@ -178,7 +255,7 @@ export const useSessionStore = create<SessionState>()(
 
           updates.stats = {
             totalSessions: stats.totalSessions + 1,
-            totalRepetitions: stats.totalRepetitions + preset.totalBeads,
+            totalRepetitions: stats.totalRepetitions + preset.totalBeads, // This adds the whole batch? Wait, existing logic added batch at end.
             lastSessionDate: today,
             streak: newStreak,
           };
@@ -187,7 +264,7 @@ export const useSessionStore = create<SessionState>()(
         set(updates);
       },
 
-      reset: () => set({ totalCount: 0, beadIndex: 0, isComplete: false }),
+      reset: () => set({ totalCount: 0, beadIndex: 0, currentCycle: 1, isComplete: false }),
 
       toggleHaptics: () => set((state) => ({ hapticsEnabled: !state.hapticsEnabled })),
       toggleSound: () => set((state) => ({ soundEnabled: !state.soundEnabled })),

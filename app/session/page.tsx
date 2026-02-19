@@ -7,7 +7,7 @@ import { useClickSound } from "@/lib/hooks/useClickSound";
 import { useEffect, useState, Suspense, useCallback, useRef, memo } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { RefreshCw, Volume2, VolumeX, RotateCcw, Vibrate, VibrateOff } from "lucide-react";
+import { RefreshCw, Volume2, VolumeX, RotateCcw, Vibrate, VibrateOff, Pencil } from "lucide-react";
 import { FullscreenModal } from "@/components/ui/FullscreenModal";
 import { LibraryContent } from "@/components/library/LibraryContent";
 import { SettingsContent } from "@/components/settings/SettingsContent";
@@ -33,8 +33,12 @@ const stopAllBubbles = (e: React.UIEvent | React.PointerEvent | React.MouseEvent
 // ─────────────────────────────────────────────────────────────
 const SessionHeader = memo(({
   isComplete,
+  isEditing,
+  setIsEditing
 }: {
   isComplete: boolean;
+  isEditing: boolean;
+  setIsEditing: (val: boolean) => void;
 }) => {
   const beadColor = useSessionStore(state => state.beadColor);
   const preset = useSessionStore(state => state.preset);
@@ -43,7 +47,40 @@ const SessionHeader = memo(({
   const hapticsEnabled = useSessionStore(state => state.hapticsEnabled);
   const toggleSound = useSessionStore(state => state.toggleSound);
   const toggleHaptics = useSessionStore(state => state.toggleHaptics);
+  const updateFreeSession = useSessionStore(state => state.updateFreeSession);
+  const currentCycle = useSessionStore(state => state.currentCycle);
   const progress = useSessionProgress();
+
+  const [editName, setEditName] = useState("");
+  const [editTarget, setEditTarget] = useState<number | string>(33);
+
+  useEffect(() => {
+    if (preset) {
+      setEditName(preset.name);
+      setEditTarget(preset.sequence[0].repetitions);
+    }
+  }, [preset]);
+
+  const handleSave = () => {
+    // Parse editTarget safely
+    const num = parseInt(editTarget.toString());
+
+    // If invalid or < 1, do nothing (keep editing, button disabled)
+    if (isNaN(num) || num < 1) return;
+
+    // Check if we need to update state (if it was string or different number)
+    if (editTarget.toString() !== num.toString() || editTarget === '') {
+      setEditTarget(num);
+    }
+    updateFreeSession(editName, num);
+    setIsEditing(false);
+  };
+
+  const handleQuickSave = (val: number) => {
+    setEditTarget(val);
+    updateFreeSession(editName, val);
+    setIsEditing(false);
+  };
 
   return (
     <div className="relative z-50 w-full">
@@ -86,18 +123,123 @@ const SessionHeader = memo(({
 
             {/* Middle: Collection & Progress Counter */}
             <div className="flex flex-col items-center gap-1">
-              {preset && preset.sequence.length > 1 && (
-                <span className="text-[9px] font-bold tracking-[0.25em] uppercase text-white/40 mb-1">
-                  {preset.name}
-                </span>
-              )}
+              {/* Collection Name / Edit Controls */}
+              {preset?.id === "free-session" ? (
+                <div className="flex flex-col items-center gap-2 mb-4 w-full">
+                  {isEditing ? (
+                    <div
+                      className="flex flex-col items-center gap-2 animate-in fade-in zoom-in-95 duration-200"
+                      onMouseDown={stopAllBubbles}
+                      onMouseUp={stopAllBubbles}
+                      onPointerDown={stopAllBubbles}
+                      onPointerUp={stopAllBubbles}
+                      onTouchStart={stopAllBubbles}
+                      onTouchEnd={stopAllBubbles}
+                      onClick={stopAllBubbles}
+                    >
+                      <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-emerald-400 mb-1">
+                        MODIFICATION
+                      </span>
 
-              <h1
-                className="text-[11px] font-black tracking-[0.2em] uppercase opacity-80 leading-snug text-center max-w-[85%] mx-auto mb-6 break-words"
-                style={{ color: beadColor }}
-              >
-                {progress.cycleTotal} <span className="opacity-50 mx-1">×</span> {progress.label}
-              </h1>
+                      {/* Name Input - Minimal */}
+                      <input
+                        type="text"
+                        value={editName}
+                        onChange={(e) => setEditName(e.target.value)}
+                        className="w-full bg-transparent border-b border-white/10 py-1 text-center text-[10px] font-bold tracking-[0.2em] uppercase text-white/60 focus:outline-none focus:border-white/40 focus:text-white transition-colors mb-1"
+                        placeholder="TITRE"
+                      />
+
+                      {/* Inline Target Edit */}
+                      <div className="flex items-center gap-2 p-1 rounded-full bg-white/10 border border-white/10">
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          value={editTarget}
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/[^0-9]/g, ''); // Remove non-digits
+                            setEditTarget(val);
+                          }}
+                          onFocus={(e) => e.target.select()}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              handleSave();
+                              (e.target as HTMLInputElement).blur();
+                            }
+                          }}
+                          className="w-[60px] bg-transparent text-center text-sm font-bold font-mono text-white focus:outline-none"
+                          placeholder=""
+                          autoFocus
+                          enterKeyHint="done"
+                          autoComplete="off"
+                          autoCorrect="off"
+                          spellCheck="false"
+                        />
+                        <button
+                          onClick={handleSave}
+                          disabled={!editTarget || editTarget === '0'}
+                          className={`px-3 py-1.5 rounded-full text-[10px] font-bold uppercase transition-all mr-0.5 ${!editTarget || editTarget === '0'
+                            ? 'bg-white/5 text-white/20 border border-white/5 cursor-not-allowed'
+                            : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 hover:bg-emerald-500 hover:text-white'
+                            }`}
+                        >
+                          VALIDER
+                        </button>
+                      </div>
+
+                      {/* Quick Presets - Horizontal Row */}
+                      <div className="flex items-center gap-1 mt-1">
+                        {[33, 99, 100, 1000].map(val => (
+                          <button
+                            key={val}
+                            onClick={() => handleQuickSave(val)}
+                            className={`px-2 py-0.5 rounded text-[9px] font-medium border transition-all ${
+                              // Convert editTarget to number for comparison or string
+                              parseInt(editTarget.toString()) === val
+                                ? 'bg-emerald-500 text-white border-emerald-500'
+                                : 'bg-white/5 text-white/40 border-white/5 hover:bg-white/10'
+                              }`}
+                          >
+                            {val}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="group flex flex-col items-center gap-1"
+                    >
+                      <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/60 group-hover:text-white transition-colors mb-2">
+                        BOUCLE {currentCycle || 1}
+                      </span>
+
+                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 group-hover:bg-white/10 transition-all">
+                        <span className="text-xs font-medium text-white/80">
+                          Objectif : {progress?.cycleTotal}
+                        </span>
+                        <Pencil size={10} className="text-white/40 group-hover:text-white/80" />
+                      </div>
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <>
+                  {preset && preset.sequence.length > 1 && (
+                    <span className="text-[9px] font-bold tracking-[0.25em] uppercase text-white/40 mb-1">
+                      {preset.name}
+                    </span>
+                  )}
+
+                  <h1
+                    className="text-[11px] font-black tracking-[0.2em] uppercase opacity-80 leading-snug text-center max-w-[85%] mx-auto mb-6 break-words"
+                    style={{ color: beadColor }}
+                  >
+                    {progress?.cycleTotal} <span className="opacity-50 mx-1">×</span> {progress?.label}
+                  </h1>
+                </>
+              )}
 
               {/* Counter Ring */}
               <div className="relative flex items-center justify-center h-[96px] w-[96px]">
@@ -146,10 +288,10 @@ const SessionHeader = memo(({
                 </AnimatePresence>
               </div>
             </div>
-          </motion.div>
+          </motion.div >
         )}
-      </AnimatePresence>
-    </div>
+      </AnimatePresence >
+    </div >
   );
 });
 
@@ -230,9 +372,10 @@ function SessionContent() {
 
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const setIsUiOpen = useSessionStore(state => state.setIsUiOpen);
 
-  const isAnyUIOpen = isLibraryOpen || isSettingsOpen || isComplete;
+  const isAnyUIOpen = isLibraryOpen || isSettingsOpen || isComplete || isEditing;
 
   useEffect(() => {
     setIsUiOpen(isAnyUIOpen);
@@ -262,7 +405,28 @@ function SessionContent() {
 
   useEffect(() => {
     if (!preset || !progress) return;
-    if (progress.cycleProgress === progress.cycleTotal && progress.cycleIndex > lastFinishedCycle) {
+
+    // Free Session (Loop-based)
+    if (preset.id === "free-session") {
+      const isFullLoop = progress.cycleProgress === progress.cycleTotal;
+      // Since we reset totalCount to 1, we reply on cycles.
+      const currentCycle = useSessionStore.getState().currentCycle || 1;
+
+      // Celebrate when isFullLoop AND we haven't celebrated this Cycle yet
+      if (isFullLoop && lastFinishedCycle !== currentCycle) {
+        if (soundEnabled) playSuccess();
+        hapticHeavy();
+        confetti({
+          particleCount: 50,
+          spread: 80,
+          origin: { y: 0.3 },
+          colors: [beadColor, '#ffd700', '#ffffff']
+        });
+        setLastFinishedCycle(currentCycle);
+      }
+    }
+    // Regular Sessions
+    else if (progress.cycleProgress === progress.cycleTotal && progress.cycleIndex > lastFinishedCycle) {
       const isIntermediary = progress.cycleIndex < (preset.sequence.length - 1);
       if (isIntermediary) {
         if (soundEnabled) playSuccess();
@@ -310,7 +474,11 @@ function SessionContent() {
         />
       </div>
 
-      <SessionHeader isComplete={isComplete} />
+      <SessionHeader
+        isComplete={isComplete}
+        isEditing={isEditing}
+        setIsEditing={setIsEditing}
+      />
 
       {/* Main interactive area - Bead Scene area taking remaining vertical space */}
       <div className={`flex-1 relative z-0 transition-all duration-1000 ${isAnyUIOpen ? 'pointer-events-none opacity-40 blur-sm grayscale' : 'opacity-100'}`}>

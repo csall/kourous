@@ -91,11 +91,26 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                 <div className="space-y-6">
                     {/* Large Title + Subtitle */}
                     <div className="space-y-1">
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
-                                <Sparkles size={16} style={{ color: beadColor }} />
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
+                                    <Sparkles size={16} style={{ color: beadColor }} />
+                                </div>
+                                <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Bibliothèque</h2>
                             </div>
-                            <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Bibliothèque</h2>
+
+                            {/* Free Session Button */}
+                            <Link
+                                href="/session"
+                                onClick={() => {
+                                    useSessionStore.getState().setFreeSession();
+                                    onSessionStart?.();
+                                }}
+                                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 active:scale-95 transition-all"
+                            >
+                                <Play size={12} fill="currentColor" />
+                                Session Libre
+                            </Link>
                         </div>
                         <p className="text-sm text-slate-500 dark:text-slate-400 font-medium pl-11">Vos rituels et collections</p>
                     </div>
