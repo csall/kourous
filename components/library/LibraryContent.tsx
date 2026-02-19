@@ -281,11 +281,11 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                     )}
                                 </div>
                             ) : (
-                                <div className="text-center py-20 px-6 bg-white/[0.03] border border-dashed border-white/10 rounded-[2rem]">
-                                    <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6 opacity-30">
+                                <div className="text-center py-20 px-6 bg-slate-50 dark:bg-white/[0.03] border border-dashed border-slate-200 dark:border-white/10 rounded-[2rem]">
+                                    <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center mx-auto mb-6 opacity-30">
                                         <Star size={24} className="text-slate-400" />
                                     </div>
-                                    <p className="text-base font-bold text-white">Aucun favori</p>
+                                    <p className="text-base font-bold text-slate-900 dark:text-white">Aucun favori</p>
                                     <p className="text-xs text-slate-500 mt-2 max-w-[200px] mx-auto leading-relaxed">Touchez l'étoile sur une invocation ou une collection pour l'ajouter ici.</p>
                                 </div>
                             )}
@@ -319,21 +319,21 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
                     return (
                         <div key={invocation.id} className="relative group">
                             <motion.div
-                                className={`transition-all duration-300 rounded-2xl border ${isExpanded ? "bg-white/[0.08] border-white/10" : "bg-white/[0.04] border-white/5 hover:border-white/10 hover:bg-white/[0.06] active:scale-[0.99]"}`}
+                                className={`transition-all duration-300 rounded-2xl border ${isExpanded ? "bg-white dark:bg-white/[0.08] border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none" : "bg-white dark:bg-white/[0.04] border-slate-200 dark:border-white/5 hover:border-slate-300 dark:hover:border-white/10 hover:shadow-md dark:hover:bg-white/[0.06] active:scale-[0.99]"}`}
                             >
                                 <div
                                     className="flex items-center gap-4 p-5 cursor-pointer"
                                     onClick={() => onToggleExpand(invocation.id)}
                                 >
-                                    <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center shrink-0 text-slate-400 group-hover:border-white/20 transition-colors">
+                                    <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center shrink-0 text-slate-500 dark:text-slate-400 group-hover:border-slate-300 dark:group-hover:border-white/20 transition-colors">
                                         <BookOpen size={18} style={{ color: invocation.id.startsWith("inv-default-") ? beadColor : undefined }} />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <h4 className={`text-[15px] font-semibold leading-tight transition-colors ${isExpanded ? "text-white" : "text-slate-200 group-hover:text-white"}`}>
+                                        <h4 className={`text-[15px] font-semibold leading-tight transition-colors ${isExpanded ? "text-slate-900 dark:text-white" : "text-slate-700 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white"}`}>
                                             {invocation.name}
                                         </h4>
                                         {invocation.description && (
-                                            <p className="text-[13px] text-slate-400 line-clamp-1 mt-0.5 font-medium opacity-80">{invocation.description}</p>
+                                            <p className="text-[13px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5 font-medium opacity-80">{invocation.description}</p>
                                         )}
                                     </div>
                                     <div className="flex items-center gap-3">
@@ -363,19 +363,19 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
                                                 </Link>
                                                 <button
                                                     onClick={(e) => { e.stopPropagation(); onToggleFavorite(invocation.id); }}
-                                                    className={`w-11 h-11 rounded-xl flex items-center justify-center border transition-all ${isFavorite(invocation.id) ? "bg-white/10 border-transparent" : "border-white/10 text-slate-400 hover:bg-white/5"}`}
+                                                    className={`w-11 h-11 rounded-xl flex items-center justify-center border transition-all ${isFavorite(invocation.id) ? "bg-slate-100 dark:bg-white/10 border-transparent" : "border-slate-200 dark:border-white/10 text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5"}`}
                                                 >
                                                     <Star size={18} fill={isFavorite(invocation.id) ? beadColor : "none"} style={{ color: isFavorite(invocation.id) ? beadColor : undefined }} />
                                                 </button>
                                                 <button
                                                     onClick={(e) => { e.stopPropagation(); onEdit(invocation); }}
-                                                    className="w-11 h-11 rounded-xl border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+                                                    className="w-11 h-11 rounded-xl border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
                                                 >
                                                     <Pencil size={18} />
                                                 </button>
                                                 <button
                                                     onClick={(e) => { e.stopPropagation(); onDelete(invocation.id); }}
-                                                    className="w-11 h-11 rounded-xl border border-white/10 flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-white/5 transition-all"
+                                                    className="w-11 h-11 rounded-xl border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
                                                 >
                                                     <Trash2 size={18} />
                                                 </button>
@@ -389,7 +389,7 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
                 })
             ) : (
                 <div className="text-center py-16 px-6 bg-transparent">
-                    <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4 opacity-40">
+                    <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center mx-auto mb-4 opacity-40">
                         <BookOpen size={24} className="text-slate-400" />
                     </div>
                     <p className="text-sm font-bold text-slate-500 mb-1">Aucun résultat</p>
@@ -403,8 +403,8 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
 function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart, onEdit, onDelete, onToggleFavorite, isFavorite, beadColor, getInvocationById }: any) {
     if (groups.length === 0) {
         return (
-            <div className="text-center py-16 px-6 bg-white/[0.03] border border-dashed border-white/10 rounded-[2rem]">
-                <div className="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-5 opacity-40">
+            <div className="text-center py-16 px-6 bg-slate-50 dark:bg-white/[0.03] border border-dashed border-slate-200 dark:border-white/10 rounded-[2rem]">
+                <div className="w-20 h-20 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center mx-auto mb-5 opacity-40">
                     <Sparkles size={28} className="text-slate-400" />
                 </div>
                 <p className="text-sm font-bold text-slate-500 mb-2">Aucune collection</p>
@@ -422,21 +422,21 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                 return (
                     <div key={group.id} className="relative group">
                         <motion.div
-                            className={`transition-all duration-300 rounded-2xl border ${isExpanded ? "bg-white/[0.08] border-white/10" : "bg-white/[0.04] border-white/5 hover:border-white/10 hover:bg-white/[0.06] active:scale-[0.99]"}`}
+                            className={`transition-all duration-300 rounded-2xl border ${isExpanded ? "bg-white dark:bg-white/[0.08] border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none" : "bg-white dark:bg-white/[0.04] border-slate-200 dark:border-white/5 hover:border-slate-300 dark:hover:border-white/10 hover:shadow-md dark:hover:bg-white/[0.06] active:scale-[0.99]"}`}
                         >
                             <div
                                 className="flex items-center gap-4 p-5 cursor-pointer"
                                 onClick={() => onToggleExpand(group.id)}
                             >
-                                <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center shrink-0 border border-white/10 group-hover:border-white/20 transition-colors">
+                                <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center shrink-0 border border-slate-200 dark:border-white/10 group-hover:border-slate-300 dark:group-hover:border-white/20 transition-colors">
                                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: beadColor, boxShadow: `0 0 12px ${beadColor}90` }} />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <h4 className={`text-[15px] font-semibold leading-tight transition-colors ${isExpanded ? "text-white" : "text-slate-200 group-hover:text-white"}`}>
+                                    <h4 className={`text-[15px] font-semibold leading-tight transition-colors ${isExpanded ? "text-slate-900 dark:text-white" : "text-slate-700 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white"}`}>
                                         {group.name}
                                     </h4>
                                     {group.description && (
-                                        <p className="text-[13px] text-slate-400 line-clamp-1 mt-0.5 font-medium opacity-80">{group.description}</p>
+                                        <p className="text-[13px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5 font-medium opacity-80">{group.description}</p>
                                     )}
                                 </div>
                                 <div className="flex items-center gap-3">
@@ -468,19 +468,19 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                                                 </Link>
                                                 <button
                                                     onClick={(e) => { e.stopPropagation(); onToggleFavorite(group.id); }}
-                                                    className={`w-11 h-11 rounded-xl flex items-center justify-center border transition-all ${isFavorite(group.id) ? "bg-white/10 border-transparent" : "border-white/10 text-slate-400 hover:bg-white/5"}`}
+                                                    className={`w-11 h-11 rounded-xl flex items-center justify-center border transition-all ${isFavorite(group.id) ? "bg-slate-100 dark:bg-white/10 border-transparent" : "border-slate-200 dark:border-white/10 text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5"}`}
                                                 >
                                                     <Star size={18} fill={isFavorite(group.id) ? beadColor : "none"} style={{ color: isFavorite(group.id) ? beadColor : undefined }} />
                                                 </button>
                                                 <button
                                                     onClick={(e) => { e.stopPropagation(); onEdit(group); }}
-                                                    className="w-11 h-11 rounded-xl border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/5 transition-all"
+                                                    className="w-11 h-11 rounded-xl border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
                                                 >
                                                     <Pencil size={18} />
                                                 </button>
                                                 <button
                                                     onClick={(e) => { e.stopPropagation(); onDelete(group.id); }}
-                                                    className="w-11 h-11 rounded-xl border border-white/10 flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-white/5 transition-all"
+                                                    className="w-11 h-11 rounded-xl border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
                                                 >
                                                     <Trash2 size={18} />
                                                 </button>
@@ -492,11 +492,11 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                                                     const invData = getInvocationById(inv.invocationId);
                                                     return (
                                                         <div key={i} className="flex items-center justify-between text-[13px] py-1">
-                                                            <div className="flex items-center gap-3 text-slate-300">
+                                                            <div className="flex items-center gap-3 text-slate-600 dark:text-slate-300">
                                                                 <span className="w-5 text-[10px] font-bold text-slate-500">{i + 1}</span>
                                                                 <span className="font-medium">{invData?.name || "Invocation"}</span>
                                                             </div>
-                                                            <div className="bg-white/5 px-2 py-0.5 rounded text-[11px] font-mono text-slate-400">{inv.repetitions}</div>
+                                                            <div className="bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded text-[11px] font-mono text-slate-500 dark:text-slate-400">{inv.repetitions}</div>
                                                         </div>
                                                     );
                                                 })}
