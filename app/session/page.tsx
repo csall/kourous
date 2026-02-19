@@ -54,7 +54,7 @@ const SessionHeader = memo(({
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full pt-[calc(env(safe-area-inset-top,20px)+12px)] pb-12 px-6 flex flex-col items-center gap-4 relative"
+            className="w-full pt-[calc(env(safe-area-inset-top,20px)+12px)] pb-2 px-6 flex flex-col items-center gap-4 relative"
           >
             {/* Top Control Bar */}
             <div className="w-full flex items-center justify-center gap-8 pointer-events-auto">
