@@ -165,6 +165,18 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModa
                                     )}
                                 </div>
 
+                                {/* Description Input */}
+                                <div className="space-y-3 shrink-0">
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Notes (Optionnel)</label>
+                                    <textarea
+                                        value={description}
+                                        onChange={(e) => setDescription(e.target.value)}
+                                        placeholder="Rappel ou intention pour cette collection..."
+                                        rows={2}
+                                        className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white text-sm placeholder:text-slate-700 focus:outline-none focus:border-white/20 transition-all font-medium resize-none"
+                                    />
+                                </div>
+
                                 {/* Sequence List */}
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between px-1">
