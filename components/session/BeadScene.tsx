@@ -358,8 +358,8 @@ const SceneInternal = memo(({ count, beadWindow, total, presetId, tapProgress }:
     const [{ smoothedCount }, api] = useSpring(() => ({
         smoothedCount: count,
         config: {
-            mass: 1.2,
-            tension: 80,
+            mass: 0.8,
+            tension: 180,
             friction: 20,
             precision: 0.0001
         }
