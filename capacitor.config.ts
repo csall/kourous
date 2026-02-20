@@ -28,6 +28,11 @@ const config: CapacitorConfig = {
       style: 'LIGHT',
       backgroundColor: '#05070c',
     },
+    Keyboard: {
+      resize: 'body',
+      style: 'DARK',
+      hideFormAccessoryBar: true,
+    },
   },
 };
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, Sparkles, BookOpen, Trash2, Plus, ChevronDown, Pencil, Play, Star } from "lucide-react";
+import { Search, Sparkles, BookOpen, Trash2, Plus, ChevronDown, Pencil, Play, Star, X } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useInvocationStore, type InvocationGroup, type Invocation } from "@/lib/store/invocationStore";
@@ -21,6 +21,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
     const [editingGroup, setEditingGroup] = useState<InvocationGroup | null>(null);
     const [editingInvocation, setEditingInvocation] = useState<Invocation | null>(null);
     const [expandedId, setExpandedId] = useState<string | null>(null);
+    const [isSearching, setIsSearching] = useState(false);
 
     const { invocations, groups, deleteInvocation, deleteGroup, getInvocationById, loadDefaultData, toggleFavorite, isFavorite, favoriteIds } = useInvocationStore();
     const beadColor = useSessionStore((s) => s.beadColor);
@@ -86,93 +87,110 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
             </div>
 
             {/* ── FIXED HEADER ─────────────────────────── */}
-            <div className="flex-none space-y-6 pb-2 z-10 touch-none">
-                {/* ── MOBILE NATIVE HEADER ─────────────────────────── */}
-                <div className="space-y-6">
-                    {/* Large Title + Subtitle */}
-                    <div className="space-y-1">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
-                                    <Sparkles size={16} style={{ color: beadColor }} />
+            <div className="flex-none space-y-4 pb-2 z-10 touch-none">
+                <AnimatePresence mode="wait">
+                    {!isSearching ? (
+                        <motion.div
+                            key="normal-header"
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            className="space-y-4"
+                        >
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
+                                        <Sparkles size={16} style={{ color: beadColor }} />
+                                    </div>
+                                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Bibliothèque</h2>
                                 </div>
-                                <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Bibliothèque</h2>
+
+                                <button
+                                    onClick={() => setIsSearching(true)}
+                                    className="p-2.5 rounded-full hover:bg-slate-200/50 dark:hover:bg-white/5 text-slate-600 dark:text-slate-400 active:scale-90 transition-all"
+                                >
+                                    <Search size={24} />
+                                </button>
                             </div>
 
-                            {/* Free Session Button */}
-                            <Link
-                                href="/session"
-                                onClick={() => {
-                                    useSessionStore.getState().setFreeSession();
-                                    onSessionStart?.();
-                                }}
-                                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 active:scale-95 transition-all"
-                            >
-                                <Play size={12} fill="currentColor" />
-                                Session Libre
-                            </Link>
-                        </div>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium pl-11">Vos rituels et collections</p>
-                    </div>
+                            {/* Action Buttons Grid */}
+                            <div className="grid grid-cols-2 gap-3">
+                                <button
+                                    onClick={() => {
+                                        setEditingGroup(null);
+                                        setIsCreateGroupModalOpen(true);
+                                    }}
+                                    className="flex items-center justify-center gap-3 py-3 px-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 active:scale-95 transition-all group"
+                                >
+                                    <div className="relative">
+                                        <Sparkles size={20} className="text-emerald-400 group-hover:text-emerald-300" />
+                                        <Plus size={10} strokeWidth={4} className="absolute -bottom-1 -right-1 text-emerald-400 group-hover:text-emerald-300" />
+                                    </div>
+                                    <span className="text-[14px] font-bold text-emerald-400 group-hover:text-emerald-300">Collection</span>
+                                </button>
 
-                    {/* Toolbar Row: Search + Add */}
-                    <div className="flex flex-col gap-3">
-                        <div className="relative w-full group">
-                            <div className="absolute left-4 top-1/2 -translate-y-1/2 transition-colors duration-300">
+                                <button
+                                    onClick={() => {
+                                        setEditingInvocation(null);
+                                        setIsCreateInvocationModalOpen(true);
+                                    }}
+                                    className="flex items-center justify-center gap-3 py-3 px-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 active:scale-95 transition-all group"
+                                >
+                                    <div className="relative">
+                                        <BookOpen size={20} className="text-indigo-400 group-hover:text-indigo-300" />
+                                        <Plus size={10} strokeWidth={4} className="absolute -bottom-1 -right-1 text-indigo-400 group-hover:text-indigo-300" />
+                                    </div>
+                                    <span className="text-[14px] font-bold text-indigo-400 group-hover:text-indigo-300">Invocation</span>
+                                </button>
+                            </div>
+                        </motion.div>
+                    ) : (
+                        <motion.div
+                            key="search-header"
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 20 }}
+                            className="flex items-center gap-3"
+                        >
+                            <div className="relative flex-1 group">
                                 <Search
                                     size={18}
-                                    className="text-slate-500 group-focus-within:text-white transition-colors"
-                                    style={{
-                                        filter: searchQuery ? `drop-shadow(0 0 8px ${beadColor}40)` : 'none'
-                                    }}
+                                    className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-slate-900 dark:group-focus-within:text-white transition-colors duration-300"
                                 />
+                                <input
+                                    autoFocus
+                                    type="text"
+                                    inputMode="search"
+                                    spellCheck="false"
+                                    autoComplete="off"
+                                    autoCorrect="off"
+                                    autoCapitalize="none"
+                                    placeholder="Rechercher..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full bg-slate-200/40 dark:bg-white/[0.05] border border-transparent dark:border-white/5 rounded-2xl py-3 pl-11 pr-10 text-[15px] text-slate-900 dark:text-white placeholder:text-slate-500/80 outline-none transition-all duration-300 focus:bg-white dark:focus:bg-white/10"
+                                />
+                                {searchQuery && (
+                                    <button
+                                        onClick={() => setSearchQuery("")}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                                    >
+                                        <X size={14} strokeWidth={3} />
+                                    </button>
+                                )}
                             </div>
-                            <input
-                                type="text"
-                                placeholder="Rechercher..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full bg-slate-200/50 dark:bg-white/[0.04] border border-black/5 dark:border-white/10 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-slate-900 dark:text-white placeholder:text-slate-500 outline-none transition-all duration-300 hover:bg-slate-200/80 dark:hover:bg-white/[0.07] focus:bg-slate-200 dark:focus:bg-white/[0.08] focus:border-black/10 dark:focus:border-white/20"
-                                style={{
-                                    boxShadow: `0 0 0 0px ${beadColor}00`
-                                }}
-                                onFocus={(e) => e.target.style.boxShadow = `0 0 25px -10px ${beadColor}50`}
-                                onBlur={(e) => e.target.style.boxShadow = `0 0 0 0px ${beadColor}00`}
-                            />
-                        </div>
-
-
-                        <div className="grid grid-cols-2 gap-3 pt-2">
                             <button
                                 onClick={() => {
-                                    setEditingGroup(null);
-                                    setIsCreateGroupModalOpen(true);
+                                    setIsSearching(false);
+                                    setSearchQuery("");
                                 }}
-                                className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 active:scale-95 transition-all group"
+                                className="text-[15px] font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 active:opacity-70 transition-all"
                             >
-                                <div className="relative">
-                                    <Sparkles size={18} className="text-emerald-400 group-hover:text-emerald-300" />
-                                    <Plus size={10} strokeWidth={4} className="absolute -bottom-1.5 -right-1.5 text-emerald-400 group-hover:text-emerald-300" />
-                                </div>
-                                <span className="text-sm font-bold text-emerald-400 group-hover:text-emerald-300">Collection</span>
+                                Annuler
                             </button>
-
-                            <button
-                                onClick={() => {
-                                    setEditingInvocation(null);
-                                    setIsCreateInvocationModalOpen(true);
-                                }}
-                                className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 active:scale-95 transition-all group"
-                            >
-                                <div className="relative">
-                                    <BookOpen size={18} className="text-indigo-400 group-hover:text-indigo-300" />
-                                    <Plus size={10} strokeWidth={4} className="absolute -bottom-1.5 -right-1.5 text-indigo-400 group-hover:text-indigo-300" />
-                                </div>
-                                <span className="text-sm font-bold text-indigo-400 group-hover:text-indigo-300">Invocation</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
                 {/* ── TABS ─────────────────────────── */}
                 <div>

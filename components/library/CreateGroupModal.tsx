@@ -193,9 +193,11 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModa
                                                         </div>
                                                         <div className="flex items-center gap-2">
                                                             <input
-                                                                type="number"
+                                                                type="text"
+                                                                inputMode="numeric"
+                                                                pattern="[0-9]*"
                                                                 value={sel.repetitions}
-                                                                onChange={(e) => handleUpdateRepetitions(index, parseInt(e.target.value) || 1)}
+                                                                onChange={(e) => handleUpdateRepetitions(index, parseInt(e.target.value.replace(/[^0-9]/g, "")) || 1)}
                                                                 className="w-12 h-9 bg-white/5 border border-white/5 rounded-lg text-white text-xs font-black text-center focus:outline-none focus:border-white/20"
                                                             />
                                                             <button

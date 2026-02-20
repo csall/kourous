@@ -184,10 +184,11 @@ export function CreateInvocationModal({ isOpen, onClose, editInvocation }: Creat
                                         </button>
                                     ))}
                                     <input
-                                        type="number"
-                                        min="1"
+                                        type="text"
+                                        inputMode="numeric"
+                                        pattern="[0-9]*"
                                         value={customRepetitions}
-                                        onChange={(e) => setCustomRepetitions(e.target.value)}
+                                        onChange={(e) => setCustomRepetitions(e.target.value.replace(/[^0-9]/g, ""))}
                                         placeholder="..."
                                         className="w-full h-12 bg-white/[0.03] border-2 border-white/5 rounded-xl text-white placeholder:text-slate-700 focus:outline-none transition-all text-center font-black text-sm"
                                     />
