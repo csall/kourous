@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft, HelpCircle, Mail, MessageCircle, Smartphone, Volume2 } from "lucide-react";
+import { ArrowLeft, HelpCircle, Mail, MessageCircle, Smartphone, Volume2, Sparkles, BookOpen, Palette } from "lucide-react";
 
 export default function SupportPage() {
     return (
@@ -11,7 +11,7 @@ export default function SupportPage() {
             </div>
 
             {/* Content */}
-            <main className="relative max-w-3xl mx-auto px-6 pt-[calc(env(safe-area-inset-top)+2rem)] pb-32 space-y-12">
+            <main className="relative max-w-3xl mx-auto px-6 pt-[calc(env(safe-area-inset-top)+2rem)] pb-32 space-y-8">
                 <Link href="/settings" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors mb-8">
                     <ArrowLeft size={20} />
                     <span>Retour</span>
@@ -32,82 +32,110 @@ export default function SupportPage() {
 
                 <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-white/10 to-transparent" />
 
-                {/* Contact Section */}
-                <section className="space-y-6">
-                    <div className="text-center space-y-2">
-                        <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Nous contacter</h3>
-                        <p className="text-slate-700 dark:text-slate-400 text-sm">Une question, une suggestion ou un problème ?</p>
-                    </div>
-
-                    <div className="bg-white dark:bg-gradient-to-b dark:from-white/[0.08] dark:to-white/[0.02] border border-slate-200 dark:border-white/10 rounded-2xl p-8 text-center max-w-sm mx-auto hover:shadow-lg dark:hover:border-white/20 transition-all group relative overflow-hidden">
-                        <div className="absolute inset-0 bg-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <div className="relative z-10">
-                            <div className="w-12 h-12 bg-slate-100 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-cyan-500/10 dark:group-hover:bg-white/10 transition-colors">
-                                <Mail size={20} className="text-slate-900 dark:text-white" />
-                            </div>
-                            <h4 className="font-bold text-slate-900 dark:text-white text-lg mb-2">Envoyer un email</h4>
-                            <p className="text-slate-700 dark:text-slate-400 text-sm mb-6 leading-relaxed">
-                                Je lis tous les messages et m'efforce de répondre le plus rapidement possible.
-                            </p>
-                            <a
-                                href="mailto:cheikh.sall@icloud.com"
-                                className="inline-flex items-center justify-center px-6 py-2 rounded-full bg-cyan-500 hover:bg-cyan-400 text-white font-bold text-sm transition-colors"
-                            >
-                                cheikh.sall@icloud.com
-                            </a>
+                <div className="space-y-4">
+                    {/* Contact Section */}
+                    <section className="space-y-6">
+                        <div className="text-center space-y-2">
+                            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Nous contacter</h3>
+                            <p className="text-slate-700 dark:text-slate-400 text-sm">Une question, une suggestion ou un problème ?</p>
                         </div>
-                    </div>
-                </section>
 
-                <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-
-                {/* FAQ Section */}
-                <section className="space-y-8">
-                    <div className="text-center">
-                        <h3 className="text-xl font-bold text-slate-900 dark:text-white">FAQ Rapide</h3>
-                    </div>
-
-                    <div className="grid gap-6">
-                        {/* FAQ Item 1 */}
-                        <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-2xl p-6 space-y-3 shadow-sm dark:shadow-none">
-                            <div className="flex items-center gap-3 text-slate-900 dark:text-white">
-                                <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                                    <MessageCircle size={18} />
+                        <div className="bg-white dark:bg-gradient-to-b dark:from-white/[0.08] dark:to-white/[0.02] border border-slate-200 dark:border-white/10 rounded-2xl p-8 text-center max-w-sm mx-auto hover:shadow-lg dark:hover:border-white/20 transition-all group relative overflow-hidden">
+                            <div className="absolute inset-0 bg-cyan-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                            <div className="relative z-10">
+                                <div className="w-12 h-12 bg-slate-100 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-cyan-500/10 dark:group-hover:bg-white/10 transition-colors">
+                                    <Mail size={20} className="text-slate-900 dark:text-white" />
                                 </div>
-                                <h4 className="font-bold">L'application est-elle gratuite ?</h4>
+                                <h4 className="font-bold text-slate-900 dark:text-white text-lg mb-2">Envoyer un email</h4>
+                                <p className="text-slate-700 dark:text-slate-400 text-sm mb-6 leading-relaxed">
+                                    Je lis tous les messages et m'efforce de répondre le plus rapidement possible.
+                                </p>
+                                <a
+                                    href="mailto:cheikh.sall@icloud.com"
+                                    className="inline-flex items-center justify-center px-6 py-2 rounded-full bg-cyan-500 hover:bg-cyan-400 text-white font-bold text-sm transition-colors"
+                                >
+                                    cheikh.sall@icloud.com
+                                </a>
                             </div>
-                            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed pl-[3.25rem]">
-                                Oui, Kourous est gratuite dans sa version de base pour accompagner votre pratique quotidienne sans publicité intrusive.
-                            </p>
+                        </div>
+                    </section>
+
+                    <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+                    {/* FAQ Section */}
+                    <section className="space-y-6">
+                        <div className="text-center">
+                            <h3 className="text-xl font-bold text-slate-900 dark:text-white">FAQ Rapide</h3>
                         </div>
 
-                        {/* FAQ Item 2 */}
-                        <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-2xl p-6 space-y-3 shadow-sm dark:shadow-none">
-                            <div className="flex items-center gap-3 text-slate-900 dark:text-white">
-                                <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400">
-                                    <Smartphone size={18} />
+                        <div className="grid gap-6">
+                            {/* FAQ Item 1 */}
+                            <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-2xl p-6 space-y-3 shadow-sm dark:shadow-none">
+                                <div className="flex items-center gap-3 text-slate-900 dark:text-white">
+                                    <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                                        <Sparkles size={18} />
+                                    </div>
+                                    <h4 className="font-bold">Créer une collection ou invocation</h4>
                                 </div>
-                                <h4 className="font-bold">Où sont mes perles ?</h4>
+                                <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed pl-[3.25rem]">
+                                    Utilisez le bouton "+" dans la bibliothèque pour ajouter une invocation ou créer une collection. Les collections vous permettent de grouper vos invocations préférées.
+                                </p>
                             </div>
-                            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed pl-[3.25rem]">
-                                Vos chapelets sont accessibles via l'onglet "Bibliothèque" en bas de l'écran principal de l'application.
-                            </p>
-                        </div>
 
-                        {/* FAQ Item 3 */}
-                        <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-2xl p-6 space-y-3 shadow-sm dark:shadow-none">
-                            <div className="flex items-center gap-3 text-slate-900 dark:text-white">
-                                <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400">
-                                    <Volume2 size={18} />
+                            {/* FAQ Item 2 */}
+                            <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-2xl p-6 space-y-3 shadow-sm dark:shadow-none">
+                                <div className="flex items-center gap-3 text-slate-900 dark:text-white">
+                                    <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                                        <BookOpen size={18} />
+                                    </div>
+                                    <h4 className="font-bold">Personnalisation des éléments</h4>
                                 </div>
-                                <h4 className="font-bold">Comment modifier le son ?</h4>
+                                <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed pl-[3.25rem]">
+                                    Vous pouvez modifier à tout moment le nom, la description ou les répétitions de vos invocations et collections pour qu'elles correspondent parfaitement à votre pratique.
+                                </p>
                             </div>
-                            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed pl-[3.25rem]">
-                                Rendez-vous dans les "Réglages" (icône engrenage) pour ajuster l'intensité du retour haptique et sonore selon vos préférences.
-                            </p>
+
+                            {/* FAQ Item 3 */}
+                            <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-2xl p-6 space-y-3 shadow-sm dark:shadow-none">
+                                <div className="flex items-center gap-3 text-slate-900 dark:text-white">
+                                    <div className="p-2 rounded-lg bg-cyan-100 dark:bg-cyan-500/10 text-cyan-600 dark:text-cyan-400">
+                                        <Smartphone size={18} />
+                                    </div>
+                                    <h4 className="font-bold">Support du mode clair</h4>
+                                </div>
+                                <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed pl-[3.25rem]">
+                                    Kourous s'adapte automatiquement au thème de votre iPhone. Les textes et l'interface ont été optimisés pour une lecture confortable de jour comme de nuit.
+                                </p>
+                            </div>
+
+                            {/* FAQ Item 4 */}
+                            <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-2xl p-6 space-y-3 shadow-sm dark:shadow-none">
+                                <div className="flex items-center gap-3 text-slate-900 dark:text-white">
+                                    <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400">
+                                        <Volume2 size={18} />
+                                    </div>
+                                    <h4 className="font-bold">Son et Vibration</h4>
+                                </div>
+                                <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed pl-[3.25rem]">
+                                    Vous pouvez activer ou désactiver le retour haptique et les sons de clic dans les "Réglages" pour une expérience qui vous ressemble.
+                                </p>
+                            </div>
+
+                            {/* FAQ Item 5 */}
+                            <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-2xl p-6 space-y-3 shadow-sm dark:shadow-none">
+                                <div className="flex items-center gap-3 text-slate-900 dark:text-white">
+                                    <div className="p-2 rounded-lg bg-rose-100 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400">
+                                        <Palette size={18} />
+                                    </div>
+                                    <h4 className="font-bold">Modifier la couleur des perles</h4>
+                                </div>
+                                <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed pl-[3.25rem]">
+                                    Personnalisez votre chapelet en changeant la couleur des perles dans les "Réglages". Choisissez parmi plusieurs teintes pour rendre votre pratique unique.
+                                </p>
+                            </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
+                </div>
 
                 {/* Footer Logo */}
                 <div className="pt-8 flex flex-col items-center opacity-30">
