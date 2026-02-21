@@ -413,89 +413,123 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
 
 function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onToggleFavorite, isFavorite, beadColor, expandedId, onToggleExpand }: any) {
     return (
-        <div className="space-y-3">
+        <div className="space-y-2.5">
             {invocations.length > 0 ? (
-                invocations.map((invocation: any, index: number) => {
+                invocations.map((invocation: any) => {
                     const isExpanded = expandedId === invocation.id;
+                    const isDefault = invocation.id.startsWith("inv-default-");
 
                     return (
-                        <div key={invocation.id} className="relative group">
-                            <motion.div
-                                className={`transition-all duration-300 rounded-2xl border ${isExpanded ? "bg-white dark:bg-white/[0.08] border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none" : "bg-white dark:bg-white/[0.04] border-slate-200 dark:border-white/5 hover:border-slate-300 dark:hover:border-white/10 hover:shadow-md dark:hover:bg-white/[0.06] active:scale-[0.99]"}`}
+                        <motion.div
+                            key={invocation.id}
+                            layout
+                            className={`overflow-hidden rounded-3xl border transition-all duration-300 ${
+                                isExpanded
+                                    ? "bg-white dark:bg-white/[0.07] border-slate-200 dark:border-white/12 shadow-md dark:shadow-none"
+                                    : "bg-white dark:bg-white/[0.04] border-slate-200/80 dark:border-white/[0.06] active:scale-[0.99]"
+                            }`}
+                        >
+                            {/* ── Header row ── */}
+                            <button
+                                className="w-full flex items-center gap-3.5 px-4 py-4 text-left"
+                                onClick={() => onToggleExpand(invocation.id)}
                             >
+                                {/* Icon */}
                                 <div
-                                    className="flex items-center gap-4 p-5 cursor-pointer"
-                                    onClick={() => onToggleExpand(invocation.id)}
+                                    className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 border transition-colors ${isDefault ? "" : "bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10"}`}
+                                    style={isDefault ? {
+                                        backgroundColor: beadColor + "18",
+                                        borderColor: beadColor + "35",
+                                    } : {}}
                                 >
-                                    <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center shrink-0 text-slate-500 dark:text-slate-400 group-hover:border-slate-300 dark:group-hover:border-white/20 transition-colors">
-                                        <BookOpen size={18} style={{ color: invocation.id.startsWith("inv-default-") ? beadColor : undefined }} />
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <h4 className={`text-[15px] font-semibold leading-tight transition-colors ${isExpanded ? "text-slate-900 dark:text-white" : "text-slate-800 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white"}`}>
-                                            {invocation.name}
-                                        </h4>
-                                        {invocation.description && (
-                                            <p className="text-[13px] text-slate-600 dark:text-slate-400 line-clamp-1 mt-0.5 font-medium opacity-90">{invocation.description}</p>
-                                        )}
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider opacity-80 group-hover:opacity-100 transition-opacity">{invocation.repetitions} reps</span>
-                                        <ChevronDown size={16} className={`text-slate-500 transition-transform duration-300 ${isExpanded ? "rotate-180 text-white" : "group-hover:text-slate-300"}`} />
-                                    </div>
+                                    <BookOpen size={17} style={{ color: isDefault ? beadColor : undefined }} className={isDefault ? "" : "text-slate-400 dark:text-slate-500"} />
                                 </div>
 
-                                <AnimatePresence>
-                                    {isExpanded && (
-                                        <motion.div
-                                            initial={{ height: 0, opacity: 0 }}
-                                            animate={{ height: "auto", opacity: 1 }}
-                                            exit={{ height: 0, opacity: 0 }}
-                                            transition={{ duration: 0.3, ease: "easeInOut" }}
-                                            className="overflow-hidden"
-                                        >
-                                            <div className="pb-6 px-5 pl-[3.5rem] flex items-center gap-2">
-                                                <Link
-                                                    href={`/session?invocation=${invocation.id}`}
-                                                    onClick={onSessionStart}
-                                                    style={{ backgroundColor: beadColor }}
-                                                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-white text-[13px] font-bold active:scale-[0.98] transition-transform shadow-lg shadow-black/20"
-                                                >
-                                                    <Play size={14} fill="currentColor" />
-                                                    Lancer
-                                                </Link>
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); onToggleFavorite(invocation.id); }}
-                                                    className={`w-11 h-11 rounded-xl flex items-center justify-center border transition-all ${isFavorite(invocation.id) ? "bg-slate-100 dark:bg-white/10 border-transparent" : "border-slate-200 dark:border-white/10 text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5"}`}
-                                                >
-                                                    <Star size={18} fill={isFavorite(invocation.id) ? beadColor : "none"} style={{ color: isFavorite(invocation.id) ? beadColor : undefined }} />
-                                                </button>
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); onEdit(invocation); }}
-                                                    className="w-11 h-11 rounded-xl border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
-                                                >
-                                                    <Pencil size={18} />
-                                                </button>
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); onDelete(invocation.id); }}
-                                                    className="w-11 h-11 rounded-xl border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
-                                                >
-                                                    <Trash2 size={18} />
-                                                </button>
-                                            </div>
-                                        </motion.div>
+                                {/* Text */}
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-[15px] font-semibold text-slate-800 dark:text-slate-100 leading-tight truncate">
+                                        {invocation.name}
+                                    </p>
+                                    {invocation.description && (
+                                        <p className={`text-[12.5px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug transition-all duration-300 ${isExpanded ? "" : "line-clamp-1"}`}>
+                                            {invocation.description}
+                                        </p>
                                     )}
-                                </AnimatePresence>
-                            </motion.div>
-                        </div>
+                                </div>
+
+                                {/* Right side */}
+                                <div className="flex items-center gap-2 shrink-0 ml-1">
+                                    <span
+                                        className="text-[11px] font-bold px-2 py-0.5 rounded-full"
+                                        style={{ backgroundColor: beadColor + "18", color: beadColor }}
+                                    >
+                                        {invocation.repetitions}×
+                                    </span>
+                                    <motion.div
+                                        animate={{ rotate: isExpanded ? 180 : 0 }}
+                                        transition={{ duration: 0.25, ease: "easeInOut" }}
+                                    >
+                                        <ChevronDown size={16} className="text-slate-400 dark:text-slate-500" />
+                                    </motion.div>
+                                </div>
+                            </button>
+
+                            {/* ── Expanded panel ── */}
+                            <AnimatePresence initial={false}>
+                                {isExpanded && (
+                                    <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: "auto", opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
+                                        className="overflow-hidden"
+                                    >
+                                        {/* Separator */}
+                                        <div className="mx-4 h-px bg-slate-100 dark:bg-white/[0.06]" />
+
+                                        {/* Action bar */}
+                                        <div className="flex items-center gap-2 px-4 py-3.5">
+                                            <Link
+                                                href={`/session?invocation=${invocation.id}`}
+                                                onClick={onSessionStart}
+                                                style={{ backgroundColor: beadColor }}
+                                                className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-white text-[13px] font-bold active:scale-[0.97] transition-transform"
+                                            >
+                                                <Play size={13} fill="currentColor" />
+                                                Lancer
+                                            </Link>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); onToggleFavorite(invocation.id); }}
+                                                className="w-10 h-10 rounded-2xl flex items-center justify-center border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 active:scale-90 transition-all"
+                                            >
+                                                <Star size={16} fill={isFavorite(invocation.id) ? beadColor : "none"} style={{ color: isFavorite(invocation.id) ? beadColor : undefined }} className={isFavorite(invocation.id) ? "" : "text-slate-400"} />
+                                            </button>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); onEdit(invocation); }}
+                                                className="w-10 h-10 rounded-2xl flex items-center justify-center border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-slate-500 active:scale-90 transition-all"
+                                            >
+                                                <Pencil size={16} />
+                                            </button>
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); onDelete(invocation.id); }}
+                                                className="w-10 h-10 rounded-2xl flex items-center justify-center border border-red-100 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10 text-red-400 active:scale-90 transition-all"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </motion.div>
                     );
                 })
             ) : (
-                <div className="text-center py-16 px-6 bg-transparent">
+                <div className="text-center py-16 px-6">
                     <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center mx-auto mb-4 opacity-40">
                         <BookOpen size={24} className="text-slate-400" />
                     </div>
                     <p className="text-sm font-bold text-slate-600 mb-1">Aucun résultat</p>
-                    <p className="text-xs text-slate-700">Essayez une autre recherche</p>
+                    <p className="text-xs text-slate-500">Essayez une autre recherche</p>
                 </div>
             )}
         </div>
@@ -516,99 +550,146 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
     }
 
     return (
-        <div className="space-y-3">
-            {groups.map((group: any, index: number) => {
-                const totalReps = group.invocations.reduce((sum: number, inv: any) => sum + inv.repetitions, 0);
+        <div className="space-y-2.5">
+            {groups.map((group: any) => {
                 const isExpanded = expandedId === group.id;
 
                 return (
-                    <div key={group.id} className="relative group">
-                        <motion.div
-                            className={`transition-all duration-300 rounded-2xl border ${isExpanded ? "bg-white dark:bg-white/[0.08] border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none" : "bg-white dark:bg-white/[0.04] border-slate-200 dark:border-white/5 hover:border-slate-300 dark:hover:border-white/10 hover:shadow-md dark:hover:bg-white/[0.06] active:scale-[0.99]"}`}
+                    <motion.div
+                        key={group.id}
+                        layout
+                        className={`overflow-hidden rounded-3xl border transition-all duration-300 ${
+                            isExpanded
+                                ? "bg-white dark:bg-white/[0.07] border-slate-200 dark:border-white/12 shadow-md dark:shadow-none"
+                                : "bg-white dark:bg-white/[0.04] border-slate-200/80 dark:border-white/[0.06] active:scale-[0.99]"
+                        }`}
+                    >
+                        {/* ── Header row ── */}
+                        <button
+                            className="w-full flex items-center gap-3.5 px-4 py-4 text-left"
+                            onClick={() => onToggleExpand(group.id)}
                         >
+                            {/* Bead icon */}
                             <div
-                                className="flex items-center gap-4 p-5 cursor-pointer"
-                                onClick={() => onToggleExpand(group.id)}
+                                className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 border"
+                                style={{
+                                    backgroundColor: beadColor + "18",
+                                    borderColor: beadColor + "35",
+                                }}
                             >
-                                <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-white/5 flex items-center justify-center shrink-0 border border-slate-200 dark:border-white/10 group-hover:border-slate-300 dark:group-hover:border-white/20 transition-colors">
-                                    <div className="w-2 h-2 rounded-full" style={{ backgroundColor: beadColor, boxShadow: `0 0 12px ${beadColor}90` }} />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                    <h4 className={`text-[15px] font-semibold leading-tight transition-colors ${isExpanded ? "text-slate-900 dark:text-white" : "text-slate-800 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white"}`}>
-                                        {group.name}
-                                    </h4>
-                                    {group.description && (
-                                        <p className="text-[13px] text-slate-600 dark:text-slate-400 line-clamp-1 mt-0.5 font-medium opacity-90">{group.description}</p>
-                                    )}
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider opacity-80 group-hover:opacity-100 transition-opacity">{group.invocations.length} étapes</span>
-                                    <ChevronDown size={16} className={`text-slate-500 transition-transform duration-300 ${isExpanded ? "rotate-180 text-white" : "group-hover:text-slate-300"}`} />
-                                </div>
+                                <div
+                                    className="w-2.5 h-2.5 rounded-full"
+                                    style={{ backgroundColor: beadColor, boxShadow: `0 0 8px ${beadColor}` }}
+                                />
                             </div>
 
-                            <AnimatePresence>
-                                {isExpanded && (
-                                    <motion.div
-                                        initial={{ height: 0, opacity: 0 }}
-                                        animate={{ height: "auto", opacity: 1 }}
-                                        exit={{ height: 0, opacity: 0 }}
-                                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                                        className="overflow-hidden"
-                                    >
-                                        <div className="pb-6 px-5 space-y-4">
-                                            {/* Action Bar */}
-                                            <div className="flex items-center gap-2 pl-[3.5rem]">
-                                                <Link
-                                                    href={`/session?group=${group.id}`}
-                                                    onClick={onSessionStart}
-                                                    style={{ backgroundColor: beadColor }}
-                                                    className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-white text-[13px] font-bold active:scale-[0.98] transition-transform shadow-lg shadow-black/20"
-                                                >
-                                                    <Play size={14} fill="currentColor" />
-                                                    Lancer
-                                                </Link>
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); onToggleFavorite(group.id); }}
-                                                    className={`w-11 h-11 rounded-xl flex items-center justify-center border transition-all ${isFavorite(group.id) ? "bg-slate-100 dark:bg-white/10 border-transparent" : "border-slate-200 dark:border-white/10 text-slate-400 hover:bg-slate-100 dark:hover:bg-white/5"}`}
-                                                >
-                                                    <Star size={18} fill={isFavorite(group.id) ? beadColor : "none"} style={{ color: isFavorite(group.id) ? beadColor : undefined }} />
-                                                </button>
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); onEdit(group); }}
-                                                    className="w-11 h-11 rounded-xl border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
-                                                >
-                                                    <Pencil size={18} />
-                                                </button>
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); onDelete(group.id); }}
-                                                    className="w-11 h-11 rounded-xl border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-400 hover:text-rose-500 hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
-                                                >
-                                                    <Trash2 size={18} />
-                                                </button>
-                                            </div>
-
-                                            {/* Steps Preview */}
-                                            <div className="pl-[3.5rem] space-y-2.5 opacity-90">
-                                                {group.invocations.map((inv: any, i: number) => {
-                                                    const invData = getInvocationById(inv.invocationId);
-                                                    return (
-                                                        <div key={i} className="flex items-center justify-between text-[13px] py-1">
-                                                            <div className="flex items-center gap-3 text-slate-600 dark:text-slate-300">
-                                                                <span className="w-5 text-[10px] font-bold text-slate-500">{i + 1}</span>
-                                                                <span className="font-medium">{invData?.name || "Invocation"}</span>
-                                                            </div>
-                                                            <div className="bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded text-[11px] font-mono text-slate-600 dark:text-slate-400">{inv.repetitions}</div>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        </div>
-                                    </motion.div>
+                            {/* Text */}
+                            <div className="flex-1 min-w-0">
+                                <p className="text-[15px] font-semibold text-slate-800 dark:text-slate-100 leading-tight truncate">
+                                    {group.name}
+                                </p>
+                                {group.description && (
+                                    <p className={`text-[12.5px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug transition-all duration-300 ${isExpanded ? "" : "line-clamp-1"}`}>
+                                        {group.description}
+                                    </p>
                                 )}
-                            </AnimatePresence>
-                        </motion.div>
-                    </div>
+                            </div>
+
+                            {/* Right side */}
+                            <div className="flex items-center gap-2 shrink-0 ml-1">
+                                <span
+                                    className="text-[11px] font-bold px-2 py-0.5 rounded-full"
+                                    style={{ backgroundColor: beadColor + "18", color: beadColor }}
+                                >
+                                    {group.invocations.length} étapes
+                                </span>
+                                <motion.div
+                                    animate={{ rotate: isExpanded ? 180 : 0 }}
+                                    transition={{ duration: 0.25, ease: "easeInOut" }}
+                                >
+                                    <ChevronDown size={16} className="text-slate-400 dark:text-slate-500" />
+                                </motion.div>
+                            </div>
+                        </button>
+
+                        {/* ── Expanded panel ── */}
+                        <AnimatePresence initial={false}>
+                            {isExpanded && (
+                                <motion.div
+                                    initial={{ height: 0, opacity: 0 }}
+                                    animate={{ height: "auto", opacity: 1 }}
+                                    exit={{ height: 0, opacity: 0 }}
+                                    transition={{ duration: 0.28, ease: [0.4, 0, 0.2, 1] }}
+                                    className="overflow-hidden"
+                                >
+                                    {/* Separator */}
+                                    <div className="mx-4 h-px bg-slate-100 dark:bg-white/[0.06]" />
+
+                                    {/* Steps list */}
+                                    {group.invocations.length > 0 && (
+                                        <div className="px-4 pt-3 pb-1 space-y-1">
+                                            {group.invocations.map((inv: { invocationId: string; repetitions: number }, i: number) => {
+                                                const invData = getInvocationById(inv.invocationId);
+                                                return (
+                                                    <div key={i} className="flex items-center gap-3 py-2">
+                                                        <span
+                                                            className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black shrink-0"
+                                                            style={{ backgroundColor: beadColor + "20", color: beadColor }}
+                                                        >
+                                                            {i + 1}
+                                                        </span>
+                                                        <span className="flex-1 text-[13px] text-slate-700 dark:text-slate-300 font-medium truncate">
+                                                            {invData?.name || "Invocation"}
+                                                        </span>
+                                                        <span
+                                                            className="text-[11px] font-bold px-2 py-0.5 rounded-lg shrink-0"
+                                                            style={{ backgroundColor: beadColor + "15", color: beadColor }}
+                                                        >
+                                                            {inv.repetitions}×
+                                                        </span>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+
+                                    {/* Separator */}
+                                    <div className="mx-4 h-px bg-slate-100 dark:bg-white/[0.06] mt-1" />
+
+                                    {/* Action bar */}
+                                    <div className="flex items-center gap-2 px-4 py-3.5">
+                                        <Link
+                                            href={`/session?group=${group.id}`}
+                                            onClick={onSessionStart}
+                                            style={{ backgroundColor: beadColor }}
+                                            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-white text-[13px] font-bold active:scale-[0.97] transition-transform"
+                                        >
+                                            <Play size={13} fill="currentColor" />
+                                            Lancer
+                                        </Link>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); onToggleFavorite(group.id); }}
+                                            className="w-10 h-10 rounded-2xl flex items-center justify-center border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 active:scale-90 transition-all"
+                                        >
+                                            <Star size={16} fill={isFavorite(group.id) ? beadColor : "none"} style={{ color: isFavorite(group.id) ? beadColor : undefined }} className={isFavorite(group.id) ? "" : "text-slate-400"} />
+                                        </button>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); onEdit(group); }}
+                                            className="w-10 h-10 rounded-2xl flex items-center justify-center border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-slate-500 active:scale-90 transition-all"
+                                        >
+                                            <Pencil size={16} />
+                                        </button>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); onDelete(group.id); }}
+                                            className="w-10 h-10 rounded-2xl flex items-center justify-center border border-red-100 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10 text-red-400 active:scale-90 transition-all"
+                                        >
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </motion.div>
                 );
             })}
         </div>
