@@ -422,7 +422,7 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
                         <motion.div
                             key={invocation.id}
                             layout
-                            className={`overflow-hidden rounded-3xl border transition-all duration-300 ${isExpanded
+                            className={`overflow-hidden rounded-3xl border transition-all duration-300 scroll-mt-6 ${isExpanded
                                 ? "bg-white dark:bg-white/[0.07] border-slate-200 dark:border-white/12 shadow-md dark:shadow-none"
                                 : "bg-white dark:bg-white/[0.04] border-slate-200/80 dark:border-white/[0.06] active:scale-[0.99]"
                                 }`}
@@ -552,7 +552,7 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                     <motion.div
                         key={group.id}
                         layout
-                        className={`overflow-hidden rounded-3xl border transition-all duration-300 ${isExpanded
+                        className={`overflow-hidden rounded-3xl border transition-all duration-300 scroll-mt-6 ${isExpanded
                             ? "bg-white dark:bg-white/[0.07] border-slate-200 dark:border-white/12 shadow-md dark:shadow-none"
                             : "bg-white dark:bg-white/[0.04] border-slate-200/80 dark:border-white/[0.06] active:scale-[0.99]"
                             }`}
