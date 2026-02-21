@@ -45,10 +45,17 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
 
         if (isExpanding && e) {
             const target = e.currentTarget as HTMLElement;
-            // Un petit délai pour laisser l'animation commencer et le layout se mettre à jour
+            const container = target.closest('.scroll-mt-12');
+
+            // Un délai pour laisser les autres éléments commencer à se fermer
+            // et au navigateur de calculer la nouvelle position
             setTimeout(() => {
-                target.scrollIntoView({ behavior: "smooth", block: "start" });
-            }, 100);
+                if (container) {
+                    container.scrollIntoView({ behavior: "smooth", block: "start" });
+                } else {
+                    target.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+            }, 180);
         }
     };
 
@@ -290,7 +297,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
             </div>
 
             {/* ── SCROLLABLE CONTENT ─────────────────────── */}
-            <div className="flex-1 overflow-y-auto w-full no-scrollbar pb-40 px-5 pt-2 touch-pan-y overscroll-contain">
+            <div className="flex-1 overflow-y-auto w-full no-scrollbar pb-40 px-5 pt-2 touch-pan-y overscroll-contain scroll-pt-4">
                 <AnimatePresence mode="wait">
                     {activeTab === "collections" ? (
                         <motion.div
@@ -422,7 +429,7 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
                         <motion.div
                             key={invocation.id}
                             layout
-                            className={`overflow-hidden rounded-3xl border transition-all duration-300 scroll-mt-6 ${isExpanded
+                            className={`overflow-hidden rounded-3xl border transition-all duration-300 scroll-mt-12 ${isExpanded
                                 ? "bg-white dark:bg-white/[0.07] border-slate-200 dark:border-white/12 shadow-md dark:shadow-none"
                                 : "bg-white dark:bg-white/[0.04] border-slate-200/80 dark:border-white/[0.06] active:scale-[0.99]"
                                 }`}
@@ -556,7 +563,7 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                     <motion.div
                         key={group.id}
                         layout
-                        className={`overflow-hidden rounded-3xl border transition-all duration-300 scroll-mt-6 ${isExpanded
+                        className={`overflow-hidden rounded-3xl border transition-all duration-300 scroll-mt-12 ${isExpanded
                             ? "bg-white dark:bg-white/[0.07] border-slate-200 dark:border-white/12 shadow-md dark:shadow-none"
                             : "bg-white dark:bg-white/[0.04] border-slate-200/80 dark:border-white/[0.06] active:scale-[0.99]"
                             }`}
