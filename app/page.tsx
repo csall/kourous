@@ -114,17 +114,17 @@ export default function LiquidEtherealDashboard() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col gap-3.5"
+            className="flex flex-col gap-3"
           >
             <div className="flex items-start gap-4">
-              <QuoteIcon size={16} className="text-indigo-400 mt-1 shrink-0 opacity-40" />
-              <h1 className="text-3xl font-bold text-white tracking-tight leading-[1.1] text-balance">
-                {dailyQuote.text}
+              <QuoteIcon size={14} className="text-indigo-400 mt-1.5 shrink-0 opacity-40" />
+              <h1 className="text-xl font-medium text-white/90 tracking-wide leading-[1.4] text-balance italic">
+                "{dailyQuote.text}"
               </h1>
             </div>
-            <div className="flex items-center gap-3 ml-12">
-              <div className="h-[1px] w-8 bg-indigo-500/30" />
-              <span className="text-[11px] font-black uppercase tracking-[0.4em] text-white/30">
+            <div className="flex items-center gap-3 ml-11">
+              <div className="h-[1px] w-6 bg-indigo-500/20" />
+              <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/20">
                 {dailyQuote.source}
               </span>
             </div>
