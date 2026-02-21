@@ -197,6 +197,24 @@ export default function PrivacyPage() {
                     </div>
                 </section>
 
+                {/* 7. Contact */}
+                <section className="space-y-4">
+                    <div className="flex items-center gap-3 text-slate-900 dark:text-white">
+                        <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center border border-slate-200 dark:border-white/5">
+                            <span className="font-bold text-sm">7</span>
+                        </div>
+                        <h3 className="text-xl font-bold">Contact</h3>
+                    </div>
+                    <div className="pl-11 text-slate-700 dark:text-slate-400 leading-relaxed">
+                        <p>
+                            Pour toute question concernant cette politique ou vos données, vous pouvez nous contacter par e-mail à :{" "}
+                            <a href="mailto:cheikh.sall@icloud.com" className="text-emerald-600 dark:text-emerald-400 font-medium hover:underline">
+                                cheikh.sall@icloud.com
+                            </a>
+                        </p>
+                    </div>
+                </section>
+
                 <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-white/10 to-transparent" />
 
 

@@ -89,6 +89,24 @@ export default function TermsPage() {
                     </div>
                 </section>
 
+                {/* 4. Contact */}
+                <section className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-2xl p-6 hover:shadow-lg dark:hover:bg-white/[0.05] transition-all group">
+                    <div className="flex items-start gap-4">
+                        <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform duration-300">
+                            <Mail size={24} />
+                        </div>
+                        <div className="space-y-2">
+                            <h3 className="text-xl font-bold text-slate-900 dark:text-white">4. Contact</h3>
+                            <p className="text-slate-700 dark:text-slate-400 leading-relaxed">
+                                Pour toute question ou assistance, vous pouvez nous contacter par e-mail à :{" "}
+                                <a href="mailto:cheikh.sall@icloud.com" className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
+                                    cheikh.sall@icloud.com
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
                 <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-white/10 to-transparent" />
 
                 {/* Footer Logo */}
