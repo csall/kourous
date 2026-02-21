@@ -241,37 +241,58 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                 </AnimatePresence>
 
                 {/* ── TABS ─────────────────────────── */}
-                <div>
-                    <div className="flex p-1 bg-slate-200/60 dark:bg-[#1C1C1E] rounded-xl border border-black/5 dark:border-white/10">
-                        {[
-                            { key: "collections" as const, label: "Collections", count: groups.length },
-                            { key: "invocations" as const, label: "Invocations", count: invocations.length },
-                            { key: "favorites" as const, label: "Favoris", count: favoriteInvocations.length + favoriteGroups.length },
-                        ].map(tab => (
-                            <button
+                <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-1 px-1">
+                    {[
+                        { key: "collections" as const,  label: "Collections",  icon: <Sparkles size={14} />, count: groups.length },
+                        { key: "invocations" as const,  label: "Invocations",  icon: <BookOpen size={14} />, count: invocations.length },
+                        { key: "favorites"   as const,  label: "Favoris",      icon: <Star     size={14} />, count: favoriteInvocations.length + favoriteGroups.length },
+                    ].map(tab => {
+                        const isActive = activeTab === tab.key;
+                        return (
+                            <motion.button
                                 key={tab.key}
                                 onClick={() => setActiveTab(tab.key)}
-                                className={`relative flex-1 flex items-center justify-center gap-2 py-2 rounded-[9px] text-[13px] font-medium transition-all duration-300 ${activeTab === tab.key
-                                    ? 'text-slate-900 dark:text-white'
-                                    : 'text-slate-700 dark:text-slate-500 hover:text-slate-900 dark:hover:text-slate-300'
-                                    }`}
+                                whileTap={{ scale: 0.94 }}
+                                className="relative flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-semibold whitespace-nowrap border transition-all duration-300 shrink-0"
+                                style={isActive ? {
+                                    backgroundColor: beadColor + "22",
+                                    borderColor: beadColor + "55",
+                                    color: beadColor,
+                                } : {
+                                    backgroundColor: "transparent",
+                                    borderColor: "transparent",
+                                    color: undefined,
+                                }}
+
                             >
-                                {activeTab === tab.key && (
-                                    <motion.div
-                                        layoutId="activeTabBg"
-                                        className="absolute inset-0 bg-white dark:bg-[#3A3A3C] rounded-[9px] shadow-sm border border-black/5 dark:border-white/10"
-                                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                    />
+                                {/* Inactive ghost border */}
+                                {!isActive && (
+                                    <span className="absolute inset-0 rounded-full border border-slate-200 dark:border-white/10" />
                                 )}
-                                <span className="relative z-10 flex items-center gap-2">
-                                    <span>{tab.label}</span>
-                                    <span className={`text-[10px] font-bold opacity-70 ${activeTab === tab.key ? "text-slate-900 dark:text-white" : "text-slate-700 dark:text-slate-500"}`}>
+
+                                <span className={isActive ? "" : "text-slate-500 dark:text-slate-500"}>
+                                    {tab.icon}
+                                </span>
+                                <span className={isActive ? "" : "text-slate-700 dark:text-slate-400"}>
+                                    {tab.label}
+                                </span>
+                                {tab.count > 0 && (
+                                    <span
+                                        className="text-[10px] font-black px-1.5 py-0.5 rounded-full leading-none"
+                                        style={isActive ? {
+                                            backgroundColor: beadColor + "33",
+                                            color: beadColor,
+                                        } : {
+                                            backgroundColor: "rgba(100,116,139,0.15)",
+                                            color: "rgb(100,116,139)",
+                                        }}
+                                    >
                                         {tab.count}
                                     </span>
-                                </span>
-                            </button>
-                        ))}
-                    </div>
+                                )}
+                            </motion.button>
+                        );
+                    })}
                 </div>
             </div>
 
