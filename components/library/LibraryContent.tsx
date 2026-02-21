@@ -39,8 +39,17 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
     const favoriteInvocations = invocations.filter(inv => isFavorite(inv.id));
     const favoriteGroups = groups.filter(grp => isFavorite(grp.id));
 
-    const toggleExpand = (id: string) => {
-        setExpandedId(expandedId === id ? null : id);
+    const toggleExpand = (id: string, e?: React.MouseEvent) => {
+        const isExpanding = expandedId !== id;
+        setExpandedId(isExpanding ? id : null);
+
+        if (isExpanding && e) {
+            const target = e.currentTarget as HTMLElement;
+            // Un petit délai pour laisser l'animation commencer et le layout se mettre à jour
+            setTimeout(() => {
+                target.scrollIntoView({ behavior: "smooth", block: "start" });
+            }, 100);
+        }
     };
 
     const handleEditGroup = (group: InvocationGroup) => {
@@ -421,7 +430,7 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
                             {/* ── Header row ── */}
                             <button
                                 className="w-full flex items-center gap-3.5 px-4 py-4 text-left"
-                                onClick={() => onToggleExpand(invocation.id)}
+                                onClick={(e) => onToggleExpand(invocation.id, e)}
                             >
                                 {/* Icon */}
                                 <div
@@ -551,7 +560,7 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                         {/* ── Header row ── */}
                         <button
                             className="w-full flex items-center gap-3.5 px-4 py-4 text-left"
-                            onClick={() => onToggleExpand(group.id)}
+                            onClick={(e) => onToggleExpand(group.id, e)}
                         >
                             {/* Bead icon */}
                             <div
