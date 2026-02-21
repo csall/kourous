@@ -441,11 +441,13 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
 
                                 {/* Text */}
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-[15px] font-semibold text-slate-800 dark:text-slate-100 leading-tight truncate">
+                                    <p
+                                        className={`text-[15px] font-semibold text-slate-800 dark:text-slate-100 leading-tight transition-all duration-300 ${isExpanded ? "whitespace-normal break-words overflow-visible" : "truncate"}`}
+                                    >
                                         {invocation.name}
                                     </p>
                                     {invocation.description && (
-                                        <p className={`text-[12.5px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug transition-all duration-300 ${isExpanded ? "" : "line-clamp-1"}`}>
+                                        <p className={`text-[12.5px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug transition-all duration-300 ${isExpanded ? "whitespace-normal break-words" : "line-clamp-1"}`}>
                                             {invocation.description}
                                         </p>
                                     )}
@@ -576,11 +578,13 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
 
                             {/* Text */}
                             <div className="flex-1 min-w-0">
-                                <p className="text-[15px] font-semibold text-slate-800 dark:text-slate-100 leading-tight truncate">
+                                <p
+                                    className={`text-[15px] font-semibold text-slate-800 dark:text-slate-100 leading-tight transition-all duration-300 ${isExpanded ? "whitespace-normal break-words overflow-visible" : "truncate"}`}
+                                >
                                     {group.name}
                                 </p>
                                 {group.description && (
-                                    <p className={`text-[12.5px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug transition-all duration-300 ${isExpanded ? "" : "line-clamp-1"}`}>
+                                    <p className={`text-[12.5px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug transition-all duration-300 ${isExpanded ? "whitespace-normal break-words" : "line-clamp-1"}`}>
                                         {group.description}
                                     </p>
                                 )}
@@ -629,7 +633,9 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                                                         >
                                                             {i + 1}
                                                         </span>
-                                                        <span className="flex-1 text-[13px] text-slate-700 dark:text-slate-300 font-medium truncate">
+                                                        <span
+                                                            className="flex-1 text-[13px] text-slate-700 dark:text-slate-300 font-medium whitespace-normal break-words"
+                                                        >
                                                             {invData?.name || "Invocation"}
                                                         </span>
                                                         <span

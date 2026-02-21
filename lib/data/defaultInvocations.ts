@@ -144,7 +144,7 @@ export const defaultInvocations: Invocation[] = [
     // PROTECTION & PRÉSERVATION
     {
         id: "sys-bismillah-ladi",
-        name: "Bismi llāhi lladhī lā yaḍurru...",
+        name: "Bismi llāhi lladhī lā yaḍurru",
         description: "Au nom d'Allah dont le nom protège de tout mal sur terre et au ciel.",
         repetitions: 3,
         createdAt: "2024-01-01T00:00:00.000Z"
@@ -179,14 +179,14 @@ export const defaultInvocations: Invocation[] = [
     },
     {
         id: "sys-subhanallahi-adada",
-        name: "Subḥāna llāhi wa bi-ḥamdihi, ʿadada khalqihi...",
+        name: "Subḥāna llāhi wa bi-ḥamdihi, ʿadada khalqihi",
         description: "Gloire et louange à Allah, autant de fois qu'il y a de créatures... (Invocation de Juwayriyah)",
         repetitions: 3,
         createdAt: "2024-01-01T00:00:00.000Z"
     },
     {
         id: "sys-la-ilaha-illallah-wahdahu",
-        name: "Lā ʾilāha ʾillā llāhu waḥdahu lā sharīka lah...",
+        name: "Lā ʾilāha ʾillā llāhu waḥdahu lā sharīka lah",
         description: "Il n'y a de divinité qu'Allah, Seul et sans associé... 100 fois équivaut à affranchir 10 esclaves.",
         repetitions: 100,
         createdAt: "2024-01-01T00:00:00.000Z"
@@ -214,7 +214,7 @@ export const defaultInvocations: Invocation[] = [
     },
     {
         id: "sys-ilman-nafian",
-        name: "Allāhumma ʾinnī ʾasʾaluka ʿilman nāfiʿan...",
+        name: "Allāhumma ʾinnī ʾasʾaluka ʿilman nāfiʿan",
         description: "Seigneur, je Te demande une science utile, une subsistance licite et une œuvre acceptée.",
         repetitions: 1,
         createdAt: "2024-01-01T00:00:00.000Z"
@@ -228,28 +228,28 @@ export const defaultInvocations: Invocation[] = [
     },
     {
         id: "sys-morning-praise",
-        name: "Allāhumma bika ʾaṣbaḥnā wa bika ʾamsaynā...",
+        name: "Allāhumma bika ʾaṣbaḥnā wa bika ʾamsaynā",
         description: "Seigneur, c'est par Toi que nous nous retrouvons au matin et au soir. Invocation matinale.",
         repetitions: 1,
         createdAt: "2024-01-01T00:00:00.000Z"
     },
     {
         id: "sys-evening-praise",
-        name: "Allāhumma bika ʾamsaynā wa bika ʾaṣbaḥnā...",
+        name: "Allāhumma bika ʾamsaynā wa bika ʾaṣbaḥnā",
         description: "Seigneur, c'est par Toi que nous nous retrouvons au soir et au matin. Invocation du soir.",
         repetitions: 1,
         createdAt: "2024-01-01T00:00:00.000Z"
     },
     {
         id: "sys-gratitude-morning",
-        name: "Allāhumma mā ʾaṣbaḥa bī min niʿmatin...",
+        name: "Allāhumma mā ʾaṣbaḥa bī min niʿmatin",
         description: "Ô Allah, tout bienfait qui m'arrive ce matin ne vient que de Toi Seul. Reconnaissance du jour.",
         repetitions: 1,
         createdAt: "2024-01-01T00:00:00.000Z"
     },
     {
         id: "sys-protection-anxiety",
-        name: "Allāhumma ʾinnī ʾaʿūdhu bika minal-hammi wal-ḥazan...",
+        name: "Allāhumma ʾinnī ʾaʿūdhu bika minal-hammi wal-ḥazan",
         description: "Ô Allah, je cherche protection contre les soucis, la tristesse et l'incapacité. Pour l'apaisement.",
         repetitions: 1,
         createdAt: "2024-01-01T00:00:00.000Z"
@@ -263,7 +263,7 @@ export const defaultInvocations: Invocation[] = [
     },
     {
         id: "sys-contentment",
-        name: "Raḍītu bi-llāhi Rabban wa bil-ʾIslāmi dīnan...",
+        name: "Raḍītu bi-llāhi Rabban wa bil-ʾIslāmi dīnan",
         description: "Je suis satisfait d'Allah comme Seigneur et de l'Islam comme religion. 3 fois matin et soir.",
         repetitions: 3,
         createdAt: "2024-01-01T00:00:00.000Z"
@@ -277,21 +277,21 @@ export const defaultInvocations: Invocation[] = [
     },
     {
         id: "sys-after-sleep",
-        name: "Al-ḥamdu li-llāhi lladhī ʾaḥyānā baʿda mā ʾamātanā...",
+        name: "Al-ḥamdu li-llāhi lladhī ʾaḥyānā baʿda mā ʾamātanā",
         description: "Louange à Allah qui nous a rendu la vie après nous avoir fait mourir. Au réveil.",
         repetitions: 1,
         createdAt: "2024-01-01T00:00:00.000Z"
     },
     {
         id: "sys-travel",
-        name: "Subḥāna lladhī sakhkhara lanā hadhā...",
+        name: "Subḥāna lladhī sakhkhara lanā hadhā",
         description: "Gloire à Celui qui a mis ceci à notre service. Invocation pour le voyage.",
         repetitions: 1,
         createdAt: "2024-01-01T00:00:00.000Z"
     },
     {
         id: "sys-after-prayer-help",
-        name: "Allāhumma ʾaʿinnī ʿalā dhikrika wa shukrika...",
+        name: "Allāhumma ʾaʿinnī ʿalā dhikrika wa shukrika",
         description: "Ô Allah, aide-moi à T'évoquer, à Te remercier et à T'adorer de la meilleure manière.",
         repetitions: 1,
         createdAt: "2024-01-01T00:00:00.000Z"
@@ -312,21 +312,21 @@ export const defaultInvocations: Invocation[] = [
     },
     {
         id: "sys-barakah-food",
-        name: "Allāhumma bārik lanā fīmā razaqtanā...",
+        name: "Allāhumma bārik lanā fīmā razaqtanā",
         description: "Seigneur, bénis ce que Tu nous as accordé et préserve-nous du Feu. Avant le repas.",
         repetitions: 1,
         createdAt: "2024-01-01T00:00:00.000Z"
     },
     {
         id: "sys-huda-taqwa",
-        name: "Allāhumma ʾinnī ʾasʾaluka l-hudā wat-tuqā...",
+        name: "Allāhumma ʾinnī ʾasʾaluka l-hudā wat-tuqā",
         description: "Seigneur, je Te demande la guidance, la piété, la pudeur et la suffisance.",
         repetitions: 1,
         createdAt: "2024-01-01T00:00:00.000Z"
     },
     {
         id: "sys-istighfar-extended",
-        name: "ʾAstaghfiru llāha l-ʿAẓīm lladhī lā ʾilāha ʾillā huwa...",
+        name: "ʾAstaghfiru llāha l-ʿAẓīm lladhī lā ʾilāha ʾillā huwa",
         description: "Je demande pardon à Allah l'Immense... À dire 3 fois pour l'effacement des grands péchés.",
         repetitions: 3,
         createdAt: "2024-01-01T00:00:00.000Z"
