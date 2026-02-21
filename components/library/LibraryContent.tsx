@@ -270,20 +270,18 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                 <span className={`text-[11px] font-bold leading-none ${isActive ? "" : "text-slate-600 dark:text-slate-400"}`}>
                                     {tab.label}
                                 </span>
-                                {tab.count > 0 && (
-                                    <span
-                                        className="text-[9px] font-black px-1.5 py-0.5 rounded-full leading-none"
-                                        style={isActive ? {
-                                            backgroundColor: beadColor + "30",
-                                            color: beadColor,
-                                        } : {
-                                            backgroundColor: "rgba(100,116,139,0.12)",
-                                            color: "rgb(100,116,139)",
-                                        }}
-                                    >
-                                        {tab.count}
-                                    </span>
-                                )}
+                                <span
+                                    className="text-[9px] font-black px-1.5 py-0.5 rounded-full leading-none"
+                                    style={isActive ? {
+                                        backgroundColor: beadColor + "30",
+                                        color: beadColor,
+                                    } : {
+                                        backgroundColor: "rgba(100,116,139,0.12)",
+                                        color: "rgb(100,116,139)",
+                                    }}
+                                >
+                                    {tab.count}
+                                </span>
                             </motion.button>
                         );
                     })}
