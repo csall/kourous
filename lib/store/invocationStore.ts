@@ -23,10 +23,15 @@ export interface InvocationGroup {
 }
 
 interface InvocationStoreState {
+    // These are merged views (derived)
     invocations: Invocation[];
     groups: InvocationGroup[];
+
+    // Pure state (persisted)
+    userInvocations: Invocation[];
+    userGroups: InvocationGroup[];
     favoriteIds: string[];
-    _hasLoadedDefaults?: boolean;
+    hiddenSystemIds: string[];
 
     // Invocations CRUD
     addInvocation: (invocation: Omit<Invocation, "id" | "createdAt">) => void;
@@ -38,12 +43,14 @@ interface InvocationStoreState {
     addGroup: (group: Omit<InvocationGroup, "id" | "createdAt">) => void;
     updateGroup: (id: string, updates: Partial<Omit<InvocationGroup, "id" | "createdAt">>) => void;
     deleteGroup: (id: string) => void;
+    getGroupById: (id: string) => InvocationGroup | undefined;
+
     // Favorites
     toggleFavorite: (id: string) => void;
     isFavorite: (id: string) => boolean;
 
     // Utility
-    loadDefaultData: () => void;
+    refreshMergedData: () => void;
     resetStore: () => void;
 }
 
@@ -52,8 +59,38 @@ export const useInvocationStore = create<InvocationStoreState>()(
         (set, get) => ({
             invocations: [],
             groups: [],
+            userInvocations: [],
+            userGroups: [],
             favoriteIds: [],
-            _hasLoadedDefaults: false,
+            hiddenSystemIds: [],
+
+            // Helper to merge system and user data
+            refreshMergedData: () => {
+                let defaultInvocations: Invocation[] = [];
+                let defaultGroups: InvocationGroup[] = [];
+
+                try {
+                    const defaults = require("@/lib/data/defaultInvocations");
+                    defaultInvocations = defaults.defaultInvocations || [];
+                    defaultGroups = defaults.defaultGroups || [];
+                } catch (e) {
+                    console.error("Failed to load default invocations:", e);
+                }
+
+                const { userInvocations, userGroups, hiddenSystemIds } = get();
+
+                const mergedInvocations = [
+                    ...defaultInvocations.filter(inv => !hiddenSystemIds.includes(inv.id)),
+                    ...userInvocations
+                ];
+
+                const mergedGroups = [
+                    ...defaultGroups.filter(grp => !hiddenSystemIds.includes(grp.id)),
+                    ...userGroups
+                ];
+
+                set({ invocations: mergedInvocations, groups: mergedGroups });
+            },
 
             // Invocations
             addInvocation: (invocation) => {
@@ -63,29 +100,40 @@ export const useInvocationStore = create<InvocationStoreState>()(
                     createdAt: new Date().toISOString(),
                 };
                 set((state) => ({
-                    invocations: [newInvocation, ...state.invocations],
+                    userInvocations: [newInvocation, ...state.userInvocations],
                 }));
+                get().refreshMergedData();
             },
 
             updateInvocation: (id, updates) => {
+                if (id.startsWith('sys-')) {
+                    // System items are read-only for now, or we could support overrides
+                    // For now, let's just ignore or warn
+                    return;
+                }
                 set((state) => ({
-                    invocations: state.invocations.map((inv) =>
+                    userInvocations: state.userInvocations.map((inv) =>
                         inv.id === id ? { ...inv, ...updates } : inv
                     ),
                 }));
+                get().refreshMergedData();
             },
 
             deleteInvocation: (id) => {
+                if (id.startsWith('sys-')) {
+                    set((state) => ({
+                        hiddenSystemIds: [...state.hiddenSystemIds, id],
+                    }));
+                } else {
+                    set((state) => ({
+                        userInvocations: state.userInvocations.filter((inv) => inv.id !== id),
+                    }));
+                }
+                // Cleanup favorites and groups
                 set((state) => ({
-                    invocations: state.invocations.filter((inv) => inv.id !== id),
-                    // Also remove from groups
-                    groups: state.groups.map((group) => ({
-                        ...group,
-                        invocations: group.invocations.filter((inv) => inv.invocationId !== id),
-                    })),
-                    // Remove from favorites if present
                     favoriteIds: state.favoriteIds.filter((favId) => favId !== id),
                 }));
+                get().refreshMergedData();
             },
 
             getInvocationById: (id) => {
@@ -100,27 +148,38 @@ export const useInvocationStore = create<InvocationStoreState>()(
                     createdAt: new Date().toISOString(),
                 };
                 set((state) => ({
-                    groups: [newGroup, ...state.groups],
+                    userGroups: [newGroup, ...state.userGroups],
                 }));
+                get().refreshMergedData();
             },
 
             updateGroup: (id, updates) => {
+                if (id.startsWith('sys-')) return;
                 set((state) => ({
-                    groups: state.groups.map((grp) =>
+                    userGroups: state.userGroups.map((grp) =>
                         grp.id === id ? { ...grp, ...updates } : grp
                     ),
                 }));
+                get().refreshMergedData();
             },
 
             deleteGroup: (id) => {
+                if (id.startsWith('sys-')) {
+                    set((state) => ({
+                        hiddenSystemIds: [...state.hiddenSystemIds, id],
+                    }));
+                } else {
+                    set((state) => ({
+                        userGroups: state.userGroups.filter((grp) => grp.id !== id),
+                    }));
+                }
                 set((state) => ({
-                    groups: state.groups.filter((grp) => grp.id !== id),
-                    // Remove from favorites if present
                     favoriteIds: state.favoriteIds.filter((favId) => favId !== id),
                 }));
+                get().refreshMergedData();
             },
 
-            getGroupById: (id: string) => {
+            getGroupById: (id) => {
                 return get().groups.find((grp) => grp.id === id);
             },
 
@@ -137,81 +196,27 @@ export const useInvocationStore = create<InvocationStoreState>()(
                 return get().favoriteIds.includes(id);
             },
 
-            // Utility
             loadDefaultData: () => {
-                const { defaultInvocations, defaultGroups } = require("@/lib/data/defaultInvocations");
-
-                // Add default invocations (Idempotent: Check by name)
-                const currentInvocations = get().invocations;
-                const currentGroups = get().groups;
-
-                const invocationMap = new Map<string, string>();
-                const newInvocations: Invocation[] = [];
-
-                // 1. Create a map of EXISTING invocations to reuse IDs
-                currentInvocations.forEach(inv => {
-                    invocationMap.set(inv.name, inv.id);
-                });
-
-                defaultInvocations.forEach((inv: any) => {
-                    // Only add if it doesn't exist
-                    if (!invocationMap.has(inv.name)) {
-                        const id = `inv-default-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-                        const newInv = {
-                            ...inv,
-                            id,
-                            createdAt: new Date().toISOString(),
-                        };
-                        newInvocations.push(newInv);
-                        invocationMap.set(inv.name, id);
-                    }
-                });
-
-                // Add default groups (Idempotent: Check by name)
-                const newGroups: InvocationGroup[] = [];
-                defaultGroups.forEach((grp: any) => {
-                    // Check if group already exists
-                    if (currentGroups.some(g => g.name === grp.name)) return;
-
-                    const invocations = grp.invocationNames
-                        .map((invName: any) => {
-                            const invId = invocationMap.get(invName.name);
-                            return invId ? {
-                                invocationId: invId,
-                                repetitions: invName.repetitions,
-                            } : null;
-                        })
-                        .filter(Boolean);
-
-                    if (invocations.length > 0) {
-                        newGroups.push({
-                            id: `grp-default-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                            name: grp.name,
-                            description: grp.description,
-                            invocations,
-                            createdAt: new Date().toISOString(),
-                        });
-                    }
-                });
-
-                set((state) => ({
-                    invocations: [...state.invocations, ...newInvocations],
-                    groups: [...state.groups, ...newGroups],
-                    _hasLoadedDefaults: true,
-                }));
+                // Obsolete, but kept for compatibility during migration if needed
+                get().refreshMergedData();
             },
 
             resetStore: () => {
-                set({ invocations: [], groups: [], favoriteIds: [], _hasLoadedDefaults: true });
+                set({ userInvocations: [], userGroups: [], favoriteIds: [], hiddenSystemIds: [] });
+                get().refreshMergedData();
             },
         }),
         {
             name: "kourous-invocations",
+            partialize: (state) => ({
+                userInvocations: state.userInvocations,
+                userGroups: state.userGroups,
+                favoriteIds: state.favoriteIds,
+                hiddenSystemIds: state.hiddenSystemIds,
+            }),
             onRehydrateStorage: () => (state) => {
-                // Ensure defaults aren't loaded automatically if we just reset
-                // But allow if we want them back
-                if (state && !state._hasLoadedDefaults) {
-                    // We'll let the component call loadDefaultData or rehydrate
+                if (state) {
+                    state.refreshMergedData();
                 }
             },
         }

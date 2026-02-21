@@ -24,16 +24,8 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
     const [isSearching, setIsSearching] = useState(false);
     const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
 
-    const { invocations, groups, deleteInvocation, deleteGroup, getInvocationById, loadDefaultData, toggleFavorite, isFavorite, favoriteIds } = useInvocationStore();
+    const { invocations, groups, deleteInvocation, deleteGroup, getInvocationById, toggleFavorite, isFavorite, favoriteIds } = useInvocationStore();
     const beadColor = useSessionStore((s) => s.beadColor);
-
-    // Load defaults if store is empty OR if new defaults are missing (migration)
-    useEffect(() => {
-        const hasNewDefaults = invocations.some(inv => inv.name === "Āyat al-Kursī");
-        if ((invocations.length === 0 && groups.length === 0) || !hasNewDefaults) {
-            loadDefaultData();
-        }
-    }, [invocations.length, groups.length, loadDefaultData, invocations]);
 
     const filteredInvocations = invocations.filter(inv =>
         inv.name.toLowerCase().includes(searchQuery.toLowerCase())
