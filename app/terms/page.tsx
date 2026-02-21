@@ -3,7 +3,7 @@ import { ArrowLeft, Scale, ShieldAlert, BookOpen, Mail, FileText } from "lucide-
 
 export default function TermsPage() {
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-300 font-sans selection:bg-indigo-500/30">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300 font-sans selection:bg-indigo-500/30">
             {/* Background Effects (Dark Mode Only) */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden opacity-0 dark:opacity-100 transition-opacity duration-500">
                 <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-indigo-500/5 rounded-full blur-[120px]" />
@@ -24,7 +24,7 @@ export default function TermsPage() {
                     </div>
                     <div className="space-y-2">
                         <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Conditions Générales</h2>
-                        <p className="text-lg text-slate-600 dark:text-slate-400 max-w-lg mx-auto leading-relaxed">
+                        <p className="text-lg text-slate-700 dark:text-slate-400 max-w-lg mx-auto leading-relaxed">
                             Simplicité et transparence pour une utilisation sereine.
                         </p>
                     </div>
@@ -47,7 +47,7 @@ export default function TermsPage() {
                         </div>
                         <div className="space-y-2">
                             <h3 className="text-xl font-bold text-slate-900 dark:text-white">1. Utilisation</h3>
-                            <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                            <p className="text-slate-700 dark:text-slate-400 leading-relaxed">
                                 Kourous est une application gratuite destinée à un usage personnel et spirituel. Vous êtes libre de l'utiliser autant que vous le souhaitez pour vos pratiques quotidiennes.
                             </p>
                         </div>
@@ -62,7 +62,7 @@ export default function TermsPage() {
                         </div>
                         <div className="space-y-2">
                             <h3 className="text-xl font-bold text-slate-900 dark:text-white">2. Responsabilité</h3>
-                            <div className="space-y-2 text-slate-600 dark:text-slate-400 leading-relaxed">
+                            <div className="space-y-2 text-slate-700 dark:text-slate-400 leading-relaxed">
                                 <p>
                                     L'application est fournie "telle quelle".
                                 </p>
@@ -82,7 +82,7 @@ export default function TermsPage() {
                         </div>
                         <div className="space-y-2">
                             <h3 className="text-xl font-bold text-slate-900 dark:text-white">3. Contenu</h3>
-                            <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                            <p className="text-slate-700 dark:text-slate-400 leading-relaxed">
                                 Les textes et contenus présents dans l'application sont fournis à titre informatif et spirituel, dans le but de faciliter votre pratique.
                             </p>
                         </div>
