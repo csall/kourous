@@ -84,7 +84,7 @@ function SettingsInner() {
     ];
 
     return (
-        <div className="flex flex-col w-full h-full px-5 pt-[calc(env(safe-area-inset-top)+2rem)] overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-200 transition-colors">
+        <div className="flex flex-col w-full h-[100dvh] overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-200 transition-colors">
             <AnimatePresence mode="wait">
                 {view === 'menu' ? (
                     <motion.div
@@ -92,7 +92,7 @@ function SettingsInner() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
-                        className="flex flex-col h-full"
+                        className="flex flex-col h-full pt-[calc(env(safe-area-inset-top)+2rem)] px-5"
                     >
                         {/* ── FIXED HEADER ─────────────────────────── */}
                         <div className="flex-none space-y-6 pb-6 z-10 px-1">
