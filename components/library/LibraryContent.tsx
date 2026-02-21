@@ -29,11 +29,11 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
 
     // Load defaults if store is empty OR if new defaults are missing (migration)
     useEffect(() => {
-        const hasTasbih = groups.some(g => g.name === "Tasbih après la Prière");
-        if ((invocations.length === 0 && groups.length === 0) || !hasTasbih) {
+        const hasNewDefaults = invocations.some(inv => inv.name === "Āyat al-Kursī");
+        if ((invocations.length === 0 && groups.length === 0) || !hasNewDefaults) {
             loadDefaultData();
         }
-    }, [invocations.length, groups.length, loadDefaultData, groups]);
+    }, [invocations.length, groups.length, loadDefaultData, invocations]);
 
     const filteredInvocations = invocations.filter(inv =>
         inv.name.toLowerCase().includes(searchQuery.toLowerCase())

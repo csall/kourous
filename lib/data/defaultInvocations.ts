@@ -70,7 +70,25 @@ export const defaultInvocations: Omit<Invocation, "id" | "createdAt">[] = [
         description: "Prières sur le Prophète ﷺ. Source de bénédictions et d'apaisement des soucis.",
         repetitions: 100,
     },
+    {
+        name: "As-ṣalātu l-Ibrāhīmiyyah",
+        description: "La prière Abrahamique complète, telle que récitée dans le Tashahhud.",
+        repetitions: 10,
+    },
+
+    // MAÎTRE DU PARDON
+    {
+        name: "Sayyid al-Istighfār",
+        description: "Le maître de la demande de pardon. Une invocation immense pour le Paradis.",
+        repetitions: 3,
+    },
+
     // CORAN (Sourates Protectrices)
+    {
+        name: "Āyat al-Kursī",
+        description: "Le Verset du Trône. Le plus grand verset du Coran pour une protection totale.",
+        repetitions: 1,
+    },
     {
         name: "Al-Ikhlās (La Pureté)",
         description: "Dis : Il est Allah, Unique. Sourate 112.",
@@ -85,6 +103,33 @@ export const defaultInvocations: Omit<Invocation, "id" | "createdAt">[] = [
         name: "An-Nās (Les Hommes)",
         description: "Dis : Je cherche protection auprès du Seigneur des hommes. Sourate 114.",
         repetitions: 3,
+    },
+
+    // PROTECTION & PRÉSERVATION
+    {
+        name: "Bismi llāhi lladhī lā yaḍurru...",
+        description: "Au nom d'Allah dont le nom protège de tout mal sur terre et au ciel.",
+        repetitions: 3,
+    },
+    {
+        name: "Yā Ḥayyu yā Qayyūm",
+        description: "Ô Vivant, Ô Subsistant par Soi-même. Pour la demande de secours divin.",
+        repetitions: 33,
+    },
+    {
+        name: "Ḥasbiya llāhu lā ʾilāha ʾillā huwa",
+        description: "Allah me suffit, Il est mon seul Dieu. 7 fois matin et soir suffit contre les soucis.",
+        repetitions: 7,
+    },
+    {
+        name: "Allāhumma ʾinnī ʾasʾaluka l-ʿāfiyah",
+        description: "Seigneur, je Te demande la préservation (Santé, Foi, Vie).",
+        repetitions: 3,
+    },
+    {
+        name: "Mā shāʾa llāh, lā quwwata ʾillā bi-llāh",
+        description: "Ce qu'Allah veut [se produit], il n'est de force que par Allah.",
+        repetitions: 33,
     },
 ];
 
@@ -103,21 +148,62 @@ export const defaultGroups: Array<{
             ],
         },
         {
+            name: "Les \"Bāqiyāt aṣ-Ṣāliḥāt\"",
+            description: "Les œuvres durables et les paroles les plus aimées d'Allah.",
+            invocationNames: [
+                { name: "Subḥān Allāh", repetitions: 33 },
+                { name: "Al-ḥamdu li-llāh", repetitions: 33 },
+                { name: "Lā ʾilāha ʾillā llāh", repetitions: 33 },
+                { name: "Allāhu ʾAkbar", repetitions: 33 },
+                { name: "Lā ḥawla wa lā quwwata ʾillā bi-llāh", repetitions: 33 },
+            ],
+        },
+        {
+            name: "Protection du Matin",
+            description: "Verset du Trône et sourates protectrices.",
+            invocationNames: [
+                { name: "Āyat al-Kursī", repetitions: 1 },
+                { name: "Al-Ikhlās (La Pureté)", repetitions: 3 },
+                { name: "Al-Falaq (L'Aube)", repetitions: 3 },
+                { name: "An-Nās (Les Hommes)", repetitions: 3 },
+                { name: "Bismi llāhi lladhī lā yaḍurru...", repetitions: 3 },
+            ],
+        },
+        {
+            name: "Soirée de Sérénité",
+            description: "Protection et rappel pour finir la journée en paix.",
+            invocationNames: [
+                { name: "Sayyid al-Istighfār", repetitions: 1 },
+                { name: "Ḥasbiya llāhu lā ʾilāha ʾillā huwa", repetitions: 7 },
+                { name: "Allāhumma ṣalli ʿalā Sayyidinā Muḥammad", repetitions: 10 },
+            ],
+        },
+        {
+            name: "Protection Nocturne",
+            description: "À réciter avant le sommeil pour une nuit sous protection divine.",
+            invocationNames: [
+                { name: "Āyat al-Kursī", repetitions: 1 },
+                { name: "Subḥān Allāh", repetitions: 33 },
+                { name: "Al-ḥamdu li-llāh", repetitions: 33 },
+                { name: "Allāhu ʾAkbar", repetitions: 34 },
+            ],
+        },
+        {
+            name: "Dhikr Essentiel",
+            description: "Les formules capitales pour la purification du cœur.",
+            invocationNames: [
+                { name: "Lā ʾilāha ʾillā llāh", repetitions: 100 },
+                { name: "ʾAstaghfiru llāh", repetitions: 100 },
+                { name: "As-ṣalātu l-Ibrāhīmiyyah", repetitions: 10 },
+            ],
+        },
+        {
             name: "Tasbih de Fâtima",
             description: "Recommandé avant de dormir pour la force et la sérénité.",
             invocationNames: [
                 { name: "Allāhu ʾAkbar", repetitions: 34 },
                 { name: "Al-ḥamdu li-llāh", repetitions: 33 },
                 { name: "Subḥān Allāh", repetitions: 33 },
-            ],
-        },
-        {
-            name: "Protection du Matin",
-            description: "Courtes sourates protectrices à réciter au lever du soleil.",
-            invocationNames: [
-                { name: "Al-Ikhlās (La Pureté)", repetitions: 3 },
-                { name: "Al-Falaq (L'Aube)", repetitions: 3 },
-                { name: "An-Nās (Les Hommes)", repetitions: 3 },
             ],
         },
         {
