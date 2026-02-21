@@ -19,7 +19,7 @@ import {
   ArrowRight,
   Quote as QuoteIcon
 } from "lucide-react";
-import { getDailyQuote } from "@/lib/data/quotes";
+import { getDailyQuote, getRandomQuote } from "@/lib/data/quotes";
 
 /* ─── Greeting & Date Logic ──────────────────────────────── */
 function getGreeting() {
@@ -69,7 +69,7 @@ export default function LiquidEtherealDashboard() {
   useEffect(() => { setMounted(true); }, []);
 
   const greeting = useMemo(() => getGreeting(), []);
-  const dailyQuote = useMemo(() => getDailyQuote(), []);
+  const dailyQuote = useMemo(() => getRandomQuote(), []);
 
   const hasActiveSession = mounted && hasHydrated && preset && totalCount > 0 && !isComplete;
   const progress = hasActiveSession && preset && preset.totalBeads > 0 ? (totalCount / preset.totalBeads) : 0;
@@ -82,26 +82,26 @@ export default function LiquidEtherealDashboard() {
   if (!mounted || !hasHydrated) return <div className="min-h-screen bg-[#05060f]" />;
 
   return (
-    <div className="h-[100dvh] text-slate-100 flex flex-col relative overflow-hidden touch-none font-sans pb-[env(safe-area-inset-bottom,20px)]">
+    <div className="h-[100dvh] text-slate-100 flex flex-col relative overflow-hidden touch-none font-sans pb-[env(safe-area-inset-bottom,20px)] select-none">
 
       <HomeBackground />
 
       {/* ── ETHEREAL UI LAYER ─────────────────────────────────── */}
-      <main className="flex-1 px-7 pt-[calc(env(safe-area-inset-top,20px)+2rem)] pb-28 flex flex-col z-10 max-w-lg mx-auto w-full h-full">
+      <main className="flex-1 px-7 pt-[calc(env(safe-area-inset-top,20px)+1.5rem)] pb-[calc(env(safe-area-inset-bottom,20px)+5.5rem)] flex flex-col z-10 max-w-lg mx-auto w-full h-full justify-between items-center overflow-hidden">
 
         {/* LUXURY HEADER SECTION */}
-        <div className="space-y-6 shrink-0 mb-10">
+        <div className="space-y-4 w-full shrink-0">
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
             className="flex items-center gap-4"
           >
-            <div className="w-12 h-12 rounded-full glass-premium flex items-center justify-center border border-white/20">
+            <div className="w-11 h-11 rounded-full glass-premium flex items-center justify-center border border-white/20">
               {greeting.icon}
             </div>
             <div className="flex flex-col">
-              <span className="text-white/30 text-[10px] font-black uppercase tracking-[0.4em] leading-none mb-1.5">
+              <span className="text-white/30 text-[10px] font-black uppercase tracking-[0.4em] leading-none mb-1">
                 {greeting.label}
               </span>
               <span className="text-white/90 text-sm font-light tracking-wide italic">
@@ -114,11 +114,11 @@ export default function LiquidEtherealDashboard() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="flex flex-col gap-4"
+            className="flex flex-col gap-3.5"
           >
             <div className="flex items-start gap-4">
               <QuoteIcon size={16} className="text-indigo-400 mt-1 shrink-0 opacity-40" />
-              <h1 className="text-3xl font-bold text-white tracking-tight leading-[1.15] text-balance">
+              <h1 className="text-3xl font-bold text-white tracking-tight leading-[1.1] text-balance">
                 {dailyQuote.text}
               </h1>
             </div>
@@ -132,11 +132,11 @@ export default function LiquidEtherealDashboard() {
         </div>
 
         {/* ORGANIC HERO HUB */}
-        <div className="flex-1 flex flex-col justify-center gap-10 relative items-center">
+        <div className="flex-1 flex flex-col justify-center gap-6 relative items-center w-full min-h-0">
 
           {/* Main Action Sphere */}
           <GlassCardPremium
-            className="w-full aspect-square max-w-[300px] glass-iridescent flex items-center justify-center border-none shadow-none"
+            className="w-full aspect-square max-w-[290px] max-h-[38vh] glass-iridescent flex items-center justify-center border-none shadow-none"
             delay={0.4}
             onClick={() => {
               if (hasActiveSession) router.push("/session");
@@ -144,7 +144,7 @@ export default function LiquidEtherealDashboard() {
             }}
           >
             {/* Center Ethereal Element */}
-            <div className="relative flex items-center justify-center w-full h-full">
+            <div className="relative flex items-center justify-center w-full h-full scale-95 sm:scale-100">
               {/* Volumetric Glows */}
               <div className="absolute w-[140%] h-[140%] bg-indigo-500/10 blur-[80px] rounded-full animate-pulse-slow" />
               <div className="absolute w-[100%] h-[100%] bg-rose-500/5 blur-[60px] rounded-full animate-pulse delay-1000" />
@@ -153,19 +153,19 @@ export default function LiquidEtherealDashboard() {
                 {hasActiveSession ? (
                   <div className="flex flex-col items-center">
                     <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/30 mb-2">Progression</span>
-                    <span className="text-7xl font-bold text-white tracking-tighter tabular-nums drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                    <span className="text-6xl font-bold text-white tracking-tighter tabular-nums drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
                       {Math.round(progress * 100)}<span className="text-xl opacity-30 align-top mt-2">%</span>
                     </span>
-                    <p className="mt-4 text-[11px] font-bold text-white/50 tracking-wide bg-white/5 px-3 py-1 rounded-full border border-white/5 backdrop-blur-md italic">
+                    <p className="mt-3 text-[11px] font-bold text-white/50 tracking-wide bg-white/5 px-3 py-1 rounded-full border border-white/5 backdrop-blur-md italic line-clamp-1">
                       "{preset?.name}"
                     </p>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center group">
-                    <div className="w-24 h-24 rounded-full bg-white flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,0.4)] transition-transform group-hover:scale-110">
-                      <Play className="text-black fill-black ml-2" size={42} />
+                    <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,0.4)] transition-transform group-hover:scale-110">
+                      <Play className="text-black fill-black ml-1.5" size={36} />
                     </div>
-                    <span className="mt-8 text-[10px] font-black uppercase tracking-[0.4em] text-white/60">Explorer</span>
+                    <span className="mt-6 text-[10px] font-black uppercase tracking-[0.4em] text-white/60">Explorer</span>
                   </div>
                 )}
               </div>
@@ -173,15 +173,15 @@ export default function LiquidEtherealDashboard() {
           </GlassCardPremium>
 
           {/* Quick Access Floating Row */}
-          <div className="w-full flex justify-between gap-4 mt-4">
+          <div className="w-full flex justify-between gap-4">
             <motion.button
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.6 }}
               onClick={() => router.push("/library")}
-              className="flex-1 flex flex-col items-center gap-3 p-6 glass-premium rounded-[32px] border border-white/5 hover:bg-white/5 transition-colors"
+              className="flex-1 flex flex-col items-center gap-3 p-5 glass-premium rounded-[32px] border border-white/5 hover:bg-white/5 transition-colors"
             >
-              <Library size={24} className="text-slate-400" />
+              <Library size={22} className="text-slate-400" />
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70">Biblio</span>
             </motion.button>
 
@@ -190,26 +190,15 @@ export default function LiquidEtherealDashboard() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.7 }}
               onClick={handleStartFreeSession}
-              className="flex-1 flex flex-col items-center gap-3 p-6 glass-premium rounded-[32px] border border-white/5 hover:bg-white/5 transition-colors"
+              className="flex-1 flex flex-col items-center gap-3 p-5 glass-premium rounded-[32px] border border-white/5 hover:bg-white/5 transition-colors"
             >
-              <InfinityIcon size={26} className="text-slate-400" />
+              <InfinityIcon size={24} className="text-slate-400" />
               <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/70">Libre</span>
             </motion.button>
           </div>
 
         </div>
 
-        {/* BOTTOM REVEAL FOOTER */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 1 }}
-          className="mt-12 text-center"
-        >
-          <p className="text-[10px] font-medium text-white/20 tracking-widest uppercase">
-            La méditation moderne, réinventée.
-          </p>
-        </motion.div>
 
       </main>
     </div>

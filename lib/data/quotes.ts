@@ -43,6 +43,66 @@ export const religiousQuotes: Quote[] = [
     {
         text: "Rends-toi utile aux autres, car l'homme le plus aimé d'Allah est le plus utile aux autres.",
         source: "Hadith"
+    },
+    {
+        text: "Cherche l'aide d'Allah et ne baisse pas les bras.",
+        source: "Hadith"
+    },
+    {
+        text: "Le sourire envers ton frère est une aumône.",
+        source: "Hadith"
+    },
+    {
+        text: "Si vous saviez ce que je sais, vous ririez peu et pleureriez beaucoup.",
+        source: "Hadith"
+    },
+    {
+        text: "Certes, Allah est Doux et Il aime la douceur.",
+        source: "Hadith"
+    },
+    {
+        text: "Craignez Allah là où que vous soyez.",
+        source: "Hadith"
+    },
+    {
+        text: "Et quiconque place sa confiance en Allah, Il lui suffit.",
+        source: "Coran 65:3"
+    },
+    {
+        text: "Allah facilitera les choses à quiconque facilite celles d'autrui.",
+        source: "Hadith"
+    },
+    {
+        text: "Certes, avec la difficulté vient la facilité.",
+        source: "Coran 94:6"
+    },
+    {
+        text: "Et patiente, car Allah ne laisse pas perdre la récompense des gens bienfaisants.",
+        source: "Coran 11:115"
+    },
+    {
+        text: "Allah est le meilleur des protecteurs.",
+        source: "Coran 12:64"
+    },
+    {
+        text: "Ô Allah, je Te demande un savoir utile, un rizq licite et des œuvres agréées.",
+        source: "Invocation"
+    },
+    {
+        text: "Le bonheur est dans la satisfaction de ce qu'Allah nous a accordé.",
+        source: "Sagesse"
+    },
+    {
+        text: "Ta langue doit rester humide par le rappel d'Allah.",
+        source: "Hadith"
+    },
+    {
+        text: "Le monde n'est qu'un pont, traverse-le mais n'y bâtis rien.",
+        source: "Sagesse"
+    },
+    {
+        text: "Fais du bien, même si c'est peu, car tu ne sais pas quelle œuvre te fera entrer au Paradis.",
+        source: "Sagesse"
     }
 ];
 
@@ -54,4 +114,9 @@ export function getDailyQuote(): Quote {
     const dayOfYear = Math.floor(diff / oneDay);
 
     return religiousQuotes[dayOfYear % religiousQuotes.length];
+}
+
+export function getRandomQuote(): Quote {
+    const randomIndex = Math.floor(Math.random() * religiousQuotes.length);
+    return religiousQuotes[randomIndex];
 }
