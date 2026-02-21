@@ -13,10 +13,10 @@ export default function TermsContent({ forceLocale }: { forceLocale?: 'fr' | 'en
     const t = forceLocale === 'en' ? en : forceLocale === 'fr' ? fr : dynamicT;
 
     return (
-        <div className="h-[100dvh] bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300 font-sans selection:bg-indigo-500/30 overflow-hidden flex flex-col">
+        <div className="h-[100dvh] bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300 font-sans selection:bg-emerald-500/30 overflow-hidden flex flex-col">
             {/* Background Effects (Dark Mode Only) */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden opacity-0 dark:opacity-100 transition-opacity duration-500">
-                <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-indigo-500/5 rounded-full blur-[120px]" />
+                <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[120px]" />
                 <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-slate-500/5 rounded-full blur-[120px]" />
             </div>
 
@@ -30,8 +30,8 @@ export default function TermsContent({ forceLocale }: { forceLocale?: 'fr' | 'en
 
                     {/* Intro Section */}
                     <div className="space-y-6 text-center">
-                        <div className="w-20 h-20 bg-indigo-100 dark:bg-transparent bg-gradient-to-tr from-indigo-500/20 to-slate-500/20 rounded-3xl border border-indigo-200 dark:border-white/10 flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-indigo-500/10">
-                            <Scale size={32} className="text-indigo-600 dark:text-indigo-400" />
+                        <div className="w-20 h-20 bg-emerald-100 dark:bg-transparent bg-gradient-to-tr from-emerald-500/20 to-slate-500/20 rounded-3xl border border-emerald-200 dark:border-white/10 flex items-center justify-center mx-auto mb-6 shadow-xl shadow-emerald-500/10">
+                            <Scale size={32} className="text-emerald-700 dark:text-emerald-400" />
                         </div>
                         <div className="space-y-2">
                             <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{t.terms.title}</h2>
@@ -39,10 +39,10 @@ export default function TermsContent({ forceLocale }: { forceLocale?: 'fr' | 'en
                                 {t.terms.subtitle}
                             </p>
                         </div>
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-bold uppercase tracking-wider">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-bold uppercase tracking-wider">
                             <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-indigo-500"></span>
+                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                             </span>
                             {t.terms.lastUpdate}
                         </div>
@@ -51,9 +51,9 @@ export default function TermsContent({ forceLocale }: { forceLocale?: 'fr' | 'en
                     <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-white/10 to-transparent" />
 
                     {t.terms.sections.map((section: any, i: number) => (
-                        <section key={i} className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-2xl p-6 hover:shadow-lg dark:hover:bg-white/[0.05] transition-all group">
+                        <section key={i} className="bg-slate-100/30 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-2xl p-6 hover:shadow-lg dark:hover:bg-white/[0.05] transition-all group">
                             <div className="flex items-start gap-4">
-                                <div className="p-3 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform duration-300">
+                                <div className="p-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-emerald-700 dark:text-emerald-400 group-hover:scale-110 transition-transform duration-300">
                                     {i === 0 ? <FileText size={24} /> : i === 1 ? <ShieldAlert size={24} /> : i === 2 ? <BookOpen size={24} /> : <Mail size={24} />}
                                 </div>
                                 <div className="space-y-2">
@@ -63,7 +63,7 @@ export default function TermsContent({ forceLocale }: { forceLocale?: 'fr' | 'en
                                         {i === t.terms.sections.length - 1 && (
                                             <>
                                                 {" "}
-                                                <a href="mailto:cheikh.sall@icloud.com" className="text-indigo-600 dark:text-indigo-400 font-medium hover:underline">
+                                                <a href="mailto:cheikh.sall@icloud.com" className="text-emerald-700 dark:text-emerald-400 font-bold hover:underline">
                                                     cheikh.sall@icloud.com
                                                 </a>
                                             </>
@@ -77,9 +77,9 @@ export default function TermsContent({ forceLocale }: { forceLocale?: 'fr' | 'en
                     <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-white/10 to-transparent" />
 
                     {/* Footer Logo */}
-                    <div className="pt-8 flex flex-col items-center opacity-30">
-                        <Scale size={24} className="mb-4" />
-                        <p className="text-xs font-bold tracking-[0.3em] uppercase">Kourous</p>
+                    <div className="pt-8 flex flex-col items-center opacity-40">
+                        <Scale size={24} className="mb-4 text-emerald-700 dark:text-emerald-500" />
+                        <p className="text-xs font-black tracking-[0.3em] uppercase text-slate-400 dark:text-slate-600">Kourous</p>
                     </div>
 
                 </main>

@@ -40,7 +40,7 @@ export default function PrivacyContent({ forceLocale }: { forceLocale?: 'fr' | '
 
                     {/* Intro Section */}
                     <div className="space-y-6 text-center">
-                        <div className="w-20 h-20 bg-emerald-100 dark:bg-transparent bg-gradient-to-tr from-emerald-500/20 to-blue-500/20 rounded-3xl border border-emerald-200 dark:border-white/10 flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-emerald-500/10">
+                        <div className="w-20 h-20 bg-emerald-100 dark:bg-transparent bg-gradient-to-tr from-emerald-500/20 to-blue-500/20 rounded-3xl border border-emerald-200 dark:border-white/10 flex items-center justify-center mx-auto mb-6 shadow-xl shadow-emerald-500/10">
                             <Shield size={32} className="text-emerald-600 dark:text-emerald-400" />
                         </div>
                         <div className="space-y-2">
@@ -49,7 +49,7 @@ export default function PrivacyContent({ forceLocale }: { forceLocale?: 'fr' | '
                                 {t.privacy.subtitle}
                             </p>
                         </div>
-                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-xs font-bold uppercase tracking-wider">
                             <span className="relative flex h-2 w-2">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -63,8 +63,8 @@ export default function PrivacyContent({ forceLocale }: { forceLocale?: 'fr' | '
                     {/* 1. Introduction */}
                     <section className="space-y-4">
                         <div className="flex items-center gap-3 text-slate-900 dark:text-white">
-                            <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center border border-slate-200 dark:border-white/5">
-                                <span className="font-bold text-sm">1</span>
+                            <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none transition-colors">
+                                <span className="font-black text-sm text-slate-900 dark:text-white">1</span>
                             </div>
                             <h3 className="text-xl font-bold">{t.privacy.sections[0].title}</h3>
                         </div>
@@ -72,8 +72,8 @@ export default function PrivacyContent({ forceLocale }: { forceLocale?: 'fr' | '
                             <p>
                                 {t.privacy.sections[0].content}
                             </p>
-                            <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-2xl p-6 shadow-sm dark:shadow-none">
-                                <p className="font-medium text-slate-900 dark:text-white mb-2">{t.privacy.summary}</p>
+                            <div className="bg-slate-100/50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-2xl p-6 shadow-sm dark:shadow-none">
+                                <p className="font-bold text-slate-900 dark:text-white mb-2">{t.privacy.summary}</p>
                                 <p className="text-sm">
                                     {t.privacy.summaryText}
                                 </p>
@@ -84,8 +84,8 @@ export default function PrivacyContent({ forceLocale }: { forceLocale?: 'fr' | '
                     {/* 2. Données collectées */}
                     <section className="space-y-4">
                         <div className="flex items-center gap-3 text-slate-900 dark:text-white">
-                            <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center border border-slate-200 dark:border-white/5">
-                                <span className="font-bold text-sm">2</span>
+                            <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none transition-colors">
+                                <span className="font-black text-sm text-slate-900 dark:text-white">2</span>
                             </div>
                             <h3 className="text-xl font-bold">{t.privacy.sections[1].title}</h3>
                         </div>
@@ -95,30 +95,30 @@ export default function PrivacyContent({ forceLocale }: { forceLocale?: 'fr' | '
                             </p>
                             <div className="grid sm:grid-cols-3 gap-4">
                                 <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 p-5 rounded-2xl space-y-3 hover:shadow-lg dark:hover:bg-white/[0.05] transition-all group">
-                                    <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                        <EyeOff size={20} className="text-slate-600 dark:text-slate-400" />
+                                    <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/20 border border-purple-100 dark:border-purple-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <EyeOff size={20} className="text-purple-600 dark:text-purple-400" />
                                     </div>
                                     <div>
                                         <p className="font-bold text-slate-900 dark:text-white">{resolve({ fr: "Zéro inscription", en: "No Registration" })}</p>
-                                        <p className="text-xs text-slate-600 mt-1">{resolve({ fr: "Utilisation immédiate", en: "Instant use" })}</p>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{resolve({ fr: "Utilisation immédiate", en: "Instant use" })}</p>
                                     </div>
                                 </div>
                                 <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 p-5 rounded-2xl space-y-3 hover:shadow-lg dark:hover:bg-white/[0.05] transition-all group">
-                                    <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                        <FileText size={20} className="text-slate-600 dark:text-slate-400" />
+                                    <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <FileText size={20} className="text-blue-600 dark:text-blue-400" />
                                     </div>
                                     <div>
                                         <p className="font-bold text-slate-900 dark:text-white">{resolve({ fr: "Zéro formulaire", en: "No Forms" })}</p>
-                                        <p className="text-xs text-slate-600 mt-1">{resolve({ fr: "Rien à remplir", en: "Nothing to fill" })}</p>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{resolve({ fr: "Rien à remplir", en: "Nothing to fill" })}</p>
                                     </div>
                                 </div>
                                 <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 p-5 rounded-2xl space-y-3 hover:shadow-lg dark:hover:bg-white/[0.05] transition-all group">
-                                    <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                        <Server size={20} className="text-slate-600 dark:text-slate-400" />
+                                    <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                                        <Server size={20} className="text-indigo-600 dark:text-indigo-400" />
                                     </div>
                                     <div>
                                         <p className="font-bold text-slate-900 dark:text-white">{resolve({ fr: "Zéro serveur", en: "No Servers" })}</p>
-                                        <p className="text-xs text-slate-600 mt-1">{resolve({ fr: "Tout est local", en: "Everything is local" })}</p>
+                                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{resolve({ fr: "Tout est local", en: "Everything is local" })}</p>
                                     </div>
                                 </div>
                             </div>
@@ -128,8 +128,8 @@ export default function PrivacyContent({ forceLocale }: { forceLocale?: 'fr' | '
                     {/* 3. Données stockées localement */}
                     <section className="space-y-4">
                         <div className="flex items-center gap-3 text-slate-900 dark:text-white">
-                            <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center border border-slate-200 dark:border-white/5">
-                                <span className="font-bold text-sm">3</span>
+                            <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none transition-colors">
+                                <span className="font-black text-sm text-slate-900 dark:text-white">3</span>
                             </div>
                             <h3 className="text-xl font-bold">{t.privacy.sections[2].title}</h3>
                         </div>
@@ -137,11 +137,14 @@ export default function PrivacyContent({ forceLocale }: { forceLocale?: 'fr' | '
                             <p>
                                 {t.privacy.sections[2].content}
                             </p>
-                            <div className="bg-emerald-500/5 border border-emerald-500/10 rounded-2xl p-4 flex gap-4 items-center mt-2">
-                                <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
-                                    <Lock size={18} className="text-emerald-600 dark:text-emerald-400" />
+                            <div className="bg-slate-100/50 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-2xl p-6 shadow-sm dark:shadow-none space-y-3">
+                                <div className="flex items-center gap-3 text-emerald-700 dark:text-emerald-400">
+                                    <Lock size={20} className="shrink-0" />
+                                    <p className="font-bold uppercase tracking-wider text-xs">{resolve({ fr: "Sécurité locale", en: "Local Security" })}</p>
                                 </div>
-                                <p className="text-sm text-emerald-800 dark:text-emerald-100/80 font-medium">{t.privacy.localDataInfo}</p>
+                                <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                                    {t.privacy.localDataInfo}
+                                </p>
                             </div>
                         </div>
                     </section>
@@ -149,8 +152,8 @@ export default function PrivacyContent({ forceLocale }: { forceLocale?: 'fr' | '
                     {/* 4. Services tiers */}
                     <section className="space-y-4">
                         <div className="flex items-center gap-3 text-slate-900 dark:text-white">
-                            <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center border border-slate-200 dark:border-white/5">
-                                <span className="font-bold text-sm">4</span>
+                            <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none transition-colors">
+                                <span className="font-black text-sm text-slate-900 dark:text-white">4</span>
                             </div>
                             <h3 className="text-xl font-bold">{t.privacy.sections[3].title}</h3>
                         </div>
@@ -172,8 +175,8 @@ export default function PrivacyContent({ forceLocale }: { forceLocale?: 'fr' | '
                     {/* 5. Sécurité */}
                     <section className="space-y-4">
                         <div className="flex items-center gap-3 text-slate-900 dark:text-white">
-                            <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center border border-slate-200 dark:border-white/5">
-                                <span className="font-bold text-sm">5</span>
+                            <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none transition-colors">
+                                <span className="font-black text-sm text-slate-900 dark:text-white">5</span>
                             </div>
                             <h3 className="text-xl font-bold">{t.privacy.sections[4].title}</h3>
                         </div>
@@ -187,8 +190,8 @@ export default function PrivacyContent({ forceLocale }: { forceLocale?: 'fr' | '
                     {/* 6. Modifications */}
                     <section className="space-y-4">
                         <div className="flex items-center gap-3 text-slate-900 dark:text-white">
-                            <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center border border-slate-200 dark:border-white/5">
-                                <span className="font-bold text-sm">6</span>
+                            <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none transition-colors">
+                                <span className="font-black text-sm text-slate-900 dark:text-white">6</span>
                             </div>
                             <h3 className="text-xl font-bold">{t.privacy.sections[5].title}</h3>
                         </div>
@@ -202,15 +205,15 @@ export default function PrivacyContent({ forceLocale }: { forceLocale?: 'fr' | '
                     {/* 7. Contact */}
                     <section className="space-y-4">
                         <div className="flex items-center gap-3 text-slate-900 dark:text-white">
-                            <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center border border-slate-200 dark:border-white/5">
-                                <span className="font-bold text-sm">7</span>
+                            <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/5 flex items-center justify-center border border-slate-200 dark:border-white/10 shadow-sm dark:shadow-none transition-colors">
+                                <span className="font-black text-sm text-slate-900 dark:text-white">7</span>
                             </div>
                             <h3 className="text-xl font-bold">{t.privacy.sections[6].title}</h3>
                         </div>
                         <div className="pl-11 text-slate-700 dark:text-slate-400 leading-relaxed">
                             <p>
                                 {t.privacy.sections[6].content}{" "}
-                                <a href="mailto:cheikh.sall@icloud.com" className="text-emerald-600 dark:text-emerald-400 font-medium hover:underline">
+                                <a href="mailto:cheikh.sall@icloud.com" className="text-emerald-700 dark:text-emerald-400 font-bold hover:underline">
                                     cheikh.sall@icloud.com
                                 </a>
                             </p>
@@ -220,9 +223,9 @@ export default function PrivacyContent({ forceLocale }: { forceLocale?: 'fr' | '
                     <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-white/10 to-transparent" />
 
                     {/* Footer Logo */}
-                    <div className="pt-8 flex flex-col items-center opacity-30">
-                        <Shield size={24} className="mb-4" />
-                        <p className="text-xs font-bold tracking-[0.3em] uppercase">Kourous</p>
+                    <div className="pt-8 flex flex-col items-center opacity-40">
+                        <Shield size={24} className="mb-4 text-emerald-700 dark:text-emerald-500" />
+                        <p className="text-xs font-black tracking-[0.3em] uppercase text-slate-400 dark:text-slate-600">Kourous</p>
                     </div>
 
                 </main>

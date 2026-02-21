@@ -41,8 +41,8 @@ export default function SupportPage() {
                         {/* Contact Section */}
                         <section className="space-y-6">
                             <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-3xl p-8 text-center max-w-sm mx-auto shadow-sm dark:shadow-none transition-all">
-                                <div className="w-12 h-12 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                                    <Mail size={22} className="text-slate-900 dark:text-white" />
+                                <div className="w-12 h-12 bg-indigo-50 dark:bg-slate-900 border border-indigo-100 dark:border-white/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+                                    <Mail size={22} className="text-indigo-600 dark:text-indigo-400" />
                                 </div>
                                 <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{t.support.question}</h3>
                                 <p className="text-slate-600 dark:text-slate-400 text-sm mb-6 leading-relaxed">
@@ -57,7 +57,7 @@ export default function SupportPage() {
                             </div>
                         </section>
 
-                        <div className="w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+                        <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-white/10 to-transparent" />
 
                         {/* FAQ Section */}
                         <section className="space-y-6">
@@ -66,27 +66,38 @@ export default function SupportPage() {
                             </div>
 
                             <div className="grid gap-6">
-                                {t.support.faq.map((item: any, i: number) => (
-                                    <div key={i} className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-2xl p-6 space-y-3 shadow-sm dark:shadow-none">
-                                        <div className="flex items-center gap-3 text-slate-900 dark:text-white">
-                                            <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                                                {i === 0 ? <Sparkles size={18} /> : i === 1 ? <BookOpen size={18} /> : i === 2 ? <Smartphone size={18} /> : i === 3 ? <Volume2 size={18} /> : <Palette size={18} />}
+                                {t.support.faq.map((item: any, i: number) => {
+                                    const faqStyles = [
+                                        { bg: 'bg-emerald-100 dark:bg-emerald-500/10', text: 'text-emerald-600 dark:text-emerald-400', icon: <Sparkles size={18} /> },
+                                        { bg: 'bg-blue-100 dark:bg-blue-500/10', text: 'text-blue-600 dark:text-blue-400', icon: <BookOpen size={18} /> },
+                                        { bg: 'bg-purple-100 dark:bg-purple-500/10', text: 'text-purple-600 dark:text-purple-400', icon: <Smartphone size={18} /> },
+                                        { bg: 'bg-rose-100 dark:bg-rose-500/10', text: 'text-rose-600 dark:text-rose-400', icon: <Volume2 size={18} /> },
+                                        { bg: 'bg-amber-100 dark:bg-amber-500/10', text: 'text-amber-600 dark:text-amber-400', icon: <Palette size={18} /> },
+                                    ];
+                                    const style = faqStyles[i % faqStyles.length];
+
+                                    return (
+                                        <div key={i} className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-2xl p-6 space-y-3 shadow-sm dark:shadow-none">
+                                            <div className="flex items-center gap-3 text-slate-900 dark:text-white">
+                                                <div className={`p-2 rounded-lg ${style.bg} ${style.text}`}>
+                                                    {style.icon}
+                                                </div>
+                                                <h4 className="font-bold">{item.q}</h4>
                                             </div>
-                                            <h4 className="font-bold">{item.q}</h4>
+                                            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed pl-[3.25rem]">
+                                                {item.a}
+                                            </p>
                                         </div>
-                                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed pl-[3.25rem]">
-                                            {item.a}
-                                        </p>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </section>
                     </div>
 
                     {/* Footer Logo */}
-                    <div className="pt-8 flex flex-col items-center opacity-30">
-                        <HelpCircle size={24} className="mb-4" />
-                        <p className="text-xs font-bold tracking-[0.3em] uppercase">Kourous</p>
+                    <div className="pt-8 flex flex-col items-center opacity-40">
+                        <HelpCircle size={24} className="mb-4 text-cyan-600 dark:text-cyan-500" />
+                        <p className="text-xs font-black tracking-[0.3em] uppercase text-slate-400 dark:text-slate-600">Kourous</p>
                     </div>
 
                 </main>
