@@ -471,3 +471,48 @@ canvas {
 .animate-victory {
   animation: victory-pop 0.5s ease-out;
 }
+
+/* ── Glow pulse ───────────────────────────────────────────── */
+@keyframes glow-pulse {
+  0%, 100% {
+    box-shadow: 0 0 20px rgba(129, 140, 248, 0.2), 0 0 40px rgba(129, 140, 248, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 40px rgba(129, 140, 248, 0.4), 0 0 80px rgba(129, 140, 248, 0.2);
+  }
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 3s ease-in-out infinite;
+}
+
+/* ── Aurora sweep ─────────────────────────────────────────── */
+@keyframes aurora-sweep {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* ── Slow pulse (for 3D glows) ────────────────────────────── */
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50%       { opacity: 0.75; transform: scale(1.12); }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 5s ease-in-out infinite;
+}
+
+/* ── line-clamp-1 utility ─────────────────────────────────── */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
