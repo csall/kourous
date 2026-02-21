@@ -9,6 +9,12 @@ import { CreateInvocationModal } from "@/components/library/CreateInvocationModa
 import { CreateGroupModal } from "@/components/library/CreateGroupModal";
 import { useSessionStore } from "@/lib/store/sessionStore";
 import { useTranslation } from "@/lib/hooks/useTranslation";
+import { HomeBackground } from "@/components/home/HomeBackground";
+
+const glassCard = "relative bg-white/[0.042] backdrop-blur-xl border border-white/[0.07] rounded-3xl";
+const Shine = () => (
+    <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/12 to-transparent rounded-t-3xl" />
+);
 
 interface LibraryContentProps {
     onSessionStart?: () => void;
@@ -81,9 +87,11 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
 
 
     return (
-        <div className="flex flex-col h-[100dvh] bg-slate-50 dark:bg-slate-950/20 pt-[calc(env(safe-area-inset-top,20px)+1rem)] overflow-hidden">
-            {/* Immersive Mesh Glows */}
-            <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
+        <div className="flex flex-col w-full h-[100dvh] overflow-hidden text-white relative">
+            <HomeBackground />
+
+            {/* Immersive Mesh Glows - Keep some for extra depth if needed, or remove since HomeBackground has them */}
+            <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10 opacity-30">
                 <motion.div
                     animate={{
                         scale: [1, 1.3, 1],
@@ -106,21 +114,24 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            className="space-y-4"
+                            className="space-y-4 pt-[calc(env(safe-area-inset-top,20px)+0.5rem)]"
                         >
-                            {/* Spotify-style title row */}
+                            {/* Spotify-style title row formatted like Settings */}
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
+                                    <div className="w-9 h-9 rounded-[12px] flex items-center justify-center"
+                                        style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
                                         <Sparkles size={16} style={{ color: beadColor }} />
                                     </div>
-                                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{t.library.title}</h2>
+                                    <div>
+                                        <h2 className="text-2xl font-bold text-white tracking-tight">{t.library.title}</h2>
+                                    </div>
                                 </div>
 
                                 <div className="flex items-center gap-1">
                                     <button
                                         onClick={() => setIsSearching(true)}
-                                        className="p-2.5 rounded-full hover:bg-slate-200/50 dark:hover:bg-white/5 text-slate-700 dark:text-slate-400 active:scale-90 transition-all"
+                                        className="p-2.5 rounded-full hover:bg-white/5 text-white/50 active:scale-90 transition-all"
                                     >
                                         <Search size={22} />
                                     </button>
@@ -130,7 +141,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                         <motion.button
                                             whileTap={{ scale: 0.88 }}
                                             onClick={() => setIsAddMenuOpen(v => !v)}
-                                            className="p-2.5 rounded-full hover:bg-slate-200/50 dark:hover:bg-white/5 text-slate-700 dark:text-slate-400 active:scale-90 transition-all"
+                                            className="p-2.5 rounded-full hover:bg-white/5 text-white/50 active:scale-90 transition-all"
                                         >
                                             <motion.div
                                                 animate={{ rotate: isAddMenuOpen ? 45 : 0 }}
@@ -156,7 +167,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                                         animate={{ opacity: 1, scale: 1, y: 0 }}
                                                         exit={{ opacity: 0, scale: 0.9, y: -8 }}
                                                         transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-                                                        className="absolute right-0 top-full mt-1 z-50 bg-white dark:bg-[#1C1C1E] border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl shadow-black/30 overflow-hidden min-w-[200px]"
+                                                        className="absolute right-0 top-full mt-1 z-50 bg-[#1C1C1E]/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/40 overflow-hidden min-w-[200px]"
                                                         style={{ transformOrigin: "top right" }}
                                                     >
                                                         <button
@@ -165,18 +176,18 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                                                 setEditingGroup(null);
                                                                 setIsCreateGroupModalOpen(true);
                                                             }}
-                                                            className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-slate-100 dark:hover:bg-white/[0.06] active:bg-slate-100 dark:active:bg-white/10 transition-colors text-left"
+                                                            className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-white/5 active:bg-white/10 transition-colors text-left"
                                                         >
                                                             <div className="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center shrink-0">
                                                                 <Sparkles size={15} className="text-emerald-400" />
                                                             </div>
                                                             <div>
-                                                                <p className="text-[14px] font-semibold text-slate-900 dark:text-white leading-tight">{t.library.newCollection}</p>
-                                                                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{t.library.groupInvocations}</p>
+                                                                <p className="text-[14px] font-semibold text-white/90 leading-tight">{t.library.newCollection}</p>
+                                                                <p className="text-[11px] text-white/40 mt-0.5">{t.library.groupInvocations}</p>
                                                             </div>
                                                         </button>
 
-                                                        <div className="h-px bg-slate-100 dark:bg-white/[0.06] mx-4" />
+                                                        <div className="h-px bg-white/5 mx-4" />
 
                                                         <button
                                                             onClick={() => {
@@ -184,14 +195,14 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                                                 setEditingInvocation(null);
                                                                 setIsCreateInvocationModalOpen(true);
                                                             }}
-                                                            className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-slate-100 dark:hover:bg-white/[0.06] active:bg-slate-100 dark:active:bg-white/10 transition-colors text-left"
+                                                            className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-white/5 active:bg-white/10 transition-colors text-left"
                                                         >
                                                             <div className="w-8 h-8 rounded-xl bg-indigo-500/15 border border-indigo-500/20 flex items-center justify-center shrink-0">
                                                                 <BookOpen size={15} className="text-indigo-400" />
                                                             </div>
                                                             <div>
-                                                                <p className="text-[14px] font-semibold text-slate-900 dark:text-white leading-tight">{t.library.newInvocation}</p>
-                                                                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{t.library.createDhikr}</p>
+                                                                <p className="text-[14px] font-semibold text-white/90 leading-tight">{t.library.newInvocation}</p>
+                                                                <p className="text-[11px] text-white/40 mt-0.5">{t.library.createDhikr}</p>
                                                             </div>
                                                         </button>
                                                     </motion.div>
@@ -213,7 +224,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                             <div className="relative flex-1 group">
                                 <Search
                                     size={18}
-                                    className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 group-focus-within:text-slate-900 dark:group-focus-within:text-white transition-colors duration-300"
+                                    className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 group-focus-within:text-white transition-colors duration-300"
                                 />
                                 <input
                                     autoFocus
@@ -226,12 +237,12 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                     placeholder={t.common.search}
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full bg-slate-200/40 dark:bg-white/[0.05] border border-transparent dark:border-white/5 rounded-2xl py-3 pl-11 pr-10 text-[15px] text-slate-900 dark:text-white placeholder:text-slate-600/80 outline-none transition-all duration-300 focus:bg-white dark:focus:bg-white/10"
+                                    className="w-full bg-white/[0.05] border border-white/5 rounded-2xl py-3 pl-11 pr-10 text-[15px] text-white placeholder:text-white/30 outline-none transition-all duration-300 focus:bg-white/10"
                                 />
                                 {searchQuery && (
                                     <button
                                         onClick={() => setSearchQuery("")}
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center text-white/30 hover:text-white transition-colors"
                                     >
                                         <X size={14} strokeWidth={3} />
                                     </button>
@@ -242,7 +253,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                     setIsSearching(false);
                                     setSearchQuery("");
                                 }}
-                                className="text-[15px] font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 active:opacity-70 transition-all"
+                                className="text-[15px] font-medium text-white/50 hover:text-white px-1 active:opacity-70 transition-all"
                             >
                                 {t.common.cancel}
                             </button>
@@ -270,14 +281,14 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                     color: beadColor,
                                 } : {
                                     backgroundColor: "transparent",
-                                    borderColor: "rgba(148,163,184,0.18)",
+                                    borderColor: "rgba(255,255,255,0.08)",
                                     color: undefined,
                                 }}
                             >
-                                <span className={isActive ? "" : "text-slate-400 dark:text-slate-500"}>
+                                <span className={isActive ? "" : "text-white/30"}>
                                     {tab.icon}
                                 </span>
-                                <span className={`text-[11px] font-bold leading-none ${isActive ? "" : "text-slate-600 dark:text-slate-400"}`}>
+                                <span className={`text-[11px] font-bold leading-none ${isActive ? "" : "text-white/50"}`}>
                                     {tab.label}
                                 </span>
                                 <span
@@ -286,8 +297,8 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                         backgroundColor: beadColor + "30",
                                         color: beadColor,
                                     } : {
-                                        backgroundColor: "rgba(100,116,139,0.12)",
-                                        color: "rgb(100,116,139)",
+                                        backgroundColor: "rgba(255,255,255,0.08)",
+                                        color: "rgba(255,255,255,0.3)",
                                     }}
                                 >
                                     {tab.count}
@@ -352,7 +363,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                 <div className="space-y-8">
                                     {favoriteGroups.length > 0 && (
                                         <div className="space-y-4">
-                                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-600 px-1">{t.library.collections}</h3>
+                                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/25 px-1">{t.library.collections}</h3>
                                             <CollectionSection
                                                 groups={favoriteGroups}
                                                 expandedId={expandedId}
@@ -369,7 +380,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                     )}
                                     {favoriteInvocations.length > 0 && (
                                         <div className="space-y-4">
-                                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-600 px-1">{t.library.invocations}</h3>
+                                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-white/25 px-1">{t.library.invocations}</h3>
                                             <FavoriteSection
                                                 invocations={favoriteInvocations}
                                                 onSessionStart={onSessionStart}
@@ -385,12 +396,12 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                     )}
                                 </div>
                             ) : (
-                                <div className="text-center py-20 px-6 bg-slate-50 dark:bg-white/[0.03] border border-dashed border-slate-200 dark:border-white/10 rounded-[2rem]">
-                                    <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center mx-auto mb-6 opacity-30">
-                                        <Star size={24} className="text-slate-400" />
+                                <div className="text-center py-20 px-6 bg-white/[0.03] border border-dashed border-white/10 rounded-[2rem]">
+                                    <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-6 opacity-30">
+                                        <Star size={24} className="text-white/40" />
                                     </div>
-                                    <p className="text-base font-bold text-slate-900 dark:text-white">{t.library.noFavorites}</p>
-                                    <p className="text-xs text-slate-600 mt-2 max-w-[200px] mx-auto leading-relaxed">{t.library.addFavoriteTip}</p>
+                                    <p className="text-base font-bold text-white">{t.library.noFavorites}</p>
+                                    <p className="text-xs text-white/40 mt-2 max-w-[200px] mx-auto leading-relaxed">{t.library.addFavoriteTip}</p>
                                 </div>
                             )}
                         </motion.div>
@@ -432,11 +443,9 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
                         <motion.div
                             key={invocation.id}
                             layout
-                            className={`overflow-hidden rounded-3xl border transition-all duration-300 scroll-mt-12 ${isExpanded
-                                ? "bg-white dark:bg-white/[0.07] border-slate-200 dark:border-white/12 shadow-md dark:shadow-none"
-                                : "bg-white dark:bg-white/[0.04] border-slate-200/80 dark:border-white/[0.06] active:scale-[0.99]"
-                                }`}
+                            className={`${glassCard} overflow-hidden shadow-2xl shadow-black/20`}
                         >
+                            <Shine />
                             {/* ── Header row ── */}
                             <button
                                 className="w-full flex items-center gap-3.5 px-4 py-4 text-left"
@@ -444,7 +453,7 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
                             >
                                 {/* Icon */}
                                 <div
-                                    className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 transition-colors"
+                                    className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 bg-white/5 border border-white/10"
                                 >
                                     <BookOpen size={17} style={{ color: beadColor }} />
                                 </div>
@@ -452,12 +461,12 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
                                 {/* Text */}
                                 <div className="flex-1 min-w-0">
                                     <p
-                                        className={`text-[15px] font-semibold text-slate-800 dark:text-slate-100 leading-tight transition-all duration-300 ${isExpanded ? "whitespace-normal break-words overflow-visible" : "truncate"}`}
+                                        className={`text-[15px] font-semibold text-white/90 leading-tight transition-all duration-300 ${isExpanded ? "whitespace-normal break-words overflow-visible" : "truncate"}`}
                                     >
                                         {resolve(invocation.name)}
                                     </p>
                                     {invocation.description && (
-                                        <p className={`text-[12.5px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug transition-all duration-300 ${isExpanded ? "whitespace-normal break-words" : "line-clamp-1"}`}>
+                                        <p className={`text-[12.5px] text-white/40 mt-0.5 leading-snug transition-all duration-300 ${isExpanded ? "whitespace-normal break-words" : "line-clamp-1"}`}>
                                             {resolve(invocation.description)}
                                         </p>
                                     )}
@@ -475,7 +484,7 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
                                         animate={{ rotate: isExpanded ? 180 : 0 }}
                                         transition={{ duration: 0.25, ease: "easeInOut" }}
                                     >
-                                        <ChevronDown size={16} className="text-slate-400 dark:text-slate-500" />
+                                        <ChevronDown size={16} className="text-white/20" />
                                     </motion.div>
                                 </div>
                             </button>
@@ -491,7 +500,7 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
                                         className="overflow-hidden"
                                     >
                                         {/* Separator */}
-                                        <div className="mx-4 h-px bg-slate-100 dark:bg-white/[0.06]" />
+                                        <div className="mx-4 h-px bg-white/[0.05]" />
 
                                         {/* Action bar */}
                                         <div className="flex items-center gap-2 px-4 py-3.5">
@@ -506,21 +515,21 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
                                             </Link>
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); onToggleFavorite(invocation.id); }}
-                                                className="w-10 h-10 rounded-2xl flex items-center justify-center border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 active:scale-90 transition-all"
+                                                className="w-10 h-10 rounded-2xl flex items-center justify-center border border-white/10 bg-white/5 active:scale-90 transition-all"
                                             >
-                                                <Star size={16} fill={isFavorite(invocation.id) ? beadColor : "none"} style={{ color: isFavorite(invocation.id) ? beadColor : undefined }} className={isFavorite(invocation.id) ? "" : "text-slate-400"} />
+                                                <Star size={16} fill={isFavorite(invocation.id) ? beadColor : "none"} style={{ color: isFavorite(invocation.id) ? beadColor : undefined }} className={isFavorite(invocation.id) ? "" : "text-white/20"} />
                                             </button>
                                             <button
                                                 disabled={invocation.id.startsWith("sys-")}
                                                 onClick={(e) => { e.stopPropagation(); onEdit(invocation); }}
-                                                className={`w-10 h-10 rounded-2xl flex items-center justify-center border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-slate-500 active:scale-90 transition-all ${invocation.id.startsWith("sys-") ? "opacity-30 grayscale cursor-not-allowed" : ""}`}
+                                                className={`w-10 h-10 rounded-2xl flex items-center justify-center border border-white/10 bg-white/5 text-white/30 active:scale-90 transition-all ${invocation.id.startsWith("sys-") ? "opacity-30 grayscale cursor-not-allowed" : ""}`}
                                             >
                                                 <Pencil size={16} />
                                             </button>
                                             <button
                                                 disabled={invocation.id.startsWith("sys-")}
                                                 onClick={(e) => { e.stopPropagation(); onDelete(invocation.id); }}
-                                                className={`w-10 h-10 rounded-2xl flex items-center justify-center border border-red-100 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10 text-red-400 active:scale-90 transition-all ${invocation.id.startsWith("sys-") ? "opacity-30 grayscale cursor-not-allowed" : ""}`}
+                                                className={`w-10 h-10 rounded-2xl flex items-center justify-center border border-red-500/20 bg-red-500/10 text-red-400 active:scale-90 transition-all ${invocation.id.startsWith("sys-") ? "opacity-30 grayscale cursor-not-allowed" : ""}`}
                                             >
                                                 <Trash2 size={16} />
                                             </button>
@@ -533,11 +542,11 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
                 })
             ) : (
                 <div className="text-center py-16 px-6">
-                    <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center mx-auto mb-4 opacity-40">
-                        <BookOpen size={24} className="text-slate-400" />
+                    <div className="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-4 opacity-40">
+                        <BookOpen size={24} className="text-white/40" />
                     </div>
-                    <p className="text-sm font-bold text-slate-600 mb-1">{t.common.noResults}</p>
-                    <p className="text-xs text-slate-500">{t.common.tryAnother}</p>
+                    <p className="text-sm font-bold text-white/60 mb-1">{t.common.noResults}</p>
+                    <p className="text-xs text-white/30">{t.common.tryAnother}</p>
                 </div>
             )}
         </div>
@@ -548,12 +557,12 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
     const { t, resolve } = useTranslation();
     if (groups.length === 0) {
         return (
-            <div className="text-center py-16 px-6 bg-slate-50 dark:bg-white/[0.03] border border-dashed border-slate-200 dark:border-white/10 rounded-[2rem]">
-                <div className="w-20 h-20 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center mx-auto mb-5 opacity-40">
-                    <Sparkles size={28} className="text-slate-400" />
+            <div className="text-center py-16 px-6 bg-white/[0.03] border border-dashed border-white/10 rounded-[2rem]">
+                <div className="w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mx-auto mb-5 opacity-40">
+                    <Sparkles size={28} className="text-white/40" />
                 </div>
-                <p className="text-sm font-bold text-slate-600 mb-2">{t.common.noResults}</p>
-                <p className="text-xs text-slate-700">{t.library.newCollection}</p>
+                <p className="text-sm font-bold text-white/50 mb-2">{t.common.noResults}</p>
+                <p className="text-xs text-white/30">{t.library.newCollection}</p>
             </div>
         );
     }
@@ -567,11 +576,9 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                     <motion.div
                         key={group.id}
                         layout
-                        className={`overflow-hidden rounded-3xl border transition-all duration-300 scroll-mt-12 ${isExpanded
-                            ? "bg-white dark:bg-white/[0.07] border-slate-200 dark:border-white/12 shadow-md dark:shadow-none"
-                            : "bg-white dark:bg-white/[0.04] border-slate-200/80 dark:border-white/[0.06] active:scale-[0.99]"
-                            }`}
+                        className={`${glassCard} overflow-hidden shadow-2xl shadow-black/20`}
                     >
+                        <Shine />
                         {/* ── Header row ── */}
                         <button
                             className="w-full flex items-center gap-3.5 px-4 py-4 text-left"
@@ -579,7 +586,7 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                         >
                             {/* Bead icon */}
                             <div
-                                className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10"
+                                className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 bg-white/5 border border-white/10"
                             >
                                 <div
                                     className="w-2.5 h-2.5 rounded-full"
@@ -590,12 +597,12 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                             {/* Text */}
                             <div className="flex-1 min-w-0">
                                 <p
-                                    className={`text-[15px] font-semibold text-slate-800 dark:text-slate-100 leading-tight transition-all duration-300 ${isExpanded ? "whitespace-normal break-words overflow-visible" : "truncate"}`}
+                                    className={`text-[15px] font-semibold text-white/90 leading-tight transition-all duration-300 ${isExpanded ? "whitespace-normal break-words overflow-visible" : "truncate"}`}
                                 >
                                     {resolve(group.name)}
                                 </p>
                                 {group.description && (
-                                    <p className={`text-[12.5px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug transition-all duration-300 ${isExpanded ? "whitespace-normal break-words" : "line-clamp-1"}`}>
+                                    <p className={`text-[12.5px] text-white/40 mt-0.5 leading-snug transition-all duration-300 ${isExpanded ? "whitespace-normal break-words" : "line-clamp-1"}`}>
                                         {resolve(group.description)}
                                     </p>
                                 )}
@@ -613,7 +620,7 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                                     animate={{ rotate: isExpanded ? 180 : 0 }}
                                     transition={{ duration: 0.25, ease: "easeInOut" }}
                                 >
-                                    <ChevronDown size={16} className="text-slate-400 dark:text-slate-500" />
+                                    <ChevronDown size={16} className="text-white/20" />
                                 </motion.div>
                             </div>
                         </button>
@@ -629,7 +636,7 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                                     className="overflow-hidden"
                                 >
                                     {/* Separator */}
-                                    <div className="mx-4 h-px bg-slate-100 dark:bg-white/[0.06]" />
+                                    <div className="mx-4 h-px bg-white/[0.05]" />
 
                                     {/* Steps list */}
                                     {group.invocations.length > 0 && (
@@ -647,7 +654,7 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                                                                 {i + 1}
                                                             </span>
                                                             <span
-                                                                className="flex-1 text-[13px] text-slate-700 dark:text-slate-300 font-medium whitespace-normal break-words"
+                                                                className="flex-1 text-[13px] text-white/70 font-medium whitespace-normal break-words"
                                                             >
                                                                 {resolve(invData?.name)}
                                                             </span>
@@ -664,7 +671,7 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                                     )}
 
                                     {/* Separator */}
-                                    <div className="mx-4 h-px bg-slate-100 dark:bg-white/[0.06] mt-1" />
+                                    <div className="mx-4 h-px bg-white/[0.05] mt-1" />
 
                                     {/* Action bar */}
                                     <div className="flex items-center gap-2 px-4 py-3.5">
@@ -679,21 +686,21 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                                         </Link>
                                         <button
                                             onClick={(e) => { e.stopPropagation(); onToggleFavorite(group.id); }}
-                                            className="w-10 h-10 rounded-2xl flex items-center justify-center border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 active:scale-90 transition-all"
+                                            className="w-10 h-10 rounded-2xl flex items-center justify-center border border-white/10 bg-white/5 active:scale-90 transition-all"
                                         >
-                                            <Star size={16} fill={isFavorite(group.id) ? beadColor : "none"} style={{ color: isFavorite(group.id) ? beadColor : undefined }} className={isFavorite(group.id) ? "" : "text-slate-400"} />
+                                            <Star size={16} fill={isFavorite(group.id) ? beadColor : "none"} style={{ color: isFavorite(group.id) ? beadColor : undefined }} className={isFavorite(group.id) ? "" : "text-white/20"} />
                                         </button>
                                         <button
                                             disabled={group.id.startsWith("sys-")}
                                             onClick={(e) => { e.stopPropagation(); onEdit(group); }}
-                                            className={`w-10 h-10 rounded-2xl flex items-center justify-center border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-slate-500 active:scale-90 transition-all ${group.id.startsWith("sys-") ? "opacity-30 grayscale cursor-not-allowed" : ""}`}
+                                            className={`w-10 h-10 rounded-2xl flex items-center justify-center border border-white/10 bg-white/5 text-white/30 active:scale-90 transition-all ${group.id.startsWith("sys-") ? "opacity-30 grayscale cursor-not-allowed" : ""}`}
                                         >
                                             <Pencil size={16} />
                                         </button>
                                         <button
                                             disabled={group.id.startsWith("sys-")}
                                             onClick={(e) => { e.stopPropagation(); onDelete(group.id); }}
-                                            className={`w-10 h-10 rounded-2xl flex items-center justify-center border border-red-100 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10 text-red-400 active:scale-90 transition-all ${group.id.startsWith("sys-") ? "opacity-30 grayscale cursor-not-allowed" : ""}`}
+                                            className={`w-10 h-10 rounded-2xl flex items-center justify-center border border-red-500/20 bg-red-500/10 text-red-400 active:scale-90 transition-all ${group.id.startsWith("sys-") ? "opacity-30 grayscale cursor-not-allowed" : ""}`}
                                         >
                                             <Trash2 size={16} />
                                         </button>
