@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trash2, GripVertical, Sparkles, Plus, Check } from "lucide-react";
 import { useInvocationStore, type InvocationGroup } from "@/lib/store/invocationStore";
@@ -22,6 +22,17 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: Readonly<Create
         repetitions: number;
     }>>([]);
     const [errors, setErrors] = useState<{ name?: string; invocations?: string }>({});
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+    // Auto-scroll au bas de la liste quand on ajoute une étape
+    useEffect(() => {
+        if (scrollContainerRef.current) {
+            scrollContainerRef.current.scrollTo({
+                top: scrollContainerRef.current.scrollHeight,
+                behavior: "smooth"
+            });
+        }
+    }, [selectedInvocations.length]);
 
     useEffect(() => {
         if (editGroup) {
@@ -172,7 +183,10 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: Readonly<Create
                         </div>
 
                         {/* Liste d'étapes — scrollable si besoin */}
-                        <div className="flex-1 min-h-0 overflow-y-auto px-5 pt-2 scrollbar-hide">
+                        <div
+                            ref={scrollContainerRef}
+                            className="flex-1 min-h-0 overflow-y-auto px-5 pt-2 scrollbar-hide"
+                        >
                             <div className="space-y-2 pb-2">
                                 <AnimatePresence mode="popLayout">
                                     {selectedInvocations.map((sel, index) => {
