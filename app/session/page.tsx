@@ -378,7 +378,8 @@ function SessionContent() {
   const [isEditing, setIsEditing] = useState(false);
   const setIsUiOpen = useSessionStore(state => state.setIsUiOpen);
 
-  const isAnyUIOpen = isLibraryOpen || isSettingsOpen || isComplete || isEditing;
+  const isAnyModalOpen = isLibraryOpen || isSettingsOpen || isEditing;
+  const isAnyUIOpen = isAnyModalOpen || isComplete;
 
   useEffect(() => {
     setIsUiOpen(isAnyUIOpen);
@@ -484,7 +485,7 @@ function SessionContent() {
       />
 
       {/* Main interactive area - Bead Scene area taking remaining vertical space */}
-      <div className={`flex-1 relative z-0 transition-all duration-1000 ${isAnyUIOpen ? 'pointer-events-none opacity-40 blur-sm grayscale' : 'opacity-100'}`}>
+      <div className={`flex-1 relative z-0 transition-all duration-1000 ${isAnyModalOpen ? 'pointer-events-none opacity-40 blur-sm grayscale' : isComplete ? 'pointer-events-none opacity-60' : 'opacity-100'}`}>
         <div className="absolute inset-0 top-0 h-full">
           <BeadLayer />
         </div>
@@ -510,7 +511,7 @@ function SessionContent() {
             onPointerUp={stopAllBubbles}
             onMouseDown={stopAllBubbles}
             onMouseUp={stopAllBubbles}
-            className="fixed inset-0 flex items-center justify-center bg-slate-950/80 backdrop-blur-xl z-[70] w-full"
+            className="fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px] z-[70] w-full"
           >
             <CompletionView
               onReset={handleReset}

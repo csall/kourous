@@ -44,8 +44,8 @@ export function useSessionProgress() {
             label: currentItem.label,
             sublabel: currentItem.transliteration,
             cycleTotal: currentItem.repetitions,
-            // If complete, show the full total of the last item.
-            cycleProgress: isActuallyComplete ? currentItem.repetitions : beadsInCurrentCycle,
+            // If complete, show 0 as requested by the user.
+            cycleProgress: isActuallyComplete ? 0 : beadsInCurrentCycle,
             cycleIndex: currentCycleIndex,
             totalCycles: preset.sequence.length
         };

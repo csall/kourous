@@ -45,6 +45,7 @@ export const fr = {
         repetitions: "répétitions",
         completion: {
             congratulations: "Bravo !",
+            success: "Succès",
             sessionComplete: "Session terminée",
             returnHome: "Accueil",
             startAgain: "Recommencer",

@@ -240,7 +240,7 @@ export const useSessionStore = create<SessionState>()(
         // Regular Session Logic
         // Total steps = Sum of repetitions (no transition/dead clicks)
         const totalSteps = preset.totalBeads;
-        const completed = nextTotal > totalSteps; // Complete when we EXCEED total beads? Or when we hit it?
+        const completed = nextTotal >= totalSteps;
         // If we want the last bead to be clickable, then isComplete is when nextTotal > totalSteps? 
         // No, usually isComplete is true when we reach the end.
         // Let's say 3 beads.
@@ -255,7 +255,7 @@ export const useSessionStore = create<SessionState>()(
         const updates: Partial<SessionState> = {
           totalCount: nextTotal,
           beadIndex: nextTotal,
-          isComplete: nextTotal > totalSteps, // Ensure we can see the last bead
+          isComplete: completed,
         };
 
         // Update stats on completion
