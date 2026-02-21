@@ -28,8 +28,8 @@ function BottomNavContent() {
     };
 
     return (
-        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-t border-slate-200 dark:border-white/10 pb-[env(safe-area-inset-bottom)] pt-2 md:pb-6 touch-none overscroll-none select-none">
-            <div className="max-w-md mx-auto flex items-center justify-around px-2">
+        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/75 dark:bg-slate-950/80 backdrop-blur-2xl border-t border-slate-200/50 dark:border-white/5 pb-[env(safe-area-inset-bottom,20px)] pt-3 touch-none overscroll-none select-none">
+            <div className="max-w-md mx-auto flex items-center justify-around px-4">
                 {navItems.map((item) => {
                     const Icon = item.icon;
                     // Check if current path matches item.href base path
