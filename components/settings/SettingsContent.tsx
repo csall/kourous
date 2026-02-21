@@ -10,32 +10,36 @@ import {
 import Link from "next/link";
 import { useState, useEffect, Suspense } from "react";
 import { useSessionStore } from "@/lib/store/sessionStore";
-
 import { useSearchParams } from "next/navigation";
 import { useTranslation } from "@/lib/hooks/useTranslation";
+import { HomeBackground } from "@/components/home/HomeBackground";
 
 type SettingsView = 'menu' | 'preferences';
 
-
+const glassCard = "relative bg-white/[0.042] backdrop-blur-xl border border-white/[0.07] rounded-2xl";
+const Shine = () => (
+    <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/12 to-transparent rounded-t-2xl" />
+);
 
 function SettingsInner() {
     const searchParams = useSearchParams();
     const paramView = searchParams.get('view') === 'preferences' ? 'preferences' : 'menu';
     const [view, setView] = useState<SettingsView>(paramView);
-    const { t, language, resolve } = useTranslation();
-    const { soundEnabled, hapticsEnabled, toggleSound, toggleHaptics, beadColor, setBeadColor, theme, setTheme, setLanguage } = useSessionStore();
+    const { t, language } = useTranslation();
+    const {
+        soundEnabled, hapticsEnabled, toggleSound, toggleHaptics,
+        beadColor, setBeadColor, theme, setTheme, setLanguage
+    } = useSessionStore();
 
-    useEffect(() => {
-        setView(paramView);
-    }, [paramView]);
+    useEffect(() => { setView(paramView); }, [paramView]);
 
     const colors = [
-        { name: t.settings.theme.auto, value: "#fb7185" },
-        { name: language === 'fr' ? "Émeraude" : "Emerald", value: "#10b981" },
-        { name: language === 'fr' ? "Saphir" : "Sapphire", value: "#3b82f6" },
-        { name: language === 'fr' ? "Or" : "Gold", value: "#fbbf24" },
-        { name: language === 'fr' ? "Ardoise" : "Slate", value: "#94a3b8" },
-        { name: language === 'fr' ? "Améthyste" : "Amethyst", value: "#a855f7" }
+        { name: "Rose", value: "#fb7185" },
+        { name: "Émeraude", value: "#10b981" },
+        { name: "Saphir", value: "#3b82f6" },
+        { name: "Or", value: "#fbbf24" },
+        { name: "Ardoise", value: "#94a3b8" },
+        { name: "Améthyste", value: "#a855f7" },
     ];
 
     const languages = [
@@ -44,287 +48,223 @@ function SettingsInner() {
     ];
 
     const themes = [
-        { key: 'dark' as const, label: t.settings.theme.dark, icon: <Moon size={14} /> },
-        { key: 'light' as const, label: t.settings.theme.light, icon: <Sun size={14} /> },
-        { key: 'auto' as const, label: t.settings.theme.auto, icon: <Smartphone size={14} /> },
+        { key: 'dark' as const, label: t.settings.theme.dark, icon: <Moon size={13} /> },
+        { key: 'light' as const, label: t.settings.theme.light, icon: <Sun size={13} /> },
+        { key: 'auto' as const, label: t.settings.theme.auto, icon: <Smartphone size={13} /> },
     ];
 
     const menuGroups = [
         {
             title: t.settings.support,
             items: [
-                {
-                    icon: HelpCircle,
-                    label: t.settings.support,
-                    href: "/support",
-                    external: false,
-                    color: "bg-blue-500"
-                },
-                {
-                    icon: Mail,
-                    label: t.settings.contact,
-                    href: "mailto:cheikh.sall@icloud.com",
-                    external: true,
-                    color: "bg-sky-500"
-                }
-            ]
+                { icon: HelpCircle, label: t.settings.support, href: "/support", external: false, color: "#3b82f6" },
+                { icon: Mail, label: t.settings.contact, href: "mailto:cheikh.sall@icloud.com", external: true, color: "#0ea5e9" },
+            ],
         },
         {
             title: t.settings.about,
             items: [
-                {
-                    icon: Shield,
-                    label: t.settings.privacy,
-                    href: "/privacy",
-                    external: false,
-                    color: "bg-gray-500"
-                },
-                {
-                    icon: FileText,
-                    label: t.settings.terms,
-                    href: "/terms",
-                    external: false,
-                    color: "bg-slate-500"
-                }
-            ]
-        }
+                { icon: Shield, label: t.settings.privacy, href: "/privacy", external: false, color: "#6b7280" },
+                { icon: FileText, label: t.settings.terms, href: "/terms", external: false, color: "#64748b" },
+            ],
+        },
     ];
 
     return (
-        <div className="flex flex-col w-full h-[100dvh] overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-200 transition-colors">
+        <div className="flex flex-col w-full h-[100dvh] overflow-hidden text-white relative">
+            <HomeBackground />
+
             <AnimatePresence mode="wait">
-                {view === 'menu' ? (
+
+                {/* ── MENU ─────────────────────────────────── */}
+                {view === 'menu' && (
                     <motion.div
                         key="menu"
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        className="flex flex-col h-full pt-[calc(env(safe-area-inset-top,20px)+0.5rem)] px-5 touch-none"
+                        initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
+                        className="flex flex-col h-full pt-[calc(env(safe-area-inset-top,20px)+0.5rem)] px-5 pb-[calc(env(safe-area-inset-bottom,20px)+5.5rem)] touch-none overflow-hidden relative z-10"
                     >
-                        {/* ── FIXED HEADER ─────────────────────────── */}
-                        <div className="flex-none space-y-4 pb-4 z-10 px-1">
-                            <div className="space-y-1">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-slate-200 dark:bg-white/5 border border-slate-300 dark:border-white/10 flex items-center justify-center">
-                                        <MoreHorizontal size={16} style={{ color: beadColor }} />
-                                    </div>
-                                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{t.settings.title}</h2>
+                        {/* Header */}
+                        <div className="flex-none pb-6 px-1">
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-[12px] flex items-center justify-center"
+                                    style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                                    <MoreHorizontal size={16} style={{ color: beadColor }} />
                                 </div>
-                                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium pl-11">{t.settings.info}</p>
+                                <h2 className="text-2xl font-bold text-white tracking-tight">{t.settings.title}</h2>
                             </div>
+                            <p className="text-[13px] text-white/38 font-medium pl-12 mt-0.5">{t.settings.info}</p>
                         </div>
 
-                        {/* ── FIXED CONTENT (NO SCROLL) ─────────────────────── */}
-                        <div className="flex-1 overflow-hidden w-full px-1 pt-2 pb-32">
-                            <div className="space-y-6">
-                                {menuGroups.map((group) => (
-                                    <div key={group.title}>
-                                        <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 pl-4">
-                                            {group.title}
-                                        </h3>
-                                        <div className="bg-white dark:bg-white/[0.04] backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-2xl overflow-hidden mb-auto shadow-sm dark:shadow-none">
-                                            {group.items.map((item, index) => {
-                                                const Icon = item.icon;
-                                                const isLast = index === group.items.length - 1;
-
-                                                return (
-                                                    <div key={item.label}>
-                                                        <Link href={item.href} target={item.external ? "_blank" : undefined}>
-                                                            <div className="flex items-center justify-between p-4 bg-transparent active:bg-slate-100 dark:active:bg-white/[0.08] transition-colors cursor-pointer group">
-                                                                <div className="flex items-center gap-4">
-                                                                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${item.color} text-white shadow-lg shadow-black/20`}>
-                                                                        <Icon size={18} />
-                                                                    </div>
-                                                                    <span className="text-[15px] font-medium text-slate-900 dark:text-white group-hover:text-slate-700 dark:group-hover:text-white transition-colors">
-                                                                        {item.label}
-                                                                    </span>
+                        {/* Groups */}
+                        <div className="flex-1 overflow-hidden w-full px-1 space-y-5">
+                            {menuGroups.map((group) => (
+                                <div key={group.title}>
+                                    <p className="text-[9px] font-black uppercase tracking-[0.35em] text-white/25 mb-2 pl-1">
+                                        {group.title}
+                                    </p>
+                                    <div className={`${glassCard} overflow-hidden`}>
+                                        <Shine />
+                                        {group.items.map((item, index) => {
+                                            const Icon = item.icon;
+                                            const isLast = index === group.items.length - 1;
+                                            return (
+                                                <div key={item.label}>
+                                                    <Link href={item.href} target={item.external ? "_blank" : undefined}>
+                                                        <div className="flex items-center justify-between p-4 active:bg-white/[0.05] transition-colors">
+                                                            <div className="flex items-center gap-3.5">
+                                                                <div className="w-8 h-8 rounded-xl flex items-center justify-center"
+                                                                    style={{ backgroundColor: `${item.color}20`, border: `1px solid ${item.color}30` }}>
+                                                                    <Icon size={16} style={{ color: item.color }} />
                                                                 </div>
-                                                                <ChevronRight size={16} className="text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-400 transition-colors opacity-70" />
+                                                                <span className="text-[15px] font-medium text-white/78">{item.label}</span>
                                                             </div>
-                                                        </Link>
-                                                        {!isLast && <div className="h-px bg-slate-100 dark:bg-white/5 ml-[3.5rem]" />}
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
+                                                            <ChevronRight size={15} className="text-white/20" />
+                                                        </div>
+                                                    </Link>
+                                                    {!isLast && <div className="h-px bg-white/[0.05] ml-[3.5rem]" />}
+                                                </div>
+                                            );
+                                        })}
                                     </div>
-                                ))}
-                            </div>
+                                </div>
+                            ))}
                         </div>
                     </motion.div>
-                ) : (
+                )}
+
+                {/* ── PRÉFÉRENCES ──────────────────────────── */}
+                {view === 'preferences' && (
                     <motion.div
                         key="preferences"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 20 }}
-                        className="flex flex-col h-full"
+                        initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
+                        className="flex flex-col h-full pt-[calc(env(safe-area-inset-top,20px)+0.5rem)] relative z-10"
                     >
-                        {/* ── FIXED HEADER ─────────────────────────── */}
-                        <div className="flex-none space-y-6 pb-6 z-10 px-1">
-                            <div className="space-y-1">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-8 h-8 rounded-lg bg-slate-200 dark:bg-white/5 border border-slate-300 dark:border-white/10 flex items-center justify-center">
-                                        <Settings size={16} style={{ color: beadColor }} />
-                                    </div>
-                                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{t.settings.preferences}</h2>
+                        {/* Header */}
+                        <div className="flex-none px-6 pb-5">
+                            <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-[12px] flex items-center justify-center"
+                                    style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                                    <Settings size={16} style={{ color: beadColor }} />
                                 </div>
-                                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium pl-11">{t.settings.language} & {t.settings.appearance}</p>
+                                <h2 className="text-2xl font-bold text-white tracking-tight">{t.settings.preferences}</h2>
                             </div>
+                            <p className="text-[13px] text-white/38 pl-12 mt-0.5">{t.settings.language} & {t.settings.appearance}</p>
                         </div>
 
-                        {/* ── SCROLLABLE CONTENT ─────────────────────── */}
-                        <div className="flex-1 overflow-y-auto no-scrollbar w-full px-1 pt-4 pb-32 touch-pan-y">
-                            <div className="space-y-4">
-                                {/* Sound Toggle */}
-                                <div className="bg-white dark:bg-white/[0.04] backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-2xl p-5 shadow-sm dark:shadow-none">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            {soundEnabled ? (
-                                                <Volume2 size={20} style={{ color: beadColor }} />
-                                            ) : (
-                                                <VolumeX size={20} className="text-slate-400" />
-                                            )}
-                                            <div>
-                                                <div className="text-sm font-medium text-slate-900 dark:text-white">{t.session.sound}</div>
-                                                <div className="text-xs text-slate-500 dark:text-slate-400">{t.session.sound}</div>
-                                            </div>
-                                        </div>
+                        {/* Contenu fixe — pas de scroll */}
+                        <div className="flex-1 overflow-hidden px-5 pb-[calc(env(safe-area-inset-bottom,20px)+5.5rem)] flex flex-col gap-2">
 
-                                        <button
-                                            onClick={toggleSound}
-                                            className="w-12 h-6 rounded-full transition-all"
-                                            style={{ backgroundColor: soundEnabled ? beadColor : '#cbd5e1' }}
-                                        >
-                                            <div className={`w-5 h-5 rounded-full bg-white shadow-lg transform transition-transform ${soundEnabled ? 'translate-x-6' : 'translate-x-0.5'
-                                                }`} />
-                                        </button>
+                            {/* Son */}
+                            <div className={`${glassCard} px-4 py-3`}>
+                                <Shine />
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        {soundEnabled
+                                            ? <Volume2 size={18} style={{ color: beadColor }} />
+                                            : <VolumeX size={18} className="text-white/30" />}
+                                        <span className="text-[14px] font-medium text-white/78">{t.session.sound}</span>
                                     </div>
-                                </div>
-
-                                {/* Haptics Toggle */}
-                                <div className="bg-white dark:bg-white/[0.04] backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-2xl p-5 shadow-sm dark:shadow-none">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <Vibrate size={20} style={{ color: hapticsEnabled ? beadColor : '#94a3b8' }} />
-                                            <div>
-                                                <div className="text-sm font-medium text-slate-900 dark:text-white">{t.session.haptics}</div>
-                                                <div className="text-xs text-slate-500 dark:text-slate-400">{t.session.haptics}</div>
-                                            </div>
-                                        </div>
-
-                                        <button
-                                            onClick={toggleHaptics}
-                                            className="w-12 h-6 rounded-full transition-all"
-                                            style={{ backgroundColor: hapticsEnabled ? beadColor : '#cbd5e1' }}
-                                        >
-                                            <div className={`w-5 h-5 rounded-full bg-white shadow-lg transform transition-transform ${hapticsEnabled ? 'translate-x-6' : 'translate-x-0.5'
-                                                }`} />
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {/* Language Selector */}
-                                <div className="bg-white dark:bg-white/[0.04] backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-2xl p-5 shadow-sm dark:shadow-none">
-                                    <div className="space-y-3">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-5 h-5 flex items-center justify-center text-xs font-bold leading-none" style={{ color: beadColor }}>{language.toUpperCase()}</div>
-                                            <div>
-                                                <div className="text-sm font-medium text-slate-900 dark:text-white">{t.settings.language}</div>
-                                                <div className="text-xs text-slate-500 dark:text-slate-400">{t.settings.language}</div>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex gap-1 p-1 bg-slate-100 dark:bg-white/[0.04] rounded-xl">
-                                            {languages.map((l) => (
-                                                <button
-                                                    key={l.key}
-                                                    onClick={() => setLanguage(l.key)}
-                                                    className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${language === l.key
-                                                        ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm'
-                                                        : 'text-slate-500'
-                                                        }`}
-                                                >
-                                                    {l.label}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Theme Selector */}
-                                <div className="bg-white dark:bg-white/[0.04] backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-2xl p-5 shadow-sm dark:shadow-none">
-                                    <div className="space-y-3">
-                                        <div className="flex items-center gap-3">
-                                            <Moon size={20} style={{ color: beadColor }} />
-                                            <div>
-                                                <div className="text-sm font-medium text-slate-900 dark:text-white">{t.settings.appearance}</div>
-                                                <div className="text-xs text-slate-500 dark:text-slate-400">{t.settings.theme.auto}</div>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex gap-1 p-1 bg-slate-100 dark:bg-white/[0.04] rounded-xl">
-                                            {themes.map((t) => (
-                                                <button
-                                                    key={t.key}
-                                                    onClick={() => setTheme(t.key)}
-                                                    className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${theme === t.key
-                                                        ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm'
-                                                        : 'text-slate-500'
-                                                        }`}
-                                                >
-                                                    {t.icon}
-                                                    {t.label}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Color Selection */}
-                                <div className="bg-white dark:bg-white/[0.04] backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-2xl p-5 shadow-sm dark:shadow-none">
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-3">
-                                            <Palette size={20} style={{ color: beadColor }} />
-                                            <div>
-                                                <div className="text-sm font-medium text-slate-900 dark:text-white">{t.settings.beadColor}</div>
-                                                <div className="text-xs text-slate-500 dark:text-slate-400">{t.settings.preferences}</div>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex flex-wrap gap-3 pt-2">
-                                            {colors.map((c) => (
-                                                <button
-                                                    key={c.value}
-                                                    onClick={() => setBeadColor(c.value)}
-                                                    className={`relative w-8 h-8 rounded-full transition-all active:scale-90 ${beadColor === c.value ? 'ring-2 ring-slate-900 dark:ring-white ring-offset-2 ring-offset-white dark:ring-offset-slate-900 scale-110' : 'opacity-70 hover:opacity-100'
-                                                        }`}
-                                                    style={{ backgroundColor: c.value }}
-                                                    aria-label={c.name}
-                                                >
-                                                    {beadColor === c.value && (
-                                                        <div className="absolute inset-0 flex items-center justify-center">
-                                                            <div className="w-2 h-2 rounded-full bg-white" />
-                                                        </div>
-                                                    )}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
+                                    <button onClick={toggleSound}
+                                        className="w-12 h-6 rounded-full transition-all"
+                                        style={{ backgroundColor: soundEnabled ? beadColor : 'rgba(255,255,255,0.12)' }}>
+                                        <div className={`w-5 h-5 rounded-full bg-white shadow-lg transform transition-transform ${soundEnabled ? 'translate-x-6' : 'translate-x-0.5'}`} />
+                                    </button>
                                 </div>
                             </div>
+
+                            {/* Haptiques */}
+                            <div className={`${glassCard} px-4 py-3`}>
+                                <Shine />
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3">
+                                        <Vibrate size={18} style={{ color: hapticsEnabled ? beadColor : 'rgba(255,255,255,0.3)' }} />
+                                        <span className="text-[14px] font-medium text-white/78">{t.session.haptics}</span>
+                                    </div>
+                                    <button onClick={toggleHaptics}
+                                        className="w-12 h-6 rounded-full transition-all"
+                                        style={{ backgroundColor: hapticsEnabled ? beadColor : 'rgba(255,255,255,0.12)' }}>
+                                        <div className={`w-5 h-5 rounded-full bg-white shadow-lg transform transition-transform ${hapticsEnabled ? 'translate-x-6' : 'translate-x-0.5'}`} />
+                                    </button>
+                                </div>
+                            </div>
+
+                            {/* Langue */}
+                            <div className={`${glassCard} px-4 py-3 space-y-2`}>
+                                <Shine />
+                                <div className="flex items-center gap-3">
+                                    <span className="text-sm font-black" style={{ color: beadColor }}>{language.toUpperCase()}</span>
+                                    <span className="text-[14px] font-medium text-white/78">{t.settings.language}</span>
+                                </div>
+                                <div className="flex gap-1 p-1 rounded-xl" style={{ background: "rgba(255,255,255,0.05)" }}>
+                                    {languages.map((l) => (
+                                        <button key={l.key} onClick={() => setLanguage(l.key)}
+                                            className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all ${language === l.key ? 'bg-white/10 text-white' : 'text-white/35'}`}>
+                                            {l.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Thème */}
+                            <div className={`${glassCard} px-4 py-3 space-y-2`}>
+                                <Shine />
+                                <div className="flex items-center gap-3">
+                                    <Moon size={16} style={{ color: beadColor }} />
+                                    <span className="text-[14px] font-medium text-white/78">{t.settings.appearance}</span>
+                                </div>
+                                <div className="flex gap-1 p-1 rounded-xl" style={{ background: "rgba(255,255,255,0.05)" }}>
+                                    {themes.map((th) => (
+                                        <button key={th.key} onClick={() => setTheme(th.key)}
+                                            className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-bold transition-all ${theme === th.key ? 'bg-white/10 text-white' : 'text-white/35'}`}>
+                                            {th.icon}
+                                            {th.label}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Couleur */}
+                            <div className={`${glassCard} px-4 py-3 space-y-3`}>
+                                <Shine />
+                                <div className="flex items-center gap-3">
+                                    <Palette size={18} style={{ color: beadColor }} />
+                                    <span className="text-[15px] font-medium text-white/78">{t.settings.beadColor}</span>
+                                </div>
+                                <div className="flex flex-wrap gap-3">
+                                    {colors.map((c) => (
+                                        <button
+                                            key={c.value}
+                                            onClick={() => setBeadColor(c.value)}
+                                            aria-label={c.name}
+                                            className={`relative w-9 h-9 rounded-full transition-all active:scale-90 ${beadColor === c.value ? 'scale-110' : 'opacity-55'}`}
+                                            style={{
+                                                backgroundColor: c.value,
+                                                boxShadow: beadColor === c.value
+                                                    ? `0 0 0 2px rgba(255,255,255,0.85), 0 0 14px ${c.value}80`
+                                                    : 'none',
+                                            }}>
+                                            {beadColor === c.value && (
+                                                <div className="absolute inset-0 flex items-center justify-center">
+                                                    <div className="w-2 h-2 rounded-full bg-white" />
+                                                </div>
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
                         </div>
                     </motion.div>
-                )
-                }
-            </AnimatePresence >
-        </div >
+                )}
+
+            </AnimatePresence>
+        </div>
     );
 }
 
 export function SettingsContent() {
     return (
-        <Suspense fallback={<div className="flex-1 w-full h-full bg-slate-950" />}>
+        <Suspense fallback={<div className="flex-1 w-full h-full" style={{ background: "#010208" }} />}>
             <SettingsInner />
         </Suspense>
     );
