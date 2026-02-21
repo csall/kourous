@@ -177,17 +177,101 @@ export const defaultInvocations: Invocation[] = [
         repetitions: 33,
         createdAt: "2024-01-01T00:00:00.000Z"
     },
+    {
+        id: "sys-subhanallahi-adada",
+        name: "Subḥāna llāhi wa bi-ḥamdihi, ʿadada khalqihi...",
+        description: "Gloire et louange à Allah, autant de fois qu'il y a de créatures... (Invocation de Juwayriyah)",
+        repetitions: 3,
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-la-ilaha-illallah-wahdahu",
+        name: "Lā ʾilāha ʾillā llāhu waḥdahu lā sharīka lah...",
+        description: "Il n'y a de divinité qu'Allah, Seul et sans associé... 100 fois équivaut à affranchir 10 esclaves.",
+        repetitions: 100,
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-ya-hayyu-bi-rahmatika",
+        name: "Yā Ḥayyu yā Qayyūm bi-raḥmatika ʾastaghīth",
+        description: "Ô Vivant, Ô Subsistant, par Ta miséricorde je Te demande secours.",
+        repetitions: 3,
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-bismillah-tawakkaltu",
+        name: "Bismi llāhi tawakkaltu ʿalā llāh",
+        description: "Au nom d'Allah, je m'en remets à Allah. Pour sortir de chez soi en toute sécurité.",
+        repetitions: 1,
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-allahumma-antas-salam",
+        name: "Allāhumma ʾanta s-Salām wa minka s-Salām",
+        description: "Seigneur, Tu es la Paix et la Paix vient de Toi. À dire après la prière.",
+        repetitions: 1,
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-ilman-nafian",
+        name: "Allāhumma ʾinnī ʾasʾaluka ʿilman nāfiʿan...",
+        description: "Seigneur, je Te demande une science utile, une subsistance licite et une œuvre acceptée.",
+        repetitions: 1,
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-subhanal-malikil-quddus",
+        name: "Subḥāna l-Maliki l-Quddūs",
+        description: "Gloire au Souverain, le Très Saint. À dire 3 fois après la prière du Witr.",
+        repetitions: 3,
+        createdAt: "2024-01-01T00:00:00.000Z"
+    }
 ];
 
 export const defaultGroups: InvocationGroup[] = [
     {
         id: "sys-grp-post-prayer",
-        name: "Tasbih après la Prière",
-        description: "La sunna classique après chaque prière obligatoire.",
+        name: "Après la Prière (Complet)",
+        description: "Invocation complète de la sunna après chaque prière.",
         invocations: [
+            { invocationId: "sys-astaghfirullah", repetitions: 3 },
+            { invocationId: "sys-allahumma-antas-salam", repetitions: 1 },
             { invocationId: "sys-subhan-allah", repetitions: 33 },
             { invocationId: "sys-alhamdulillah", repetitions: 33 },
             { invocationId: "sys-allahu-akbar", repetitions: 33 },
+            { invocationId: "sys-la-ilaha-illallah-wahdahu", repetitions: 1 },
+        ],
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-grp-high-rewards",
+        name: "Récompenses Immenses",
+        description: "Les formules les plus riches en hassanates selon les hadiths authentiques.",
+        invocations: [
+            { invocationId: "sys-la-ilaha-illallah-wahdahu", repetitions: 100 },
+            { invocationId: "sys-subhanallahi-wa-bihamdihi", repetitions: 100 },
+            { invocationId: "sys-subhanallahi-adada", repetitions: 3 },
+        ],
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-grp-leave-home",
+        name: "Sortie de la Maison",
+        description: "Protection et guidance au moment de sortir.",
+        invocations: [
+            { invocationId: "sys-bismillah-tawakkaltu", repetitions: 1 },
+            { invocationId: "sys-la-hawla", repetitions: 1 },
+        ],
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-grp-morning-light",
+        name: "Lumière du Matin",
+        description: "Pour illuminer son cœur dès le lever du jour.",
+        invocations: [
+            { invocationId: "sys-ilman-nafian", repetitions: 1 },
+            { invocationId: "sys-ya-hayyu-bi-rahmatika", repetitions: 3 },
+            { invocationId: "sys-afiyah", repetitions: 3 },
         ],
         createdAt: "2024-01-01T00:00:00.000Z"
     },
