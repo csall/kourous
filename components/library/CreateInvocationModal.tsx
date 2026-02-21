@@ -98,7 +98,7 @@ export function CreateInvocationModal({ isOpen, onClose, editInvocation }: Creat
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-md p-5"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 dark:bg-slate-950/70 backdrop-blur-md p-5"
                     onClick={handleClose}
                 >
                     <motion.div
@@ -106,7 +106,7 @@ export function CreateInvocationModal({ isOpen, onClose, editInvocation }: Creat
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.95, opacity: 0, y: 30 }}
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                        className="relative overflow-hidden bg-slate-900 border border-white/10 rounded-[2rem] p-6 sm:p-8 max-w-md w-full shadow-2xl flex flex-col max-h-[85dvh]"
+                        className="relative overflow-hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-[2rem] p-6 sm:p-8 max-w-md w-full shadow-2xl flex flex-col max-h-[85dvh]"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Premium Glow Decoration */}
@@ -119,11 +119,11 @@ export function CreateInvocationModal({ isOpen, onClose, editInvocation }: Creat
                                     <Sparkles size={12} className="animate-pulse" />
                                     <span className="text-[9px] font-black uppercase tracking-[0.25em]">{isEditing ? "Édition" : "Personnalisation"}</span>
                                 </div>
-                                <h2 className="text-2xl font-black tracking-tight text-white leading-tight">{isEditing ? "Modifier Invocation" : "Nouvelle Invocation"}</h2>
+                                <h2 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">{isEditing ? "Modifier Invocation" : "Nouvelle Invocation"}</h2>
                             </div>
                             <button
                                 onClick={handleClose}
-                                className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+                                className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
                             >
                                 <X size={18} />
                             </button>
@@ -132,14 +132,14 @@ export function CreateInvocationModal({ isOpen, onClose, editInvocation }: Creat
                         <form onSubmit={handleSubmit} className="space-y-6 relative z-10 flex-1 overflow-y-auto min-h-0 -mr-4 pr-4 pb-6">
                             {/* Name Input */}
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Nom de l'invocation</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 dark:text-slate-500 ml-1">Nom de l'invocation</label>
                                 <input
                                     type="text"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                     placeholder="Ex: Al-Hamdulillah"
                                     autoFocus
-                                    className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white text-base placeholder:text-slate-700 focus:outline-none focus:border-white/20 transition-all font-bold"
+                                    className="w-full px-4 py-3.5 bg-slate-100 dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white text-base placeholder:text-slate-400 dark:placeholder:text-slate-700 focus:outline-none focus:border-indigo-500/20 dark:focus:border-white/20 transition-all font-bold"
                                 />
                                 {errors.name && (
                                     <p className="text-[11px] font-bold text-rose-500 px-1">{errors.name}</p>
@@ -148,19 +148,19 @@ export function CreateInvocationModal({ isOpen, onClose, editInvocation }: Creat
 
                             {/* Description Input */}
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Notes (Optionnel)</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 dark:text-slate-500 ml-1">Notes (Optionnel)</label>
                                 <textarea
                                     value={description}
                                     onChange={(e) => setDescription(e.target.value)}
                                     placeholder="Signification ou rappel..."
                                     rows={2}
-                                    className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white text-sm placeholder:text-slate-700 focus:outline-none focus:border-white/20 transition-all font-medium resize-none"
+                                    className="w-full px-4 py-3.5 bg-slate-100 dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white text-sm placeholder:text-slate-400 dark:placeholder:text-slate-700 focus:outline-none focus:border-indigo-500/20 dark:focus:border-white/20 transition-all font-medium resize-none"
                                 />
                             </div>
 
                             {/* Repetitions Selection */}
                             <div className="space-y-3">
-                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Nombre de répétitions</label>
+                                <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 dark:text-slate-500 ml-1">Nombre de répétitions</label>
                                 <div className="grid grid-cols-4 gap-3">
                                     {quickRepetitions.map((quickRep) => (
                                         <button
@@ -177,7 +177,7 @@ export function CreateInvocationModal({ isOpen, onClose, editInvocation }: Creat
                                             }}
                                             className={`h-12 rounded-xl border-2 transition-all font-black text-sm flex items-center justify-center ${repetitions === quickRep && !customRepetitions
                                                 ? ""
-                                                : "bg-white/[0.03] border-white/5 text-slate-500"
+                                                : "bg-slate-100 dark:bg-white/[0.03] border-slate-200 dark:border-white/5 text-slate-500 dark:text-slate-500"
                                                 }`}
                                         >
                                             {quickRep}
@@ -190,7 +190,7 @@ export function CreateInvocationModal({ isOpen, onClose, editInvocation }: Creat
                                         value={customRepetitions}
                                         onChange={(e) => setCustomRepetitions(e.target.value.replace(/[^0-9]/g, ""))}
                                         placeholder="..."
-                                        className="w-full h-12 bg-white/[0.03] border-2 border-white/5 rounded-xl text-white placeholder:text-slate-700 focus:outline-none transition-all text-center font-black text-sm"
+                                        className="w-full h-12 bg-slate-100 dark:bg-white/[0.03] border-2 border-slate-200 dark:border-white/5 rounded-xl text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-700 focus:outline-none transition-all text-center font-black text-sm"
                                     />
                                 </div>
                             </div>

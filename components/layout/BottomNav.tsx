@@ -28,7 +28,7 @@ function BottomNavContent() {
     };
 
     return (
-        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-t border-white/10 pb-[env(safe-area-inset-bottom)] pt-2 md:pb-6 touch-none overscroll-none select-none">
+        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-t border-slate-200 dark:border-white/10 pb-[env(safe-area-inset-bottom)] pt-2 md:pb-6 touch-none overscroll-none select-none">
             <div className="max-w-md mx-auto flex items-center justify-around px-2">
                 {navItems.map((item) => {
                     const Icon = item.icon;
@@ -55,20 +55,20 @@ function BottomNavContent() {
                             {/* Icon avec transition de couleur */}
                             <motion.div
                                 whileTap={{ scale: 0.9 }}
-                                className={`relative z-10 transition-colors duration-300 ${isActive ? "text-white" : "text-slate-500 group-hover:text-slate-400"}`}
+                                className={`relative z-10 transition-colors duration-300 ${isActive ? "text-indigo-600 dark:text-white" : "text-slate-600 dark:text-slate-500 group-hover:text-slate-900 dark:group-hover:text-slate-400"}`}
                             >
                                 <Icon
                                     size={26}
                                     strokeWidth={isActive ? 2.5 : 2}
-                                    className={`${isActive ? "fill-white/10" : "fill-transparent"}`}
+                                    className={`${isActive ? "fill-indigo-500/10 dark:fill-white/10" : "fill-transparent"}`}
                                 />
                             </motion.div>
 
                             {/* Label */}
                             <span
                                 className={`text-[10px] font-medium transition-colors duration-300 ${isActive
-                                    ? "text-white"
-                                    : "text-slate-500 group-hover:text-slate-400"
+                                    ? "text-indigo-600 dark:text-white"
+                                    : "text-slate-600 dark:text-slate-500 group-hover:text-slate-900 dark:group-hover:text-slate-400"
                                     }`}
                             >
                                 {item.label}
@@ -83,7 +83,7 @@ function BottomNavContent() {
 
 export function BottomNav() {
     return (
-        <Suspense fallback={<nav className="fixed bottom-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-t border-white/10 pb-[env(safe-area-inset-bottom)] pt-2 md:pb-6 touch-none overscroll-none select-none" />}>
+        <Suspense fallback={<nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border-t border-slate-200 dark:border-white/10 pb-[env(safe-area-inset-bottom)] pt-2 md:pb-6 touch-none overscroll-none select-none" />}>
             <BottomNavContent />
         </Suspense>
     );

@@ -107,7 +107,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
 
                                 <button
                                     onClick={() => setIsSearching(true)}
-                                    className="p-2.5 rounded-full hover:bg-slate-200/50 dark:hover:bg-white/5 text-slate-600 dark:text-slate-400 active:scale-90 transition-all"
+                                    className="p-2.5 rounded-full hover:bg-slate-200/50 dark:hover:bg-white/5 text-slate-700 dark:text-slate-400 active:scale-90 transition-all"
                                 >
                                     <Search size={24} />
                                 </button>
@@ -168,7 +168,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                     placeholder="Rechercher..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full bg-slate-200/40 dark:bg-white/[0.05] border border-transparent dark:border-white/5 rounded-2xl py-3 pl-11 pr-10 text-[15px] text-slate-900 dark:text-white placeholder:text-slate-500/80 outline-none transition-all duration-300 focus:bg-white dark:focus:bg-white/10"
+                                    className="w-full bg-slate-200/40 dark:bg-white/[0.05] border border-transparent dark:border-white/5 rounded-2xl py-3 pl-11 pr-10 text-[15px] text-slate-900 dark:text-white placeholder:text-slate-600/80 outline-none transition-all duration-300 focus:bg-white dark:focus:bg-white/10"
                                 />
                                 {searchQuery && (
                                     <button
@@ -184,7 +184,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                     setIsSearching(false);
                                     setSearchQuery("");
                                 }}
-                                className="text-[15px] font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 active:opacity-70 transition-all"
+                                className="text-[15px] font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 active:opacity-70 transition-all"
                             >
                                 Annuler
                             </button>
@@ -205,7 +205,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                 onClick={() => setActiveTab(tab.key)}
                                 className={`relative flex-1 flex items-center justify-center gap-2 py-2 rounded-[9px] text-[13px] font-medium transition-all duration-300 ${activeTab === tab.key
                                     ? 'text-slate-900 dark:text-white'
-                                    : 'text-slate-600 dark:text-slate-500 hover:text-slate-900 dark:hover:text-slate-300'
+                                    : 'text-slate-700 dark:text-slate-500 hover:text-slate-900 dark:hover:text-slate-300'
                                     }`}
                             >
                                 {activeTab === tab.key && (
@@ -217,7 +217,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                 )}
                                 <span className="relative z-10 flex items-center gap-2">
                                     <span>{tab.label}</span>
-                                    <span className={`text-[10px] font-bold opacity-60 ${activeTab === tab.key ? "text-slate-900 dark:text-white" : "text-slate-600 dark:text-slate-500"}`}>
+                                    <span className={`text-[10px] font-bold opacity-70 ${activeTab === tab.key ? "text-slate-900 dark:text-white" : "text-slate-700 dark:text-slate-500"}`}>
                                         {tab.count}
                                     </span>
                                 </span>
@@ -281,7 +281,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                 <div className="space-y-8">
                                     {favoriteGroups.length > 0 && (
                                         <div className="space-y-4">
-                                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 px-1">Collections</h3>
+                                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-600 px-1">Collections</h3>
                                             <CollectionSection
                                                 groups={favoriteGroups}
                                                 expandedId={expandedId}
@@ -298,7 +298,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                     )}
                                     {favoriteInvocations.length > 0 && (
                                         <div className="space-y-4">
-                                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-500 px-1">Invocations</h3>
+                                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-600 px-1">Invocations</h3>
                                             <FavoriteSection
                                                 invocations={favoriteInvocations}
                                                 onSessionStart={onSessionStart}
@@ -319,7 +319,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                         <Star size={24} className="text-slate-400" />
                                     </div>
                                     <p className="text-base font-bold text-slate-900 dark:text-white">Aucun favori</p>
-                                    <p className="text-xs text-slate-500 mt-2 max-w-[200px] mx-auto leading-relaxed">Touchez l'étoile sur une invocation ou une collection pour l'ajouter ici.</p>
+                                    <p className="text-xs text-slate-600 mt-2 max-w-[200px] mx-auto leading-relaxed">Touchez l'étoile sur une invocation ou une collection pour l'ajouter ici.</p>
                                 </div>
                             )}
                         </motion.div>
@@ -362,15 +362,15 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
                                         <BookOpen size={18} style={{ color: invocation.id.startsWith("inv-default-") ? beadColor : undefined }} />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <h4 className={`text-[15px] font-semibold leading-tight transition-colors ${isExpanded ? "text-slate-900 dark:text-white" : "text-slate-700 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white"}`}>
+                                        <h4 className={`text-[15px] font-semibold leading-tight transition-colors ${isExpanded ? "text-slate-900 dark:text-white" : "text-slate-800 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white"}`}>
                                             {invocation.name}
                                         </h4>
                                         {invocation.description && (
-                                            <p className="text-[13px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5 font-medium opacity-80">{invocation.description}</p>
+                                            <p className="text-[13px] text-slate-600 dark:text-slate-400 line-clamp-1 mt-0.5 font-medium opacity-90">{invocation.description}</p>
                                         )}
                                     </div>
                                     <div className="flex items-center gap-3">
-                                        <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider opacity-70 group-hover:opacity-100 transition-opacity">{invocation.repetitions} reps</span>
+                                        <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider opacity-80 group-hover:opacity-100 transition-opacity">{invocation.repetitions} reps</span>
                                         <ChevronDown size={16} className={`text-slate-500 transition-transform duration-300 ${isExpanded ? "rotate-180 text-white" : "group-hover:text-slate-300"}`} />
                                     </div>
                                 </div>
@@ -425,8 +425,8 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
                     <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center mx-auto mb-4 opacity-40">
                         <BookOpen size={24} className="text-slate-400" />
                     </div>
-                    <p className="text-sm font-bold text-slate-500 mb-1">Aucun résultat</p>
-                    <p className="text-xs text-slate-600">Essayez une autre recherche</p>
+                    <p className="text-sm font-bold text-slate-600 mb-1">Aucun résultat</p>
+                    <p className="text-xs text-slate-700">Essayez une autre recherche</p>
                 </div>
             )}
         </div>
@@ -440,8 +440,8 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                 <div className="w-20 h-20 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center mx-auto mb-5 opacity-40">
                     <Sparkles size={28} className="text-slate-400" />
                 </div>
-                <p className="text-sm font-bold text-slate-500 mb-2">Aucune collection</p>
-                <p className="text-xs text-slate-600">Créez votre première collection</p>
+                <p className="text-sm font-bold text-slate-600 mb-2">Aucune collection</p>
+                <p className="text-xs text-slate-700">Créez votre première collection</p>
             </div>
         );
     }
@@ -465,15 +465,15 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: beadColor, boxShadow: `0 0 12px ${beadColor}90` }} />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <h4 className={`text-[15px] font-semibold leading-tight transition-colors ${isExpanded ? "text-slate-900 dark:text-white" : "text-slate-700 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white"}`}>
+                                    <h4 className={`text-[15px] font-semibold leading-tight transition-colors ${isExpanded ? "text-slate-900 dark:text-white" : "text-slate-800 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white"}`}>
                                         {group.name}
                                     </h4>
                                     {group.description && (
-                                        <p className="text-[13px] text-slate-500 dark:text-slate-400 line-clamp-1 mt-0.5 font-medium opacity-80">{group.description}</p>
+                                        <p className="text-[13px] text-slate-600 dark:text-slate-400 line-clamp-1 mt-0.5 font-medium opacity-90">{group.description}</p>
                                     )}
                                 </div>
                                 <div className="flex items-center gap-3">
-                                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider opacity-70 group-hover:opacity-100 transition-opacity">{group.invocations.length} étapes</span>
+                                    <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wider opacity-80 group-hover:opacity-100 transition-opacity">{group.invocations.length} étapes</span>
                                     <ChevronDown size={16} className={`text-slate-500 transition-transform duration-300 ${isExpanded ? "rotate-180 text-white" : "group-hover:text-slate-300"}`} />
                                 </div>
                             </div>
@@ -529,7 +529,7 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                                                                 <span className="w-5 text-[10px] font-bold text-slate-500">{i + 1}</span>
                                                                 <span className="font-medium">{invData?.name || "Invocation"}</span>
                                                             </div>
-                                                            <div className="bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded text-[11px] font-mono text-slate-500 dark:text-slate-400">{inv.repetitions}</div>
+                                                            <div className="bg-slate-100 dark:bg-white/5 px-2 py-0.5 rounded text-[11px] font-mono text-slate-600 dark:text-slate-400">{inv.repetitions}</div>
                                                         </div>
                                                     );
                                                 })}

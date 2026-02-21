@@ -116,7 +116,7 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModa
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-md p-5"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 dark:bg-slate-950/70 backdrop-blur-md p-5"
                     onClick={handleClose}
                 >
                     <motion.div
@@ -124,7 +124,7 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModa
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.95, opacity: 0, y: 30 }}
                         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                        className="relative overflow-hidden bg-slate-900 border border-white/10 rounded-[2rem] p-6 sm:p-8 max-w-lg w-full shadow-2xl flex flex-col max-h-[85dvh]"
+                        className="relative overflow-hidden bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-[2rem] p-6 sm:p-8 max-w-lg w-full shadow-2xl flex flex-col max-h-[85dvh]"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Decoration */}
@@ -137,11 +137,11 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModa
                                     <Sparkles size={12} className="animate-pulse" />
                                     <span className="text-[9px] font-black uppercase tracking-[0.25em]">{isEditing ? "Édition" : "Création"}</span>
                                 </div>
-                                <h2 className="text-2xl font-black tracking-tight text-white leading-tight">Collection</h2>
+                                <h2 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">Collection</h2>
                             </div>
                             <button
                                 onClick={handleClose}
-                                className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+                                className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors"
                             >
                                 <X size={18} />
                             </button>
@@ -152,13 +152,13 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModa
                             <div className="flex-1 overflow-y-auto min-h-0 pr-1 -mr-1 scrollbar-hide space-y-6">
                                 {/* Name Input */}
                                 <div className="space-y-3 shrink-0">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Nom de la collection</label>
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 dark:text-slate-500 ml-1">Nom de la collection</label>
                                     <input
                                         type="text"
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
                                         placeholder="Ex: Rituel du Matin"
-                                        className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white text-base placeholder:text-slate-700 focus:outline-none focus:border-white/20 transition-all font-bold"
+                                        className="w-full px-4 py-3.5 bg-slate-100 dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white text-base placeholder:text-slate-400 dark:placeholder:text-slate-700 focus:outline-none focus:border-indigo-500/20 dark:focus:border-white/20 transition-all font-bold"
                                     />
                                     {errors.name && (
                                         <p className="text-[11px] font-bold text-rose-500 px-1">{errors.name}</p>
@@ -167,21 +167,21 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModa
 
                                 {/* Description Input */}
                                 <div className="space-y-3 shrink-0">
-                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Notes (Optionnel)</label>
+                                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 dark:text-slate-500 ml-1">Notes (Optionnel)</label>
                                     <textarea
                                         value={description}
                                         onChange={(e) => setDescription(e.target.value)}
                                         placeholder="Rappel ou intention pour cette collection..."
                                         rows={2}
-                                        className="w-full px-4 py-3.5 bg-white/[0.03] border border-white/10 rounded-xl text-white text-sm placeholder:text-slate-700 focus:outline-none focus:border-white/20 transition-all font-medium resize-none"
+                                        className="w-full px-4 py-3.5 bg-slate-100 dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 rounded-xl text-slate-900 dark:text-white text-sm placeholder:text-slate-400 dark:placeholder:text-slate-700 focus:outline-none focus:border-indigo-500/20 dark:focus:border-white/20 transition-all font-medium resize-none"
                                     />
                                 </div>
 
                                 {/* Sequence List */}
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between px-1">
-                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Séquence d'étapes</label>
-                                        <span className="text-[10px] font-bold text-slate-600 bg-white/5 px-3 py-1 rounded-full">{selectedInvocations.length} étape{selectedInvocations.length > 1 ? 's' : ''}</span>
+                                        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-600 dark:text-slate-500 ml-1">Séquence d'étapes</label>
+                                        <span className="text-[10px] font-bold text-slate-700 dark:text-slate-600 bg-slate-100 dark:bg-white/5 px-3 py-1 rounded-full">{selectedInvocations.length} étape{selectedInvocations.length > 1 ? 's' : ''}</span>
                                     </div>
 
                                     <div className="space-y-2.5">
@@ -197,11 +197,11 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModa
                                                         initial={{ opacity: 0, x: -20 }}
                                                         animate={{ opacity: 1, x: 0 }}
                                                         exit={{ opacity: 0, x: 20 }}
-                                                        className="flex items-center gap-3 p-3 bg-white/[0.03] border border-white/5 rounded-xl group transition-all"
+                                                        className="flex items-center gap-3 p-3 bg-slate-100 dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-xl group transition-all"
                                                     >
                                                         <GripVertical size={14} className="text-slate-700 shrink-0" />
                                                         <div className="flex-1 min-w-0">
-                                                            <p className="text-sm font-bold text-white truncate">{invocation.name}</p>
+                                                            <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{invocation.name}</p>
                                                         </div>
                                                         <div className="flex items-center gap-2">
                                                             <input
@@ -210,7 +210,7 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModa
                                                                 pattern="[0-9]*"
                                                                 value={sel.repetitions}
                                                                 onChange={(e) => handleUpdateRepetitions(index, parseInt(e.target.value.replace(/[^0-9]/g, "")) || 1)}
-                                                                className="w-12 h-9 bg-white/5 border border-white/5 rounded-lg text-white text-xs font-black text-center focus:outline-none focus:border-white/20"
+                                                                className="w-12 h-9 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/5 rounded-lg text-slate-900 dark:text-white text-xs font-black text-center focus:outline-none focus:border-indigo-500/20 dark:focus:border-white/20"
                                                             />
                                                             <button
                                                                 type="button"
@@ -226,7 +226,7 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModa
                                         </AnimatePresence>
                                         {selectedInvocations.length === 0 && (
                                             <div className="text-center py-8 border-2 border-dashed border-white/5 rounded-2xl">
-                                                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-700">Aucune étape</p>
+                                                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-700">Aucune étape</p>
                                                 <p className="text-[10px] text-slate-600 mt-1">Ajoutez une invocation ci-dessous</p>
                                             </div>
                                         )}
@@ -246,11 +246,11 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModa
                                                     e.target.value = "";
                                                 }
                                             }}
-                                            className="w-full appearance-none px-4 py-3.5 bg-white/[0.02] border-2 border-dashed border-white/10 rounded-xl text-slate-500 text-xs font-black focus:outline-none transition-all cursor-pointer hover:border-white/20 hover:text-slate-400"
+                                            className="w-full appearance-none px-4 py-3.5 bg-slate-50 dark:bg-white/[0.02] border-2 border-dashed border-slate-200 dark:border-white/10 rounded-xl text-slate-600 dark:text-slate-500 text-xs font-black focus:outline-none transition-all cursor-pointer hover:border-slate-300 dark:hover:border-white/20 hover:text-slate-900 dark:hover:text-slate-400"
                                         >
                                             <option value="">+ AJOUTER UNE ÉTAPE</option>
                                             {availableInvocations.map((inv) => (
-                                                <option key={inv.id} value={inv.id} className="bg-slate-900 text-white">
+                                                <option key={inv.id} value={inv.id} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
                                                     {inv.name}
                                                 </option>
                                             ))}
@@ -262,7 +262,7 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: CreateGroupModa
                                 ) : ( // Only show if we actually have invocations to add, otherwise showing "All added" is fine but maybe less sticky? 
                                     // User said "ajouter une etape doit toujours etre visible". If all added, we can show the "All added" message sticky.
                                     <div className="text-center py-3.5 border-2 border-dashed border-white/5 rounded-xl bg-white/[0.02]">
-                                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-700">Toutes les étapes ajoutées</p>
+                                        <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-slate-700">Toutes les étapes ajoutées</p>
                                     </div>
                                 )}
 

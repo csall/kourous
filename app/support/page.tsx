@@ -3,7 +3,7 @@ import { ArrowLeft, HelpCircle, Mail, MessageCircle, Smartphone, Volume2 } from 
 
 export default function SupportPage() {
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-300 font-sans selection:bg-cyan-500/30">
+        <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300 font-sans selection:bg-cyan-500/30">
             {/* Background Effects (Dark Mode Only) */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden opacity-0 dark:opacity-100 transition-opacity duration-500">
                 <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px]" />
@@ -24,7 +24,7 @@ export default function SupportPage() {
                     </div>
                     <div className="space-y-2">
                         <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Support & Aide</h2>
-                        <p className="text-lg text-slate-600 dark:text-slate-400 max-w-lg mx-auto leading-relaxed">
+                        <p className="text-lg text-slate-700 dark:text-slate-400 max-w-lg mx-auto leading-relaxed">
                             Nous sommes là pour vous aider à tirer le meilleur parti de Kourous.
                         </p>
                     </div>
@@ -36,7 +36,7 @@ export default function SupportPage() {
                 <section className="space-y-6">
                     <div className="text-center space-y-2">
                         <h3 className="text-2xl font-bold text-slate-900 dark:text-white">Nous contacter</h3>
-                        <p className="text-slate-600 dark:text-slate-400 text-sm">Une question, une suggestion ou un problème ?</p>
+                        <p className="text-slate-700 dark:text-slate-400 text-sm">Une question, une suggestion ou un problème ?</p>
                     </div>
 
                     <div className="bg-white dark:bg-gradient-to-b dark:from-white/[0.08] dark:to-white/[0.02] border border-slate-200 dark:border-white/10 rounded-2xl p-8 text-center max-w-sm mx-auto hover:shadow-lg dark:hover:border-white/20 transition-all group relative overflow-hidden">
@@ -46,7 +46,7 @@ export default function SupportPage() {
                                 <Mail size={20} className="text-slate-900 dark:text-white" />
                             </div>
                             <h4 className="font-bold text-slate-900 dark:text-white text-lg mb-2">Envoyer un email</h4>
-                            <p className="text-slate-600 dark:text-slate-400 text-sm mb-6 leading-relaxed">
+                            <p className="text-slate-700 dark:text-slate-400 text-sm mb-6 leading-relaxed">
                                 Je lis tous les messages et m'efforce de répondre le plus rapidement possible.
                             </p>
                             <a
