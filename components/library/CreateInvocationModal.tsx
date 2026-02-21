@@ -10,11 +10,12 @@ interface CreateInvocationModalProps {
     isOpen: boolean;
     onClose: () => void;
     editInvocation?: Invocation | null;
+    onSuccess?: () => void;
 }
 
 const quickRepetitions = [33, 99, 100];
 
-export function CreateInvocationModal({ isOpen, onClose, editInvocation }: Readonly<CreateInvocationModalProps>) {
+export function CreateInvocationModal({ isOpen, onClose, editInvocation, onSuccess }: Readonly<CreateInvocationModalProps>) {
     const { addInvocation, updateInvocation } = useInvocationStore();
     const beadColor = useSessionStore((s) => s.beadColor);
     const [name, setName] = useState("");
@@ -61,6 +62,7 @@ export function CreateInvocationModal({ isOpen, onClose, editInvocation }: Reado
                 name: name.trim(), repetitions: finalRepetitions,
                 description: description.trim() || undefined,
             });
+            onSuccess?.();
         }
         handleClose();
     };
@@ -164,9 +166,8 @@ export function CreateInvocationModal({ isOpen, onClose, editInvocation }: Reado
                                                     borderColor: beadColor + "50",
                                                     color: beadColor,
                                                 } : {}}
-                                                className={`h-11 rounded-xl border-2 font-black text-sm transition-all ${
-                                                    active ? "" : "bg-slate-100 dark:bg-white/[0.06] border-slate-200 dark:border-white/10 text-slate-500 dark:text-white/45"
-                                                }`}
+                                                className={`h-11 rounded-xl border-2 font-black text-sm transition-all ${active ? "" : "bg-slate-100 dark:bg-white/[0.06] border-slate-200 dark:border-white/10 text-slate-500 dark:text-white/45"
+                                                    }`}
                                             >
                                                 {qr}
                                             </button>

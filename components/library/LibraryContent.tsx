@@ -245,7 +245,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                     {[
                         { key: "collections" as const, label: "Collections", icon: <Sparkles size={13} />, count: groups.length },
                         { key: "invocations" as const, label: "Invocations", icon: <BookOpen size={13} />, count: invocations.length },
-                        { key: "favorites"   as const, label: "Favoris",     icon: <Star     size={13} />, count: favoriteInvocations.length + favoriteGroups.length },
+                        { key: "favorites" as const, label: "Favoris", icon: <Star size={13} />, count: favoriteInvocations.length + favoriteGroups.length },
                     ].map(tab => {
                         const isActive = activeTab === tab.key;
                         return (
@@ -397,8 +397,14 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                     setEditingInvocation(null);
                 }}
                 editInvocation={editingInvocation}
+                onSuccess={() => setActiveTab("invocations")}
             />
-            <CreateGroupModal isOpen={isCreateGroupModalOpen} onClose={handleCloseGroupModal} editGroup={editingGroup} />
+            <CreateGroupModal
+                isOpen={isCreateGroupModalOpen}
+                onClose={handleCloseGroupModal}
+                editGroup={editingGroup}
+                onSuccess={() => setActiveTab("collections")}
+            />
         </div >
     );
 }
@@ -417,11 +423,10 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
                         <motion.div
                             key={invocation.id}
                             layout
-                            className={`overflow-hidden rounded-3xl border transition-all duration-300 ${
-                                isExpanded
-                                    ? "bg-white dark:bg-white/[0.07] border-slate-200 dark:border-white/12 shadow-md dark:shadow-none"
-                                    : "bg-white dark:bg-white/[0.04] border-slate-200/80 dark:border-white/[0.06] active:scale-[0.99]"
-                            }`}
+                            className={`overflow-hidden rounded-3xl border transition-all duration-300 ${isExpanded
+                                ? "bg-white dark:bg-white/[0.07] border-slate-200 dark:border-white/12 shadow-md dark:shadow-none"
+                                : "bg-white dark:bg-white/[0.04] border-slate-200/80 dark:border-white/[0.06] active:scale-[0.99]"
+                                }`}
                         >
                             {/* ── Header row ── */}
                             <button
@@ -430,13 +435,9 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
                             >
                                 {/* Icon */}
                                 <div
-                                    className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 border transition-colors ${isDefault ? "" : "bg-slate-100 dark:bg-white/5 border-slate-200 dark:border-white/10"}`}
-                                    style={isDefault ? {
-                                        backgroundColor: beadColor + "18",
-                                        borderColor: beadColor + "35",
-                                    } : {}}
+                                    className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 transition-colors"
                                 >
-                                    <BookOpen size={17} style={{ color: isDefault ? beadColor : undefined }} className={isDefault ? "" : "text-slate-400 dark:text-slate-500"} />
+                                    <BookOpen size={17} style={{ color: beadColor }} />
                                 </div>
 
                                 {/* Text */}
@@ -552,11 +553,10 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                     <motion.div
                         key={group.id}
                         layout
-                        className={`overflow-hidden rounded-3xl border transition-all duration-300 ${
-                            isExpanded
-                                ? "bg-white dark:bg-white/[0.07] border-slate-200 dark:border-white/12 shadow-md dark:shadow-none"
-                                : "bg-white dark:bg-white/[0.04] border-slate-200/80 dark:border-white/[0.06] active:scale-[0.99]"
-                        }`}
+                        className={`overflow-hidden rounded-3xl border transition-all duration-300 ${isExpanded
+                            ? "bg-white dark:bg-white/[0.07] border-slate-200 dark:border-white/12 shadow-md dark:shadow-none"
+                            : "bg-white dark:bg-white/[0.04] border-slate-200/80 dark:border-white/[0.06] active:scale-[0.99]"
+                            }`}
                     >
                         {/* ── Header row ── */}
                         <button
@@ -565,11 +565,7 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                         >
                             {/* Bead icon */}
                             <div
-                                className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 border"
-                                style={{
-                                    backgroundColor: beadColor + "18",
-                                    borderColor: beadColor + "35",
-                                }}
+                                className="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10"
                             >
                                 <div
                                     className="w-2.5 h-2.5 rounded-full"

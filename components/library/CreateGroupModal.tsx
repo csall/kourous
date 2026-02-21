@@ -10,9 +10,10 @@ interface CreateGroupModalProps {
     isOpen: boolean;
     onClose: () => void;
     editGroup?: InvocationGroup | null;
+    onSuccess?: () => void;
 }
 
-export function CreateGroupModal({ isOpen, onClose, editGroup }: Readonly<CreateGroupModalProps>) {
+export function CreateGroupModal({ isOpen, onClose, editGroup, onSuccess }: Readonly<CreateGroupModalProps>) {
     const { addGroup, updateGroup, invocations, getInvocationById } = useInvocationStore();
     const beadColor = useSessionStore((s) => s.beadColor);
     const [name, setName] = useState("");
@@ -76,6 +77,7 @@ export function CreateGroupModal({ isOpen, onClose, editGroup }: Readonly<Create
                 name: name.trim(), description: description.trim() || undefined,
                 invocations: selectedInvocations,
             });
+            onSuccess?.();
         }
         handleClose();
     };
