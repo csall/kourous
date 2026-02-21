@@ -241,49 +241,43 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                 </AnimatePresence>
 
                 {/* ── TABS ─────────────────────────── */}
-                <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-1 px-1">
+                <div className="flex gap-2">
                     {[
-                        { key: "collections" as const,  label: "Collections",  icon: <Sparkles size={14} />, count: groups.length },
-                        { key: "invocations" as const,  label: "Invocations",  icon: <BookOpen size={14} />, count: invocations.length },
-                        { key: "favorites"   as const,  label: "Favoris",      icon: <Star     size={14} />, count: favoriteInvocations.length + favoriteGroups.length },
+                        { key: "collections" as const, label: "Collections", icon: <Sparkles size={13} />, count: groups.length },
+                        { key: "invocations" as const, label: "Invocations", icon: <BookOpen size={13} />, count: invocations.length },
+                        { key: "favorites"   as const, label: "Favoris",     icon: <Star     size={13} />, count: favoriteInvocations.length + favoriteGroups.length },
                     ].map(tab => {
                         const isActive = activeTab === tab.key;
                         return (
                             <motion.button
                                 key={tab.key}
                                 onClick={() => setActiveTab(tab.key)}
-                                whileTap={{ scale: 0.94 }}
-                                className="relative flex items-center gap-2 px-4 py-2 rounded-full text-[13px] font-semibold whitespace-nowrap border transition-all duration-300 shrink-0"
+                                whileTap={{ scale: 0.95 }}
+                                className="relative flex-1 flex flex-col items-center gap-1.5 py-2.5 px-1 rounded-2xl border transition-all duration-300"
                                 style={isActive ? {
-                                    backgroundColor: beadColor + "22",
-                                    borderColor: beadColor + "55",
+                                    backgroundColor: beadColor + "18",
+                                    borderColor: beadColor + "45",
                                     color: beadColor,
                                 } : {
                                     backgroundColor: "transparent",
-                                    borderColor: "transparent",
+                                    borderColor: "rgba(148,163,184,0.18)",
                                     color: undefined,
                                 }}
-
                             >
-                                {/* Inactive ghost border */}
-                                {!isActive && (
-                                    <span className="absolute inset-0 rounded-full border border-slate-200 dark:border-white/10" />
-                                )}
-
-                                <span className={isActive ? "" : "text-slate-500 dark:text-slate-500"}>
+                                <span className={isActive ? "" : "text-slate-400 dark:text-slate-500"}>
                                     {tab.icon}
                                 </span>
-                                <span className={isActive ? "" : "text-slate-700 dark:text-slate-400"}>
+                                <span className={`text-[11px] font-bold leading-none ${isActive ? "" : "text-slate-600 dark:text-slate-400"}`}>
                                     {tab.label}
                                 </span>
                                 {tab.count > 0 && (
                                     <span
-                                        className="text-[10px] font-black px-1.5 py-0.5 rounded-full leading-none"
+                                        className="text-[9px] font-black px-1.5 py-0.5 rounded-full leading-none"
                                         style={isActive ? {
-                                            backgroundColor: beadColor + "33",
+                                            backgroundColor: beadColor + "30",
                                             color: beadColor,
                                         } : {
-                                            backgroundColor: "rgba(100,116,139,0.15)",
+                                            backgroundColor: "rgba(100,116,139,0.12)",
                                             color: "rgb(100,116,139)",
                                         }}
                                     >
