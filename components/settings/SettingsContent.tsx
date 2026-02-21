@@ -12,6 +12,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useSessionStore } from "@/lib/store/sessionStore";
 
 import { useSearchParams } from "next/navigation";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 
 type SettingsView = 'menu' | 'preferences';
 
@@ -21,41 +22,47 @@ function SettingsInner() {
     const searchParams = useSearchParams();
     const paramView = searchParams.get('view') === 'preferences' ? 'preferences' : 'menu';
     const [view, setView] = useState<SettingsView>(paramView);
-    const { soundEnabled, hapticsEnabled, toggleSound, toggleHaptics, beadColor, setBeadColor, theme, setTheme } = useSessionStore();
+    const { t, language, resolve } = useTranslation();
+    const { soundEnabled, hapticsEnabled, toggleSound, toggleHaptics, beadColor, setBeadColor, theme, setTheme, setLanguage } = useSessionStore();
 
     useEffect(() => {
         setView(paramView);
     }, [paramView]);
 
     const colors = [
-        { name: "Rose", value: "#fb7185" },
-        { name: "Émeraude", value: "#10b981" },
-        { name: "Saphir", value: "#3b82f6" },
-        { name: "Or", value: "#fbbf24" },
-        { name: "Ardoise", value: "#94a3b8" },
-        { name: "Améthyste", value: "#a855f7" }
+        { name: t.settings.theme.auto, value: "#fb7185" },
+        { name: language === 'fr' ? "Émeraude" : "Emerald", value: "#10b981" },
+        { name: language === 'fr' ? "Saphir" : "Sapphire", value: "#3b82f6" },
+        { name: language === 'fr' ? "Or" : "Gold", value: "#fbbf24" },
+        { name: language === 'fr' ? "Ardoise" : "Slate", value: "#94a3b8" },
+        { name: language === 'fr' ? "Améthyste" : "Amethyst", value: "#a855f7" }
+    ];
+
+    const languages = [
+        { key: 'fr' as const, label: t.settings.languages.fr },
+        { key: 'en' as const, label: t.settings.languages.en },
     ];
 
     const themes = [
-        { key: 'dark' as const, label: 'Sombre', icon: <Moon size={14} /> },
-        { key: 'light' as const, label: 'Clair', icon: <Sun size={14} /> },
-        { key: 'auto' as const, label: 'Auto', icon: <Smartphone size={14} /> },
+        { key: 'dark' as const, label: t.settings.theme.dark, icon: <Moon size={14} /> },
+        { key: 'light' as const, label: t.settings.theme.light, icon: <Sun size={14} /> },
+        { key: 'auto' as const, label: t.settings.theme.auto, icon: <Smartphone size={14} /> },
     ];
 
     const menuGroups = [
         {
-            title: "Support",
+            title: t.settings.support,
             items: [
                 {
                     icon: HelpCircle,
-                    label: "Aide",
+                    label: t.settings.support,
                     href: "/support",
                     external: false,
                     color: "bg-blue-500"
                 },
                 {
                     icon: Mail,
-                    label: "Contactez-nous",
+                    label: t.settings.contact,
                     href: "mailto:cheikh.sall@icloud.com",
                     external: true,
                     color: "bg-sky-500"
@@ -63,18 +70,18 @@ function SettingsInner() {
             ]
         },
         {
-            title: "Informations Légales",
+            title: t.settings.about,
             items: [
                 {
                     icon: Shield,
-                    label: "Politique de confidentialité",
+                    label: t.settings.privacy,
                     href: "/privacy",
                     external: false,
                     color: "bg-gray-500"
                 },
                 {
                     icon: FileText,
-                    label: "Conditions Générales d'Utilisation",
+                    label: t.settings.terms,
                     href: "/terms",
                     external: false,
                     color: "bg-slate-500"
@@ -92,25 +99,25 @@ function SettingsInner() {
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
-                        className="flex flex-col h-full pt-[calc(env(safe-area-inset-top)+2rem)] px-5"
+                        className="flex flex-col h-full pt-[calc(env(safe-area-inset-top,20px)+0.5rem)] px-5 touch-none"
                     >
                         {/* ── FIXED HEADER ─────────────────────────── */}
-                        <div className="flex-none space-y-6 pb-6 z-10 px-1">
+                        <div className="flex-none space-y-4 pb-4 z-10 px-1">
                             <div className="space-y-1">
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-lg bg-slate-200 dark:bg-white/5 border border-slate-300 dark:border-white/10 flex items-center justify-center">
                                         <MoreHorizontal size={16} style={{ color: beadColor }} />
                                     </div>
-                                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Autre</h2>
+                                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{t.settings.title}</h2>
                                 </div>
-                                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium pl-11">Paramètres avancés et informations</p>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium pl-11">{t.settings.info}</p>
                             </div>
                         </div>
 
-                        {/* ── SCROLLABLE CONTENT ─────────────────────── */}
-                        <div className="flex-1 overflow-y-auto no-scrollbar w-full px-1 pt-4 pb-32 touch-pan-y">
+                        {/* ── FIXED CONTENT (NO SCROLL) ─────────────────────── */}
+                        <div className="flex-1 overflow-hidden w-full px-1 pt-2 pb-32">
                             <div className="space-y-6">
-                                {menuGroups.map((group, groupIndex) => (
+                                {menuGroups.map((group) => (
                                     <div key={group.title}>
                                         <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2 pl-4">
                                             {group.title}
@@ -160,9 +167,9 @@ function SettingsInner() {
                                     <div className="w-8 h-8 rounded-lg bg-slate-200 dark:bg-white/5 border border-slate-300 dark:border-white/10 flex items-center justify-center">
                                         <Settings size={16} style={{ color: beadColor }} />
                                     </div>
-                                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Préférences</h2>
+                                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{t.settings.preferences}</h2>
                                 </div>
-                                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium pl-11">Personnalisez votre expérience</p>
+                                <p className="text-sm text-slate-500 dark:text-slate-400 font-medium pl-11">{t.settings.language} & {t.settings.appearance}</p>
                             </div>
                         </div>
 
@@ -179,8 +186,8 @@ function SettingsInner() {
                                                 <VolumeX size={20} className="text-slate-400" />
                                             )}
                                             <div>
-                                                <div className="text-sm font-medium text-slate-900 dark:text-white">Son</div>
-                                                <div className="text-xs text-slate-500 dark:text-slate-400">Feedback audio</div>
+                                                <div className="text-sm font-medium text-slate-900 dark:text-white">{t.session.sound}</div>
+                                                <div className="text-xs text-slate-500 dark:text-slate-400">{t.session.sound}</div>
                                             </div>
                                         </div>
 
@@ -201,8 +208,8 @@ function SettingsInner() {
                                         <div className="flex items-center gap-3">
                                             <Vibrate size={20} style={{ color: hapticsEnabled ? beadColor : '#94a3b8' }} />
                                             <div>
-                                                <div className="text-sm font-medium text-slate-900 dark:text-white">Vibrations</div>
-                                                <div className="text-xs text-slate-500 dark:text-slate-400">Retour haptique</div>
+                                                <div className="text-sm font-medium text-slate-900 dark:text-white">{t.session.haptics}</div>
+                                                <div className="text-xs text-slate-500 dark:text-slate-400">{t.session.haptics}</div>
                                             </div>
                                         </div>
 
@@ -217,14 +224,42 @@ function SettingsInner() {
                                     </div>
                                 </div>
 
+                                {/* Language Selector */}
+                                <div className="bg-white dark:bg-white/[0.04] backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-2xl p-5 shadow-sm dark:shadow-none">
+                                    <div className="space-y-3">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-5 h-5 flex items-center justify-center text-xs font-bold leading-none" style={{ color: beadColor }}>{language.toUpperCase()}</div>
+                                            <div>
+                                                <div className="text-sm font-medium text-slate-900 dark:text-white">{t.settings.language}</div>
+                                                <div className="text-xs text-slate-500 dark:text-slate-400">{t.settings.language}</div>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex gap-1 p-1 bg-slate-100 dark:bg-white/[0.04] rounded-xl">
+                                            {languages.map((l) => (
+                                                <button
+                                                    key={l.key}
+                                                    onClick={() => setLanguage(l.key)}
+                                                    className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold transition-all ${language === l.key
+                                                        ? 'bg-white dark:bg-white/10 text-slate-900 dark:text-white shadow-sm'
+                                                        : 'text-slate-500'
+                                                        }`}
+                                                >
+                                                    {l.label}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+
                                 {/* Theme Selector */}
                                 <div className="bg-white dark:bg-white/[0.04] backdrop-blur-xl border border-slate-200 dark:border-white/5 rounded-2xl p-5 shadow-sm dark:shadow-none">
                                     <div className="space-y-3">
                                         <div className="flex items-center gap-3">
                                             <Moon size={20} style={{ color: beadColor }} />
                                             <div>
-                                                <div className="text-sm font-medium text-slate-900 dark:text-white">Thème</div>
-                                                <div className="text-xs text-slate-500 dark:text-slate-400">Apparence de l&apos;application</div>
+                                                <div className="text-sm font-medium text-slate-900 dark:text-white">{t.settings.appearance}</div>
+                                                <div className="text-xs text-slate-500 dark:text-slate-400">{t.settings.theme.auto}</div>
                                             </div>
                                         </div>
 
@@ -252,8 +287,8 @@ function SettingsInner() {
                                         <div className="flex items-center gap-3">
                                             <Palette size={20} style={{ color: beadColor }} />
                                             <div>
-                                                <div className="text-sm font-medium text-slate-900 dark:text-white">Couleur des perles</div>
-                                                <div className="text-xs text-slate-500 dark:text-slate-400">Personnalisez votre expérience</div>
+                                                <div className="text-sm font-medium text-slate-900 dark:text-white">{t.settings.beadColor}</div>
+                                                <div className="text-xs text-slate-500 dark:text-slate-400">{t.settings.preferences}</div>
                                             </div>
                                         </div>
 
@@ -280,9 +315,10 @@ function SettingsInner() {
                             </div>
                         </div>
                     </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
+                )
+                }
+            </AnimatePresence >
+        </div >
     );
 }
 

@@ -6,20 +6,24 @@ import { motion } from "framer-motion";
 import { LayoutDashboard, Sparkles, BookOpen, Settings, MoreHorizontal } from "lucide-react";
 import { useSessionStore } from "@/lib/store/sessionStore";
 
-const navItems = [
-    { href: "/", label: "Accueil", icon: LayoutDashboard },
-    { href: "/session", label: "Session", icon: Sparkles },
-    { href: "/library", label: "Bibliothèque", icon: BookOpen },
-    { href: "/settings?view=preferences", label: "Préférences", icon: Settings },
-    { href: "/settings", label: "Autre", icon: MoreHorizontal },
+const navItems = (t: any) => [
+    { href: "/", label: t.nav.home, icon: LayoutDashboard },
+    { href: "/session", label: t.nav.session, icon: Sparkles },
+    { href: "/library", label: t.nav.library, icon: BookOpen },
+    { href: "/settings?view=preferences", label: t.nav.preferences, icon: Settings },
+    { href: "/settings", label: t.nav.more, icon: MoreHorizontal },
 ];
 
 import { Suspense } from "react";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 
 function BottomNavContent() {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const { hapticsEnabled } = useSessionStore();
+    const { t } = useTranslation();
+
+    const items = navItems(t);
 
     const handleHaptic = () => {
         if (hapticsEnabled && typeof navigator !== 'undefined' && navigator.vibrate) {
@@ -30,7 +34,7 @@ function BottomNavContent() {
     return (
         <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white/75 dark:bg-slate-950/80 backdrop-blur-2xl border-t border-slate-200/50 dark:border-white/5 pb-[env(safe-area-inset-bottom,20px)] pt-3 touch-none overscroll-none select-none">
             <div className="max-w-md mx-auto flex items-center justify-around px-4">
-                {navItems.map((item) => {
+                {items.map((item) => {
                     const Icon = item.icon;
                     // Check if current path matches item.href base path
                     // Special handling for preferences to distinguish from /settings

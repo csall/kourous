@@ -12,6 +12,7 @@ import { FullscreenModal } from "@/components/ui/FullscreenModal";
 import { LibraryContent } from "@/components/library/LibraryContent";
 import { SettingsContent } from "@/components/settings/SettingsContent";
 import { CompletionView } from "@/components/session/CompletionView";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 import confetti from "canvas-confetti";
 import { hapticLight, hapticMedium, hapticSuccess, hapticHeavy, hapticCelebration } from "@/lib/utils/haptics";
 
@@ -50,13 +51,14 @@ const SessionHeader = memo(({
   const updateFreeSession = useSessionStore(state => state.updateFreeSession);
   const currentCycle = useSessionStore(state => state.currentCycle);
   const progress = useSessionProgress();
+  const { t, resolve } = useTranslation();
 
   const [editName, setEditName] = useState("");
   const [editTarget, setEditTarget] = useState<number | string>(33);
 
   useEffect(() => {
     if (preset) {
-      setEditName(preset.name);
+      setEditName(resolve(preset.name));
       setEditTarget(preset.sequence[0].repetitions);
     }
   }, [preset]);
@@ -138,7 +140,7 @@ const SessionHeader = memo(({
                       onClick={stopAllBubbles}
                     >
                       <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-emerald-400 mb-1">
-                        MODIFICATION
+                        {t.session.modification}
                       </span>
 
                       {/* Name Input - Minimal */}
@@ -147,7 +149,7 @@ const SessionHeader = memo(({
                         value={editName}
                         onChange={(e) => setEditName(e.target.value)}
                         className="w-full bg-transparent border-b border-white/10 py-1 text-center text-[10px] font-bold tracking-[0.2em] uppercase text-white/60 focus:outline-none focus:border-white/40 focus:text-white transition-colors mb-1"
-                        placeholder="TITRE"
+                        placeholder={t.session.title}
                       />
 
                       {/* Inline Target Edit */}
@@ -184,7 +186,7 @@ const SessionHeader = memo(({
                             : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 hover:bg-emerald-500 hover:text-white'
                             }`}
                         >
-                          VALIDER
+                          {t.common.validate}
                         </button>
                       </div>
 
@@ -212,12 +214,12 @@ const SessionHeader = memo(({
                       className="group flex flex-col items-center gap-1"
                     >
                       <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/60 group-hover:text-white transition-colors mb-2">
-                        BOUCLE {currentCycle || 1}
+                        {t.session.loop} {currentCycle || 1}
                       </span>
 
                       <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 group-hover:bg-white/10 transition-all">
                         <span className="text-xs font-medium text-white/80">
-                          Objectif : {progress?.cycleTotal}
+                          {t.session.goal} : {progress?.cycleTotal}
                         </span>
                         <Pencil size={10} className="text-white/40 group-hover:text-white/80" />
                       </div>
@@ -228,7 +230,7 @@ const SessionHeader = memo(({
                 <>
                   {preset && preset.sequence.length > 1 && (
                     <span className="text-[9px] font-bold tracking-[0.25em] uppercase text-white/40 mb-1">
-                      {preset.name}
+                      {resolve(preset.name)}
                     </span>
                   )}
 
@@ -236,7 +238,7 @@ const SessionHeader = memo(({
                     className="text-[11px] font-black tracking-[0.2em] uppercase opacity-80 leading-snug text-center max-w-[85%] mx-auto mb-6 break-words"
                     style={{ color: beadColor }}
                   >
-                    {progress?.cycleTotal} <span className="opacity-50 mx-1">×</span> {progress?.label}
+                    {progress?.cycleTotal} <span className="opacity-50 mx-1">×</span> {resolve(progress?.label)}
                   </h1>
                 </>
               )}
@@ -352,6 +354,7 @@ function SessionContent() {
   const [isMounted, setIsMounted] = useState(false);
   const [_hydrated, _setHydrated] = useState(false);
   const hasHydrated = useSessionStore(state => state._hasHydrated);
+  const { t, resolve } = useTranslation();
 
   useEffect(() => {
     setIsMounted(true);
@@ -487,11 +490,11 @@ function SessionContent() {
         </div>
       </div>
 
-      <FullscreenModal isOpen={isLibraryOpen} onClose={closeLibrary} title="Bibliothèque">
+      <FullscreenModal isOpen={isLibraryOpen} onClose={closeLibrary} title={t.library.title}>
         <LibraryContent onSessionStart={closeLibrary} />
       </FullscreenModal>
 
-      <FullscreenModal isOpen={isSettingsOpen} onClose={closeSettings} title="Réglages">
+      <FullscreenModal isOpen={isSettingsOpen} onClose={closeSettings} title={t.settings.title}>
         <SettingsContent />
       </FullscreenModal>
 
@@ -515,7 +518,7 @@ function SessionContent() {
                 handleReset();
                 openLibrary();
               }}
-              presetName={preset?.name || "Session"}
+              presetName={resolve(preset?.name) || "Session"}
               beadColor={beadColor}
             />
           </motion.div>

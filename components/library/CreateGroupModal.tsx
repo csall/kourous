@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Trash2, GripVertical, Sparkles, Plus, Check } from "lucide-react";
 import { useInvocationStore, type InvocationGroup } from "@/lib/store/invocationStore";
 import { useSessionStore } from "@/lib/store/sessionStore";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 
 interface CreateGroupModalProps {
     isOpen: boolean;
@@ -16,13 +17,17 @@ interface CreateGroupModalProps {
 export function CreateGroupModal({ isOpen, onClose, editGroup, onSuccess }: Readonly<CreateGroupModalProps>) {
     const { addGroup, updateGroup, invocations, getInvocationById } = useInvocationStore();
     const beadColor = useSessionStore((s) => s.beadColor);
-    const [name, setName] = useState("");
-    const [description, setDescription] = useState("");
+    const [nameFr, setNameFr] = useState("");
+    const [nameEn, setNameEn] = useState("");
+    const [showEnglish, setShowEnglish] = useState(false);
+    const [descriptionFr, setDescriptionFr] = useState("");
+    const [descriptionEn, setDescriptionEn] = useState("");
     const [selectedInvocations, setSelectedInvocations] = useState<Array<{
         invocationId: string;
         repetitions: number;
     }>>([]);
-    const [errors, setErrors] = useState<{ name?: string; invocations?: string }>({});
+    const [errors, setErrors] = useState<{ nameFr?: string; invocations?: string }>({});
+    const { t, resolve } = useTranslation();
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     // Auto-scroll au bas de la liste quand on ajoute une étape
@@ -37,11 +42,17 @@ export function CreateGroupModal({ isOpen, onClose, editGroup, onSuccess }: Read
 
     useEffect(() => {
         if (editGroup) {
-            setName(editGroup.name);
-            setDescription(editGroup.description || "");
+            const n = editGroup.name;
+            const d = editGroup.description;
+            setNameFr(typeof n === 'string' ? n : n.fr);
+            setNameEn(typeof n === 'string' ? "" : n.en);
+            setDescriptionFr(typeof d === 'string' ? (d || "") : (d?.fr || ""));
+            setDescriptionEn(typeof d === 'string' ? "" : (d?.en || ""));
+            setShowEnglish(typeof n !== 'string' || !!(typeof d !== 'string' && d?.en));
             setSelectedInvocations([...editGroup.invocations]);
         } else {
-            setName(""); setDescription(""); setSelectedInvocations([]);
+            setNameFr(""); setNameEn(""); setShowEnglish(false);
+            setDescriptionFr(""); setDescriptionEn(""); setSelectedInvocations([]);
         }
         setErrors({});
     }, [editGroup, isOpen]);
@@ -62,19 +73,22 @@ export function CreateGroupModal({ isOpen, onClose, editGroup, onSuccess }: Read
 
     const handleSubmit = (e: React.SyntheticEvent) => {
         e.preventDefault();
-        const newErrors: { name?: string; invocations?: string } = {};
-        if (!name.trim()) newErrors.name = "Donnez un nom à votre collection";
+        const newErrors: { nameFr?: string; invocations?: string } = {};
+        if (!nameFr.trim()) newErrors.nameFr = "Donnez un nom à votre collection";
         if (selectedInvocations.length === 0) newErrors.invocations = "Ajoutez au moins une étape";
         if (Object.keys(newErrors).length > 0) { setErrors(newErrors); return; }
 
+        const nameData = nameEn.trim() ? { fr: nameFr.trim(), en: nameEn.trim() } : nameFr.trim();
+        const descData = descriptionEn.trim() ? { fr: descriptionFr.trim(), en: descriptionEn.trim() } : (descriptionFr.trim() || undefined);
+
         if (editGroup) {
             updateGroup(editGroup.id, {
-                name: name.trim(), description: description.trim() || undefined,
+                name: nameData, description: descData,
                 invocations: selectedInvocations,
             });
         } else {
             addGroup({
-                name: name.trim(), description: description.trim() || undefined,
+                name: nameData, description: descData,
                 invocations: selectedInvocations,
             });
             onSuccess?.();
@@ -83,7 +97,9 @@ export function CreateGroupModal({ isOpen, onClose, editGroup, onSuccess }: Read
     };
 
     const handleClose = () => {
-        setName(""); setDescription(""); setSelectedInvocations([]); setErrors({}); onClose();
+        setNameFr(""); setNameEn(""); setShowEnglish(false);
+        setDescriptionFr(""); setDescriptionEn("");
+        setSelectedInvocations([]); setErrors({}); onClose();
     };
 
     const availableInvocations = invocations.filter(
@@ -141,33 +157,88 @@ export function CreateGroupModal({ isOpen, onClose, editGroup, onSuccess }: Read
                         <div className="px-5 flex flex-col gap-4 shrink-0">
                             {/* Nom */}
                             <div className="space-y-1.5">
-                                <label htmlFor="group-name" className="text-[9px] font-black uppercase tracking-[0.22em] text-slate-500 dark:text-white/35">
-                                    Nom de la collection
-                                </label>
+                                <div className="flex items-center justify-between">
+                                    <label htmlFor="group-name" className="text-[9px] font-black uppercase tracking-[0.22em] text-slate-500 dark:text-white/35">
+                                        Nom (Français)
+                                    </label>
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowEnglish(!showEnglish)}
+                                        className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full transition-colors ${showEnglish ? 'bg-indigo-500 text-white' : 'bg-slate-100 dark:bg-white/10 text-slate-500'}`}
+                                    >
+                                        + Anglais
+                                    </button>
+                                </div>
                                 <input
                                     id="group-name"
                                     type="text"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
+                                    value={nameFr}
+                                    onChange={(e) => setNameFr(e.target.value)}
                                     placeholder="Ex: Rituel du Matin"
                                     className="w-full px-4 py-3 bg-slate-100 dark:bg-white/[0.07] border border-slate-200 dark:border-white/10 rounded-2xl text-slate-900 dark:text-white text-[15px] placeholder:text-slate-400 dark:placeholder:text-white/20 focus:outline-none focus:border-slate-400 dark:focus:border-white/25 font-semibold"
                                 />
-                                {errors.name && <p className="text-[11px] font-bold text-rose-400 px-1">{errors.name}</p>}
+                                {errors.nameFr && <p className="text-[11px] font-bold text-rose-400 px-1">{errors.nameFr}</p>}
+
+                                <AnimatePresence>
+                                    {showEnglish && (
+                                        <motion.div
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: "auto", opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            className="overflow-hidden space-y-1.5 pt-1"
+                                        >
+                                            <label htmlFor="group-name-en" className="text-[9px] font-black uppercase tracking-[0.22em] text-slate-500 dark:text-white/35 pl-1">
+                                                Name (English)
+                                            </label>
+                                            <input
+                                                id="group-name-en"
+                                                type="text"
+                                                value={nameEn}
+                                                onChange={(e) => setNameEn(e.target.value)}
+                                                placeholder="Ex: Morning Ritual"
+                                                className="w-full px-4 py-3 bg-slate-100 dark:bg-white/[0.07] border border-slate-200 dark:border-white/10 rounded-2xl text-slate-900 dark:text-white text-[15px] placeholder:text-slate-400 dark:placeholder:text-white/20 focus:outline-none focus:border-slate-400 dark:focus:border-white/25 font-semibold"
+                                            />
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </div>
 
                             {/* Notes */}
                             <div className="space-y-1.5">
                                 <label htmlFor="group-description" className="text-[9px] font-black uppercase tracking-[0.22em] text-slate-500 dark:text-white/35">
-                                    Notes (Optionnel)
+                                    Notes (Français)
                                 </label>
                                 <textarea
                                     id="group-description"
-                                    value={description}
-                                    onChange={(e) => setDescription(e.target.value)}
+                                    value={descriptionFr}
+                                    onChange={(e) => setDescriptionFr(e.target.value)}
                                     placeholder="Rappel ou intention pour cette collection..."
                                     rows={1}
                                     className="w-full px-4 py-3 bg-slate-100 dark:bg-white/[0.07] border border-slate-200 dark:border-white/10 rounded-2xl text-slate-900 dark:text-white text-sm placeholder:text-slate-400 dark:placeholder:text-white/20 focus:outline-none focus:border-slate-400 dark:focus:border-white/25 font-medium resize-none"
                                 />
+
+                                <AnimatePresence>
+                                    {showEnglish && (
+                                        <motion.div
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: "auto", opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            className="overflow-hidden space-y-1.5 pt-1"
+                                        >
+                                            <label htmlFor="group-description-en" className="text-[9px] font-black uppercase tracking-[0.22em] text-slate-500 dark:text-white/35 pl-1">
+                                                Notes (English)
+                                            </label>
+                                            <textarea
+                                                id="group-description-en"
+                                                value={descriptionEn}
+                                                onChange={(e) => setDescriptionEn(e.target.value)}
+                                                placeholder="Reminder or intention..."
+                                                rows={1}
+                                                className="w-full px-4 py-3 bg-slate-100 dark:bg-white/[0.07] border border-slate-200 dark:border-white/10 rounded-2xl text-slate-900 dark:text-white text-sm placeholder:text-slate-400 dark:placeholder:text-white/20 focus:outline-none focus:border-slate-400 dark:focus:border-white/25 font-medium resize-none"
+                                            />
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </div>
 
                             {/* Header étapes */}
@@ -205,7 +276,7 @@ export function CreateGroupModal({ isOpen, onClose, editGroup, onSuccess }: Read
                                             >
                                                 <GripVertical size={13} className="text-white/20 shrink-0" />
                                                 <div className="flex-1 min-w-0">
-                                                    <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{inv.name}</p>
+                                                    <p className="text-sm font-bold text-slate-900 dark:text-white truncate">{resolve(inv.name)}</p>
                                                 </div>
                                                 <div className="flex items-center gap-1.5">
                                                     <input
@@ -251,7 +322,7 @@ export function CreateGroupModal({ isOpen, onClose, editGroup, onSuccess }: Read
                                         <option value="">+ AJOUTER UNE ÉTAPE</option>
                                         {availableInvocations.map((inv) => (
                                             <option key={inv.id} value={inv.id} className="bg-white dark:bg-[#1c1c1e] text-slate-900 dark:text-white">
-                                                {inv.name}
+                                                {resolve(inv.name)}
                                             </option>
                                         ))}
                                     </select>

@@ -5,8 +5,8 @@ import { defaultInvocations, defaultGroups } from "@/lib/data/defaultInvocations
 // Une invocation simple
 export interface Invocation {
     id: string;
-    name: string;
-    description?: string;
+    name: string | { fr: string; en: string };
+    description?: string | { fr: string; en: string };
     repetitions: number; // Nombre de répétitions par défaut
     createdAt: string;
 }
@@ -14,8 +14,8 @@ export interface Invocation {
 // Un groupe d'invocations (session complète)
 export interface InvocationGroup {
     id: string;
-    name: string;
-    description?: string;
+    name: string | { fr: string; en: string };
+    description?: string | { fr: string; en: string };
     invocations: Array<{
         invocationId: string; // Référence à une invocation
         repetitions: number; // Peut surcharger le nombre par défaut

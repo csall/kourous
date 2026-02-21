@@ -17,17 +17,18 @@ import {
 } from "lucide-react";
 import { getRandomQuote } from "@/lib/data/quotes";
 import { HomeBackground } from "@/components/home/HomeBackground";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 
 /* ─── Greeting Logic ──────────────────────────────── */
 function getGreeting() {
   const h = new Date().getHours();
   if (h >= 5 && h < 12)
-    return { label: "Bonjour", sub: "Matinée paisible", icon: <Sunrise size={18} className="text-amber-400" />, accent: "#f59e0b", glow: "rgba(245,158,11,0.3)" };
+    return { key: "morning", icon: <Sunrise size={18} className="text-amber-400" />, accent: "#f59e0b", glow: "rgba(245,158,11,0.3)" };
   if (h >= 12 && h < 18)
-    return { label: "Après-midi", sub: "Restez centré", icon: <Sun size={18} className="text-orange-400" />, accent: "#f97316", glow: "rgba(249,115,22,0.3)" };
+    return { key: "afternoon", icon: <Sun size={18} className="text-orange-400" />, accent: "#f97316", glow: "rgba(249,115,22,0.3)" };
   if (h >= 18 && h < 22)
-    return { label: "Bonsoir", sub: "Détente du soir", icon: <Sunset size={18} className="text-rose-400" />, accent: "#f43f5e", glow: "rgba(244,63,94,0.3)" };
-  return { label: "Bonne nuit", sub: "Paix intérieure", icon: <Moon size={18} className="text-indigo-400" />, accent: "#818cf8", glow: "rgba(129,140,248,0.3)" };
+    return { key: "evening", icon: <Sunset size={18} className="text-rose-400" />, accent: "#f43f5e", glow: "rgba(244,63,94,0.3)" };
+  return { key: "night", icon: <Moon size={18} className="text-indigo-400" />, accent: "#818cf8", glow: "rgba(129,140,248,0.3)" };
 }
 
 /* ─── 3D Tilt Card ─────────────────────────────────── */
@@ -119,6 +120,7 @@ export default function HomePage() {
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
+  const { t, resolve, language } = useTranslation();
   const hasHydrated = useSessionStore((s) => s._hasHydrated);
   const preset = useSessionStore((s) => s.preset);
   const totalCount = useSessionStore((s) => s.totalCount);
@@ -171,10 +173,10 @@ export default function HomePage() {
             </motion.div>
             <div>
               <p className="text-[9px] font-black uppercase tracking-[0.5em] text-white/20 leading-none mb-0.5">
-                {greeting.label}
+                {t.home[`greeting_${greeting.key}` as keyof typeof t.home]}
               </p>
               <p className="text-sm font-light text-white/75 tracking-wide">
-                {greeting.sub}
+                {t.home[`sub_${greeting.key}` as keyof typeof t.home]}
               </p>
             </div>
           </motion.div>
@@ -194,12 +196,12 @@ export default function HomePage() {
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[13.5px] leading-[1.65] text-white/80 font-light italic">
-                  &ldquo;{dailyQuote.text}&rdquo;
+                  &ldquo;{resolve(dailyQuote.text)}&rdquo;
                 </p>
                 <div className="flex items-center gap-2 mt-2.5">
                   <div className="h-px w-5 bg-gradient-to-r from-indigo-400/30 to-transparent" />
                   <span className="text-[9px] font-black uppercase tracking-[0.45em] text-white/18">
-                    {dailyQuote.source}
+                    {resolve(dailyQuote.source)}
                   </span>
                 </div>
               </div>
@@ -241,7 +243,7 @@ export default function HomePage() {
               {hasActiveSession ? (
                 <div className="flex flex-col items-center">
                   <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/30 mb-2">
-                    Progression
+                    {t.home.progression}
                   </span>
                   <span
                     className="text-7xl font-bold text-white tracking-tighter tabular-nums"
@@ -251,7 +253,7 @@ export default function HomePage() {
                     <span className="text-2xl opacity-25 align-top mt-2">%</span>
                   </span>
                   <p className="mt-3 text-[10px] font-bold text-white/35 tracking-wide bg-white/5 px-3 py-1 rounded-full border border-white/5 italic overflow-hidden max-w-[160px] truncate">
-                    &ldquo;{preset?.name}&rdquo;
+                    &ldquo;{resolve(preset?.name)}&rdquo;
                   </p>
                 </div>
               ) : (
@@ -272,7 +274,7 @@ export default function HomePage() {
                     <Play className="text-black fill-black ml-1" size={30} />
                   </motion.div>
                   <span className="mt-5 text-[9px] font-black uppercase tracking-[0.5em] text-white/40">
-                    Explorer
+                    {t.home.explorer}
                   </span>
                 </div>
               )}
@@ -300,7 +302,7 @@ export default function HomePage() {
                 <div className="absolute inset-0 rounded-2xl bg-indigo-400/10 blur-sm" />
                 <Library size={20} className="text-indigo-400 relative z-10" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/55">Biblio</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/55">{t.home.library}</span>
             </motion.button>
 
             <motion.button
@@ -321,7 +323,7 @@ export default function HomePage() {
                 <div className="absolute inset-0 rounded-2xl bg-rose-400/10 blur-sm" />
                 <InfinityIcon size={22} className="text-rose-400 relative z-10" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/55">Libre</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/55">{t.home.free}</span>
             </motion.button>
 
           </div>

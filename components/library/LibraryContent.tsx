@@ -8,6 +8,7 @@ import { useInvocationStore, type InvocationGroup, type Invocation } from "@/lib
 import { CreateInvocationModal } from "@/components/library/CreateInvocationModal";
 import { CreateGroupModal } from "@/components/library/CreateGroupModal";
 import { useSessionStore } from "@/lib/store/sessionStore";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 
 interface LibraryContentProps {
     onSessionStart?: () => void;
@@ -21,6 +22,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
     const [editingGroup, setEditingGroup] = useState<InvocationGroup | null>(null);
     const [editingInvocation, setEditingInvocation] = useState<Invocation | null>(null);
     const [expandedId, setExpandedId] = useState<string | null>(null);
+    const { t, resolve } = useTranslation();
     const [isSearching, setIsSearching] = useState(false);
     const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
 
@@ -28,12 +30,12 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
     const beadColor = useSessionStore((s) => s.beadColor);
 
     const filteredInvocations = invocations.filter(inv =>
-        inv.name.toLowerCase().includes(searchQuery.toLowerCase())
+        resolve(inv.name).toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     const filteredGroups = groups.filter(grp =>
-        grp.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        grp.description?.toLowerCase().includes(searchQuery.toLowerCase())
+        resolve(grp.name).toLowerCase().includes(searchQuery.toLowerCase()) ||
+        resolve(grp.description).toLowerCase().includes(searchQuery.toLowerCase())
     );
 
     const favoriteInvocations = invocations.filter(inv => isFavorite(inv.id));
@@ -112,7 +114,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                     <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
                                         <Sparkles size={16} style={{ color: beadColor }} />
                                     </div>
-                                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Bibliothèque</h2>
+                                    <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{t.library.title}</h2>
                                 </div>
 
                                 <div className="flex items-center gap-1">
@@ -169,8 +171,8 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                                                 <Sparkles size={15} className="text-emerald-400" />
                                                             </div>
                                                             <div>
-                                                                <p className="text-[14px] font-semibold text-slate-900 dark:text-white leading-tight">Collection</p>
-                                                                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Grouper des invocations</p>
+                                                                <p className="text-[14px] font-semibold text-slate-900 dark:text-white leading-tight">{t.library.newCollection}</p>
+                                                                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{t.library.groupInvocations}</p>
                                                             </div>
                                                         </button>
 
@@ -188,8 +190,8 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                                                 <BookOpen size={15} className="text-indigo-400" />
                                                             </div>
                                                             <div>
-                                                                <p className="text-[14px] font-semibold text-slate-900 dark:text-white leading-tight">Invocation</p>
-                                                                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Créer une nouvelle dhikr</p>
+                                                                <p className="text-[14px] font-semibold text-slate-900 dark:text-white leading-tight">{t.library.newInvocation}</p>
+                                                                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">{t.library.createDhikr}</p>
                                                             </div>
                                                         </button>
                                                     </motion.div>
@@ -221,7 +223,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                     autoComplete="off"
                                     autoCorrect="off"
                                     autoCapitalize="none"
-                                    placeholder="Rechercher..."
+                                    placeholder={t.common.search}
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     className="w-full bg-slate-200/40 dark:bg-white/[0.05] border border-transparent dark:border-white/5 rounded-2xl py-3 pl-11 pr-10 text-[15px] text-slate-900 dark:text-white placeholder:text-slate-600/80 outline-none transition-all duration-300 focus:bg-white dark:focus:bg-white/10"
@@ -242,7 +244,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                 }}
                                 className="text-[15px] font-medium text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white px-1 active:opacity-70 transition-all"
                             >
-                                Annuler
+                                {t.common.cancel}
                             </button>
                         </motion.div>
                     )}
@@ -251,9 +253,9 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                 {/* ── TABS ─────────────────────────── */}
                 <div className="flex gap-2">
                     {[
-                        { key: "collections" as const, label: "Collections", icon: <Sparkles size={13} />, count: groups.length },
-                        { key: "invocations" as const, label: "Invocations", icon: <BookOpen size={13} />, count: invocations.length },
-                        { key: "favorites" as const, label: "Favoris", icon: <Star size={13} />, count: favoriteInvocations.length + favoriteGroups.length },
+                        { key: "collections" as const, label: t.library.collections, icon: <Sparkles size={13} />, count: groups.length },
+                        { key: "invocations" as const, label: t.library.invocations, icon: <BookOpen size={13} />, count: invocations.length },
+                        { key: "favorites" as const, label: t.library.favorites, icon: <Star size={13} />, count: favoriteInvocations.length + favoriteGroups.length },
                     ].map(tab => {
                         const isActive = activeTab === tab.key;
                         return (
@@ -350,7 +352,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                 <div className="space-y-8">
                                     {favoriteGroups.length > 0 && (
                                         <div className="space-y-4">
-                                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-600 px-1">Collections</h3>
+                                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-600 px-1">{t.library.collections}</h3>
                                             <CollectionSection
                                                 groups={favoriteGroups}
                                                 expandedId={expandedId}
@@ -367,7 +369,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                     )}
                                     {favoriteInvocations.length > 0 && (
                                         <div className="space-y-4">
-                                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-600 px-1">Invocations</h3>
+                                            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-slate-600 px-1">{t.library.invocations}</h3>
                                             <FavoriteSection
                                                 invocations={favoriteInvocations}
                                                 onSessionStart={onSessionStart}
@@ -387,8 +389,8 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                     <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center mx-auto mb-6 opacity-30">
                                         <Star size={24} className="text-slate-400" />
                                     </div>
-                                    <p className="text-base font-bold text-slate-900 dark:text-white">Aucun favori</p>
-                                    <p className="text-xs text-slate-600 mt-2 max-w-[200px] mx-auto leading-relaxed">Touchez l'étoile sur une invocation ou une collection pour l'ajouter ici.</p>
+                                    <p className="text-base font-bold text-slate-900 dark:text-white">{t.library.noFavorites}</p>
+                                    <p className="text-xs text-slate-600 mt-2 max-w-[200px] mx-auto leading-relaxed">{t.library.addFavoriteTip}</p>
                                 </div>
                             )}
                         </motion.div>
@@ -418,6 +420,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
 // ── SUB-COMPONENTS ─────────────────────────────────────────────────────────
 
 function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onToggleFavorite, isFavorite, beadColor, expandedId, onToggleExpand }: any) {
+    const { t, resolve } = useTranslation();
     return (
         <div className="space-y-2.5">
             {invocations.length > 0 ? (
@@ -451,11 +454,11 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
                                     <p
                                         className={`text-[15px] font-semibold text-slate-800 dark:text-slate-100 leading-tight transition-all duration-300 ${isExpanded ? "whitespace-normal break-words overflow-visible" : "truncate"}`}
                                     >
-                                        {invocation.name}
+                                        {resolve(invocation.name)}
                                     </p>
                                     {invocation.description && (
                                         <p className={`text-[12.5px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug transition-all duration-300 ${isExpanded ? "whitespace-normal break-words" : "line-clamp-1"}`}>
-                                            {invocation.description}
+                                            {resolve(invocation.description)}
                                         </p>
                                     )}
                                 </div>
@@ -499,7 +502,7 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
                                                 className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-white text-[13px] font-bold active:scale-[0.97] transition-transform"
                                             >
                                                 <Play size={13} fill="currentColor" />
-                                                Lancer
+                                                {t.library.launch}
                                             </Link>
                                             <button
                                                 onClick={(e) => { e.stopPropagation(); onToggleFavorite(invocation.id); }}
@@ -533,8 +536,8 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
                     <div className="w-16 h-16 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center mx-auto mb-4 opacity-40">
                         <BookOpen size={24} className="text-slate-400" />
                     </div>
-                    <p className="text-sm font-bold text-slate-600 mb-1">Aucun résultat</p>
-                    <p className="text-xs text-slate-500">Essayez une autre recherche</p>
+                    <p className="text-sm font-bold text-slate-600 mb-1">{t.common.noResults}</p>
+                    <p className="text-xs text-slate-500">{t.common.tryAnother}</p>
                 </div>
             )}
         </div>
@@ -542,14 +545,15 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
 }
 
 function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart, onEdit, onDelete, onToggleFavorite, isFavorite, beadColor, getInvocationById }: any) {
+    const { t, resolve } = useTranslation();
     if (groups.length === 0) {
         return (
             <div className="text-center py-16 px-6 bg-slate-50 dark:bg-white/[0.03] border border-dashed border-slate-200 dark:border-white/10 rounded-[2rem]">
                 <div className="w-20 h-20 rounded-2xl bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 flex items-center justify-center mx-auto mb-5 opacity-40">
                     <Sparkles size={28} className="text-slate-400" />
                 </div>
-                <p className="text-sm font-bold text-slate-600 mb-2">Aucune collection</p>
-                <p className="text-xs text-slate-700">Créez votre première collection</p>
+                <p className="text-sm font-bold text-slate-600 mb-2">{t.common.noResults}</p>
+                <p className="text-xs text-slate-700">{t.library.newCollection}</p>
             </div>
         );
     }
@@ -588,11 +592,11 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                                 <p
                                     className={`text-[15px] font-semibold text-slate-800 dark:text-slate-100 leading-tight transition-all duration-300 ${isExpanded ? "whitespace-normal break-words overflow-visible" : "truncate"}`}
                                 >
-                                    {group.name}
+                                    {resolve(group.name)}
                                 </p>
                                 {group.description && (
                                     <p className={`text-[12.5px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug transition-all duration-300 ${isExpanded ? "whitespace-normal break-words" : "line-clamp-1"}`}>
-                                        {group.description}
+                                        {resolve(group.description)}
                                     </p>
                                 )}
                             </div>
@@ -603,7 +607,7 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                                     className="text-[11px] font-bold px-2 py-0.5 rounded-full"
                                     style={{ backgroundColor: beadColor + "18", color: beadColor }}
                                 >
-                                    {group.invocations.length} étapes
+                                    {group.invocations.length} {t.session.steps}
                                 </span>
                                 <motion.div
                                     animate={{ rotate: isExpanded ? 180 : 0 }}
@@ -645,7 +649,7 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                                                             <span
                                                                 className="flex-1 text-[13px] text-slate-700 dark:text-slate-300 font-medium whitespace-normal break-words"
                                                             >
-                                                                {invData?.name}
+                                                                {resolve(invData?.name)}
                                                             </span>
                                                             <span
                                                                 className="text-[11px] font-bold px-2 py-0.5 rounded-lg shrink-0"
@@ -671,7 +675,7 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                                             className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-2xl text-white text-[13px] font-bold active:scale-[0.97] transition-transform"
                                         >
                                             <Play size={13} fill="currentColor" />
-                                            Lancer
+                                            {t.library.launch}
                                         </Link>
                                         <button
                                             onClick={(e) => { e.stopPropagation(); onToggleFavorite(group.id); }}

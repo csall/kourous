@@ -14,6 +14,7 @@ export type SessionState = {
   beadColor: string;
   showTitle: boolean;
   theme: 'dark' | 'light' | 'auto';
+  language: 'fr' | 'en';
 
   // Stats
   stats: {
@@ -36,6 +37,7 @@ export type SessionState = {
   toggleShowTitle: () => void;
   setBeadColor: (color: string) => void;
   setTheme: (theme: 'dark' | 'light' | 'auto') => void;
+  setLanguage: (lang: 'fr' | 'en') => void;
   isUiOpen: boolean;
   setIsUiOpen: (isOpen: boolean) => void;
   _hasHydrated: boolean;
@@ -54,6 +56,7 @@ export const useSessionStore = create<SessionState>()(
       soundEnabled: true,
       beadColor: "#10b981", // Default Emerald Green
       theme: 'auto' as const,
+      language: 'fr' as const,
       stats: {
         totalSessions: 0,
         totalRepetitions: 0,
@@ -280,6 +283,7 @@ export const useSessionStore = create<SessionState>()(
       toggleSound: () => set((state) => ({ soundEnabled: !state.soundEnabled })),
       setBeadColor: (color: string) => set({ beadColor: color }),
       setTheme: (theme: 'dark' | 'light' | 'auto') => set({ theme }),
+      setLanguage: (lang: 'fr' | 'en') => set({ language: lang }),
 
       showTitle: true,
       toggleShowTitle: () => set((state) => ({ showTitle: !state.showTitle })),

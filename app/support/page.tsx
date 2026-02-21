@@ -1,7 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { ArrowLeft, HelpCircle, Mail, Smartphone, Volume2, Sparkles, BookOpen, Palette } from "lucide-react";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 
 export default function SupportPage() {
+    const { t } = useTranslation();
     return (
         <div className="h-[100dvh] bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300 font-sans selection:bg-cyan-500/30 overflow-hidden flex flex-col">
             {/* Background Effects (Dark Mode Only) */}
@@ -15,7 +19,7 @@ export default function SupportPage() {
                 <main className="relative max-w-3xl mx-auto px-6 pt-[calc(env(safe-area-inset-top)+2rem)] pb-32 space-y-8">
                     <Link href="/settings" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors mb-8">
                         <ArrowLeft size={20} />
-                        <span>Retour</span>
+                        <span>{t.common.back}</span>
                     </Link>
 
                     {/* Intro Section */}
@@ -24,9 +28,9 @@ export default function SupportPage() {
                             <HelpCircle size={32} className="text-cyan-600 dark:text-cyan-400" />
                         </div>
                         <div className="space-y-2">
-                            <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Support & Aide</h2>
+                            <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{t.support.title}</h2>
                             <p className="text-lg text-slate-700 dark:text-slate-400 max-w-lg mx-auto leading-relaxed">
-                                Nous sommes là pour vous aider à tirer le meilleur parti de Kourous.
+                                {t.support.subtitle}
                             </p>
                         </div>
                     </div>
@@ -40,9 +44,9 @@ export default function SupportPage() {
                                 <div className="w-12 h-12 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl flex items-center justify-center mx-auto mb-4">
                                     <Mail size={22} className="text-slate-900 dark:text-white" />
                                 </div>
-                                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Une question ?</h3>
+                                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{t.support.question}</h3>
                                 <p className="text-slate-600 dark:text-slate-400 text-sm mb-6 leading-relaxed">
-                                    N'hésitez pas à m'écrire pour toute suggestion ou problème rencontré.
+                                    {t.support.description}
                                 </p>
                                 <a
                                     href="mailto:cheikh.sall@icloud.com"
@@ -58,74 +62,23 @@ export default function SupportPage() {
                         {/* FAQ Section */}
                         <section className="space-y-6">
                             <div className="text-center">
-                                <h3 className="text-xl font-bold text-slate-900 dark:text-white">FAQ Rapide</h3>
+                                <h3 className="text-xl font-bold text-slate-900 dark:text-white">{t.support.faqTitle}</h3>
                             </div>
 
                             <div className="grid gap-6">
-                                {/* FAQ Item 1 */}
-                                <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-2xl p-6 space-y-3 shadow-sm dark:shadow-none">
-                                    <div className="flex items-center gap-3 text-slate-900 dark:text-white">
-                                        <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
-                                            <Sparkles size={18} />
+                                {t.support.faq.map((item: any, i: number) => (
+                                    <div key={i} className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-2xl p-6 space-y-3 shadow-sm dark:shadow-none">
+                                        <div className="flex items-center gap-3 text-slate-900 dark:text-white">
+                                            <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+                                                {i === 0 ? <Sparkles size={18} /> : i === 1 ? <BookOpen size={18} /> : i === 2 ? <Smartphone size={18} /> : i === 3 ? <Volume2 size={18} /> : <Palette size={18} />}
+                                            </div>
+                                            <h4 className="font-bold">{item.q}</h4>
                                         </div>
-                                        <h4 className="font-bold">Créer une collection ou invocation</h4>
+                                        <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed pl-[3.25rem]">
+                                            {item.a}
+                                        </p>
                                     </div>
-                                    <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed pl-[3.25rem]">
-                                        Utilisez le bouton "+" dans la bibliothèque pour ajouter une invocation ou créer une collection. Les collections vous permettent de grouper vos invocations préférées.
-                                    </p>
-                                </div>
-
-                                {/* FAQ Item 2 */}
-                                <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-2xl p-6 space-y-3 shadow-sm dark:shadow-none">
-                                    <div className="flex items-center gap-3 text-slate-900 dark:text-white">
-                                        <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400">
-                                            <BookOpen size={18} />
-                                        </div>
-                                        <h4 className="font-bold">Personnalisation des éléments</h4>
-                                    </div>
-                                    <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed pl-[3.25rem]">
-                                        Vous pouvez modifier à tout moment le nom, la description ou les répétitions de vos invocations et collections pour qu'elles correspondent parfaitement à votre pratique.
-                                    </p>
-                                </div>
-
-                                {/* FAQ Item 3 */}
-                                <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-2xl p-6 space-y-3 shadow-sm dark:shadow-none">
-                                    <div className="flex items-center gap-3 text-slate-900 dark:text-white">
-                                        <div className="p-2 rounded-lg bg-cyan-100 dark:bg-cyan-500/10 text-cyan-600 dark:text-cyan-400">
-                                            <Smartphone size={18} />
-                                        </div>
-                                        <h4 className="font-bold">Support du mode clair</h4>
-                                    </div>
-                                    <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed pl-[3.25rem]">
-                                        Kourous s'adapte automatiquement au thème de votre iPhone. Les textes et l'interface ont été optimisés pour une lecture confortable de jour comme de nuit.
-                                    </p>
-                                </div>
-
-                                {/* FAQ Item 4 */}
-                                <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-2xl p-6 space-y-3 shadow-sm dark:shadow-none">
-                                    <div className="flex items-center gap-3 text-slate-900 dark:text-white">
-                                        <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400">
-                                            <Volume2 size={18} />
-                                        </div>
-                                        <h4 className="font-bold">Son et Vibration</h4>
-                                    </div>
-                                    <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed pl-[3.25rem]">
-                                        Vous pouvez activer ou désactiver le retour haptique et les sons de clic dans les "Réglages" pour une expérience qui vous ressemble.
-                                    </p>
-                                </div>
-
-                                {/* FAQ Item 5 */}
-                                <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-2xl p-6 space-y-3 shadow-sm dark:shadow-none">
-                                    <div className="flex items-center gap-3 text-slate-900 dark:text-white">
-                                        <div className="p-2 rounded-lg bg-rose-100 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400">
-                                            <Palette size={18} />
-                                        </div>
-                                        <h4 className="font-bold">Modifier la couleur des perles</h4>
-                                    </div>
-                                    <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed pl-[3.25rem]">
-                                        Personnalisez votre chapelet en changeant la couleur des perles dans les "Réglages". Choisissez parmi plusieurs teintes pour rendre votre pratique unique.
-                                    </p>
-                                </div>
+                                ))}
                             </div>
                         </section>
                     </div>

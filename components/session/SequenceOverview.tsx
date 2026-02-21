@@ -1,14 +1,16 @@
 import { useSessionStore } from "@/lib/store/sessionStore";
 import { SectionCard } from "@/components/ui/SectionCard";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 
 export function SequenceOverview() {
+  const { t, resolve } = useTranslation();
   const preset = useSessionStore((state) => state.preset);
   const totalCount = useSessionStore((state) => state.totalCount);
 
   if (!preset) return null;
 
   return (
-    <SectionCard title="Séquence" subtitle="Détails du dhikr">
+    <SectionCard title={t.session.title} subtitle="Détails du dhikr">
       <ul className="space-y-2 text-sm text-slate-600">
         {preset.sequence.map((step, index) => {
           const consumedBefore = preset.sequence
@@ -18,11 +20,11 @@ export function SequenceOverview() {
           const consumed = Math.min(step.repetitions, remainingForStep);
           const progress = Math.min(1, consumed / step.repetitions);
           return (
-            <li key={`${preset.id}-${step.label}`} className="space-y-1">
+            <li key={`${preset.id}-${typeof step.label === 'string' ? step.label : step.label.fr}`} className="space-y-1">
               <div className="flex items-center justify-between">
-                <span>{step.label}</span>
+                <span>{resolve(step.label)}</span>
                 <span className="text-xs text-slate-400">
-                  {Math.max(step.repetitions - consumed, 0)} restants
+                  {Math.max(step.repetitions - consumed, 0)} {t.common.back === 'Retour' ? 'restants' : 'remaining'}
                 </span>
               </div>
               <div className="h-2 rounded-full bg-slate-100">

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { CircleCheck, RefreshCw, BookOpen, Sparkles } from "lucide-react";
 import { useEffect, useRef } from "react";
 import confetti from "canvas-confetti";
+import { useTranslation } from "@/lib/hooks/useTranslation";
 
 interface CompletionViewProps {
     readonly onReset: () => void;
@@ -15,6 +16,7 @@ interface CompletionViewProps {
 }
 
 export function CompletionView({ onReset, onOpenLibrary, presetName, beadColor, isIntermediary, onNext }: CompletionViewProps) {
+    const { t } = useTranslation();
     const confettiLaunched = useRef(false);
 
     useEffect(() => {
@@ -185,7 +187,7 @@ export function CompletionView({ onReset, onOpenLibrary, presetName, beadColor, 
                         className="text-xs font-black tracking-[0.4em] uppercase"
                         style={{ color: beadColor }}
                     >
-                        {isIntermediary ? "Étape Complétée" : "Objectif Atteint"}
+                        {isIntermediary ? t.session.modification : t.session.completion.sessionComplete}
                     </span>
                 </motion.div>
 
@@ -200,7 +202,6 @@ export function CompletionView({ onReset, onOpenLibrary, presetName, beadColor, 
                     }}
                     className="text-5xl font-black text-white tracking-tighter"
                 >
-                    {isIntermediary ? "Ma Sha Allah" : "Alhamdulillah"}
                 </motion.h2>
 
                 <motion.p
@@ -210,9 +211,9 @@ export function CompletionView({ onReset, onOpenLibrary, presetName, beadColor, 
                     className="text-slate-400 font-medium max-w-[280px] mx-auto leading-relaxed"
                 >
                     {isIntermediary ? (
-                        <>Ton invocation <span className="text-white border-b pb-0.5" style={{ borderColor: `${beadColor}4d` }}>{presetName}</span> est finie.</>
+                        <>{t.session.completion.sessionComplete} <span className="text-white border-b pb-0.5" style={{ borderColor: `${beadColor}4d` }}>{presetName}</span>.</>
                     ) : (
-                        <>Ta session de <span className="text-white border-b pb-0.5" style={{ borderColor: `${beadColor}4d` }}>{presetName}</span> est maintenant complète.</>
+                        <>{t.session.completion.sessionComplete} <span className="text-white border-b pb-0.5" style={{ borderColor: `${beadColor}4d` }}>{presetName}</span>.</>
                     )}
                 </motion.p>
             </div>
@@ -226,7 +227,7 @@ export function CompletionView({ onReset, onOpenLibrary, presetName, beadColor, 
                         onClick={(e) => { stopAllBubbles(e); onNext?.(); }}
                         className="group flex items-center justify-center gap-3 rounded-2xl bg-white text-slate-950 px-6 py-4 hover:bg-white/90 active:scale-[0.98] transition-all duration-300 shadow-[0_20px_40px_rgba(255,255,255,0.1)]"
                     >
-                        <span className="font-black text-base uppercase tracking-wider">Continuer</span>
+                        <span className="font-black text-base uppercase tracking-wider">{t.common.back}</span>
                     </motion.button>
                 ) : (
                     <>
@@ -239,7 +240,7 @@ export function CompletionView({ onReset, onOpenLibrary, presetName, beadColor, 
                         >
                             <div className="flex items-center gap-3">
                                 <RefreshCw size={18} className="group-hover:rotate-180 transition-transform duration-700 ease-in-out" />
-                                <span className="font-bold text-sm">Refaire la session</span>
+                                <span className="font-bold text-sm">{t.session.completion.startAgain}</span>
                             </div>
                             <div className="w-1.5 h-1.5 rounded-full bg-slate-950/20" />
                         </motion.button>
@@ -254,7 +255,7 @@ export function CompletionView({ onReset, onOpenLibrary, presetName, beadColor, 
                         >
                             <div className="flex items-center gap-3">
                                 <BookOpen size={18} style={{ color: beadColor }} />
-                                <span className="font-bold text-sm">Changer de prière</span>
+                                <span className="font-bold text-sm">{t.library.title}</span>
                             </div>
                         </motion.button>
                     </>
@@ -268,7 +269,7 @@ export function CompletionView({ onReset, onOpenLibrary, presetName, beadColor, 
                 transition={{ delay: 1.2 }}
                 className="mt-12 text-[10px] text-white uppercase tracking-[0.2em] font-medium"
             >
-                {isIntermediary ? "Étape franchie, le cœur s'apaise" : "La patience est la clé de la sérénité"}
+                {t.home.sub_evening}
             </motion.div>
         </div>
     );
