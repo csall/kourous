@@ -22,6 +22,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
     const [editingInvocation, setEditingInvocation] = useState<Invocation | null>(null);
     const [expandedId, setExpandedId] = useState<string | null>(null);
     const [isSearching, setIsSearching] = useState(false);
+    const [isAddMenuOpen, setIsAddMenuOpen] = useState(false);
 
     const { invocations, groups, deleteInvocation, deleteGroup, getInvocationById, loadDefaultData, toggleFavorite, isFavorite, favoriteIds } = useInvocationStore();
     const beadColor = useSessionStore((s) => s.beadColor);
@@ -97,6 +98,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                             exit={{ opacity: 0, y: -10 }}
                             className="space-y-4"
                         >
+                            {/* Spotify-style title row */}
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center">
@@ -105,43 +107,89 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                     <h2 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Bibliothèque</h2>
                                 </div>
 
-                                <button
-                                    onClick={() => setIsSearching(true)}
-                                    className="p-2.5 rounded-full hover:bg-slate-200/50 dark:hover:bg-white/5 text-slate-700 dark:text-slate-400 active:scale-90 transition-all"
-                                >
-                                    <Search size={24} />
-                                </button>
-                            </div>
+                                <div className="flex items-center gap-1">
+                                    <button
+                                        onClick={() => setIsSearching(true)}
+                                        className="p-2.5 rounded-full hover:bg-slate-200/50 dark:hover:bg-white/5 text-slate-700 dark:text-slate-400 active:scale-90 transition-all"
+                                    >
+                                        <Search size={22} />
+                                    </button>
 
-                            {/* Action Buttons Grid */}
-                            <div className="grid grid-cols-2 gap-3">
-                                <button
-                                    onClick={() => {
-                                        setEditingGroup(null);
-                                        setIsCreateGroupModalOpen(true);
-                                    }}
-                                    className="flex items-center justify-center gap-3 py-3 px-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 active:scale-95 transition-all group"
-                                >
+                                    {/* + button Spotify-style */}
                                     <div className="relative">
-                                        <Sparkles size={20} className="text-emerald-400 group-hover:text-emerald-300" />
-                                        <Plus size={10} strokeWidth={4} className="absolute -bottom-1 -right-1 text-emerald-400 group-hover:text-emerald-300" />
-                                    </div>
-                                    <span className="text-[14px] font-bold text-emerald-400 group-hover:text-emerald-300">Collection</span>
-                                </button>
+                                        <motion.button
+                                            whileTap={{ scale: 0.88 }}
+                                            onClick={() => setIsAddMenuOpen(v => !v)}
+                                            className="p-2.5 rounded-full hover:bg-slate-200/50 dark:hover:bg-white/5 text-slate-700 dark:text-slate-400 active:scale-90 transition-all"
+                                        >
+                                            <motion.div
+                                                animate={{ rotate: isAddMenuOpen ? 45 : 0 }}
+                                                transition={{ duration: 0.2, ease: "easeInOut" }}
+                                            >
+                                                <Plus size={22} strokeWidth={2.5} />
+                                            </motion.div>
+                                        </motion.button>
 
-                                <button
-                                    onClick={() => {
-                                        setEditingInvocation(null);
-                                        setIsCreateInvocationModalOpen(true);
-                                    }}
-                                    className="flex items-center justify-center gap-3 py-3 px-4 rounded-xl bg-indigo-500/10 border border-indigo-500/20 active:scale-95 transition-all group"
-                                >
-                                    <div className="relative">
-                                        <BookOpen size={20} className="text-indigo-400 group-hover:text-indigo-300" />
-                                        <Plus size={10} strokeWidth={4} className="absolute -bottom-1 -right-1 text-indigo-400 group-hover:text-indigo-300" />
+                                        {/* Dropdown menu */}
+                                        <AnimatePresence>
+                                            {isAddMenuOpen && (
+                                                <>
+                                                    {/* Backdrop */}
+                                                    <button
+                                                        className="fixed inset-0 z-40 cursor-default"
+                                                        onClick={() => setIsAddMenuOpen(false)}
+                                                        aria-label="Fermer le menu"
+                                                        tabIndex={-1}
+                                                    />
+                                                    <motion.div
+                                                        initial={{ opacity: 0, scale: 0.9, y: -8 }}
+                                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                                        exit={{ opacity: 0, scale: 0.9, y: -8 }}
+                                                        transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                                                        className="absolute right-0 top-full mt-1 z-50 bg-white dark:bg-[#1C1C1E] border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl shadow-black/30 overflow-hidden min-w-[200px]"
+                                                        style={{ transformOrigin: "top right" }}
+                                                    >
+                                                        <button
+                                                            onClick={() => {
+                                                                setIsAddMenuOpen(false);
+                                                                setEditingGroup(null);
+                                                                setIsCreateGroupModalOpen(true);
+                                                            }}
+                                                            className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-slate-100 dark:hover:bg-white/[0.06] active:bg-slate-100 dark:active:bg-white/10 transition-colors text-left"
+                                                        >
+                                                            <div className="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center shrink-0">
+                                                                <Sparkles size={15} className="text-emerald-400" />
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-[14px] font-semibold text-slate-900 dark:text-white leading-tight">Collection</p>
+                                                                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Grouper des invocations</p>
+                                                            </div>
+                                                        </button>
+
+                                                        <div className="h-px bg-slate-100 dark:bg-white/[0.06] mx-4" />
+
+                                                        <button
+                                                            onClick={() => {
+                                                                setIsAddMenuOpen(false);
+                                                                setEditingInvocation(null);
+                                                                setIsCreateInvocationModalOpen(true);
+                                                            }}
+                                                            className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-slate-100 dark:hover:bg-white/[0.06] active:bg-slate-100 dark:active:bg-white/10 transition-colors text-left"
+                                                        >
+                                                            <div className="w-8 h-8 rounded-xl bg-indigo-500/15 border border-indigo-500/20 flex items-center justify-center shrink-0">
+                                                                <BookOpen size={15} className="text-indigo-400" />
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-[14px] font-semibold text-slate-900 dark:text-white leading-tight">Invocation</p>
+                                                                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">Créer une nouvelle dhikr</p>
+                                                            </div>
+                                                        </button>
+                                                    </motion.div>
+                                                </>
+                                            )}
+                                        </AnimatePresence>
                                     </div>
-                                    <span className="text-[14px] font-bold text-indigo-400 group-hover:text-indigo-300">Invocation</span>
-                                </button>
+                                </div>
                             </div>
                         </motion.div>
                     ) : (
