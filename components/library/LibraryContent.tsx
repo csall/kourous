@@ -72,7 +72,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
 
 
     return (
-        <div className="flex flex-col h-[100dvh] bg-slate-50 dark:bg-slate-950/20 pt-[calc(env(safe-area-inset-top,20px)+1rem)] overflow-hidden touch-none">
+        <div className="flex flex-col h-[100dvh] bg-slate-50 dark:bg-slate-950/20 pt-[calc(env(safe-area-inset-top,20px)+1rem)] overflow-hidden">
             {/* Immersive Mesh Glows */}
             <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">
                 <motion.div
@@ -89,7 +89,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
             </div>
 
             {/* ── FIXED HEADER ─────────────────────────── */}
-            <div className="flex-none space-y-4 pb-2 px-5 z-10 touch-none">
+            <div className="flex-none space-y-4 pb-2 px-5 z-10">
                 <AnimatePresence mode="wait">
                     {!isSearching ? (
                         <motion.div

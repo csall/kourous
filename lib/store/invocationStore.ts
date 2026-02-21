@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { defaultInvocations, defaultGroups } from "@/lib/data/defaultInvocations";
 
 // Une invocation simple
 export interface Invocation {
@@ -66,27 +67,16 @@ export const useInvocationStore = create<InvocationStoreState>()(
 
             // Helper to merge system and user data
             refreshMergedData: () => {
-                let defaultInvocations: Invocation[] = [];
-                let defaultGroups: InvocationGroup[] = [];
-
-                try {
-                    const defaults = require("@/lib/data/defaultInvocations");
-                    defaultInvocations = defaults.defaultInvocations || [];
-                    defaultGroups = defaults.defaultGroups || [];
-                } catch (e) {
-                    console.error("Failed to load default invocations:", e);
-                }
-
                 const { userInvocations, userGroups, hiddenSystemIds } = get();
 
                 const mergedInvocations = [
-                    ...defaultInvocations.filter(inv => !hiddenSystemIds.includes(inv.id)),
-                    ...userInvocations
+                    ...userInvocations,
+                    ...defaultInvocations.filter(inv => !hiddenSystemIds.includes(inv.id))
                 ];
 
                 const mergedGroups = [
-                    ...defaultGroups.filter(grp => !hiddenSystemIds.includes(grp.id)),
-                    ...userGroups
+                    ...userGroups,
+                    ...defaultGroups.filter(grp => !hiddenSystemIds.includes(grp.id))
                 ];
 
                 set({ invocations: mergedInvocations, groups: mergedGroups });
