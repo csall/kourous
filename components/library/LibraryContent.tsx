@@ -499,14 +499,16 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
                                                 <Star size={16} fill={isFavorite(invocation.id) ? beadColor : "none"} style={{ color: isFavorite(invocation.id) ? beadColor : undefined }} className={isFavorite(invocation.id) ? "" : "text-slate-400"} />
                                             </button>
                                             <button
+                                                disabled={invocation.id.startsWith("sys-")}
                                                 onClick={(e) => { e.stopPropagation(); onEdit(invocation); }}
-                                                className="w-10 h-10 rounded-2xl flex items-center justify-center border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-slate-500 active:scale-90 transition-all"
+                                                className={`w-10 h-10 rounded-2xl flex items-center justify-center border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-slate-500 active:scale-90 transition-all ${invocation.id.startsWith("sys-") ? "opacity-30 grayscale cursor-not-allowed" : ""}`}
                                             >
                                                 <Pencil size={16} />
                                             </button>
                                             <button
+                                                disabled={invocation.id.startsWith("sys-")}
                                                 onClick={(e) => { e.stopPropagation(); onDelete(invocation.id); }}
-                                                className="w-10 h-10 rounded-2xl flex items-center justify-center border border-red-100 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10 text-red-400 active:scale-90 transition-all"
+                                                className={`w-10 h-10 rounded-2xl flex items-center justify-center border border-red-100 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10 text-red-400 active:scale-90 transition-all ${invocation.id.startsWith("sys-") ? "opacity-30 grayscale cursor-not-allowed" : ""}`}
                                             >
                                                 <Trash2 size={16} />
                                             </button>
@@ -663,14 +665,16 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                                             <Star size={16} fill={isFavorite(group.id) ? beadColor : "none"} style={{ color: isFavorite(group.id) ? beadColor : undefined }} className={isFavorite(group.id) ? "" : "text-slate-400"} />
                                         </button>
                                         <button
+                                            disabled={group.id.startsWith("sys-")}
                                             onClick={(e) => { e.stopPropagation(); onEdit(group); }}
-                                            className="w-10 h-10 rounded-2xl flex items-center justify-center border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-slate-500 active:scale-90 transition-all"
+                                            className={`w-10 h-10 rounded-2xl flex items-center justify-center border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-400 dark:text-slate-500 active:scale-90 transition-all ${group.id.startsWith("sys-") ? "opacity-30 grayscale cursor-not-allowed" : ""}`}
                                         >
                                             <Pencil size={16} />
                                         </button>
                                         <button
+                                            disabled={group.id.startsWith("sys-")}
                                             onClick={(e) => { e.stopPropagation(); onDelete(group.id); }}
-                                            className="w-10 h-10 rounded-2xl flex items-center justify-center border border-red-100 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10 text-red-400 active:scale-90 transition-all"
+                                            className={`w-10 h-10 rounded-2xl flex items-center justify-center border border-red-100 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10 text-red-400 active:scale-90 transition-all ${group.id.startsWith("sys-") ? "opacity-30 grayscale cursor-not-allowed" : ""}`}
                                         >
                                             <Trash2 size={16} />
                                         </button>

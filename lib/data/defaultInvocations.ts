@@ -225,6 +225,118 @@ export const defaultInvocations: Invocation[] = [
         description: "Gloire au Souverain, le Très Saint. À dire 3 fois après la prière du Witr.",
         repetitions: 3,
         createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-morning-praise",
+        name: "Allāhumma bika ʾaṣbaḥnā wa bika ʾamsaynā...",
+        description: "Seigneur, c'est par Toi que nous nous retrouvons au matin et au soir. Invocation matinale.",
+        repetitions: 1,
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-evening-praise",
+        name: "Allāhumma bika ʾamsaynā wa bika ʾaṣbaḥnā...",
+        description: "Seigneur, c'est par Toi que nous nous retrouvons au soir et au matin. Invocation du soir.",
+        repetitions: 1,
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-gratitude-morning",
+        name: "Allāhumma mā ʾaṣbaḥa bī min niʿmatin...",
+        description: "Ô Allah, tout bienfait qui m'arrive ce matin ne vient que de Toi Seul. Reconnaissance du jour.",
+        repetitions: 1,
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-protection-anxiety",
+        name: "Allāhumma ʾinnī ʾaʿūdhu bika minal-hammi wal-ḥazan...",
+        description: "Ô Allah, je cherche protection contre les soucis, la tristesse et l'incapacité. Pour l'apaisement.",
+        repetitions: 1,
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-protection-evil",
+        name: "ʾAʿūdhu bi-kalimāti llāhi t-tāmmāti min sharri mā khalaq",
+        description: "Je cherche protection par les paroles parfaites d'Allah contre le mal de Ses créatures.",
+        repetitions: 3,
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-contentment",
+        name: "Raḍītu bi-llāhi Rabban wa bil-ʾIslāmi dīnan...",
+        description: "Je suis satisfait d'Allah comme Seigneur et de l'Islam comme religion. 3 fois matin et soir.",
+        repetitions: 3,
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-before-sleep",
+        name: "Bismika llāhumma ʾamūtu wa ʾaḥyā",
+        description: "En Ton nom Ô Allah, je meurs et je vis. À dire avant de s'endormir.",
+        repetitions: 1,
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-after-sleep",
+        name: "Al-ḥamdu li-llāhi lladhī ʾaḥyānā baʿda mā ʾamātanā...",
+        description: "Louange à Allah qui nous a rendu la vie après nous avoir fait mourir. Au réveil.",
+        repetitions: 1,
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-travel",
+        name: "Subḥāna lladhī sakhkhara lanā hadhā...",
+        description: "Gloire à Celui qui a mis ceci à notre service. Invocation pour le voyage.",
+        repetitions: 1,
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-after-prayer-help",
+        name: "Allāhumma ʾaʿinnī ʿalā dhikrika wa shukrika...",
+        description: "Ô Allah, aide-moi à T'évoquer, à Te remercier et à T'adorer de la meilleure manière.",
+        repetitions: 1,
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-dua-light",
+        name: "Allāhumma jʿal fī qalbī nūran",
+        description: "Ô Allah, mets de la lumière dans mon cœur. Pour la guidance et la clarté.",
+        repetitions: 1,
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-dua-parents",
+        name: "Rabbi rḥamhumā kamā rabbayānī ṣaghīran",
+        description: "Seigneur, fais-leur miséricorde (mes parents) comme ils m'ont élevé petit.",
+        repetitions: 1,
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-barakah-food",
+        name: "Allāhumma bārik lanā fīmā razaqtanā...",
+        description: "Seigneur, bénis ce que Tu nous as accordé et préserve-nous du Feu. Avant le repas.",
+        repetitions: 1,
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-huda-taqwa",
+        name: "Allāhumma ʾinnī ʾasʾaluka l-hudā wat-tuqā...",
+        description: "Seigneur, je Te demande la guidance, la piété, la pudeur et la suffisance.",
+        repetitions: 1,
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-istighfar-extended",
+        name: "ʾAstaghfiru llāha l-ʿAẓīm lladhī lā ʾilāha ʾillā huwa...",
+        description: "Je demande pardon à Allah l'Immense... À dire 3 fois pour l'effacement des grands péchés.",
+        repetitions: 3,
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-protect-children",
+        name: "Uʿīdhukumā bi-kalimāti llāhi t-tāmmati...",
+        description: "Je vous place sous la protection des paroles parfaites d'Allah contre tout démon et tout œil envieux.",
+        repetitions: 1,
+        createdAt: "2024-01-01T00:00:00.000Z"
     }
 ];
 
@@ -397,6 +509,88 @@ export const defaultGroups: InvocationGroup[] = [
             { invocationId: "sys-subhanallahi-wa-bihamdihi", repetitions: 100 },
             { invocationId: "sys-subhanallahil-azim", repetitions: 100 },
             { invocationId: "sys-la-ilaha-illallah", repetitions: 100 },
+        ],
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-grp-morning-hizb",
+        name: "Matin Complet (Sunna)",
+        description: "Le pack complet des invocations matinales authentiques.",
+        invocations: [
+            { invocationId: "sys-after-sleep", repetitions: 1 },
+            { invocationId: "sys-ayat-al-kursi", repetitions: 1 },
+            { invocationId: "sys-ikhlas", repetitions: 3 },
+            { invocationId: "sys-falaq", repetitions: 3 },
+            { invocationId: "sys-nas", repetitions: 3 },
+            { invocationId: "sys-morning-praise", repetitions: 1 },
+            { invocationId: "sys-gratitude-morning", repetitions: 1 },
+            { invocationId: "sys-hasbiyallah", repetitions: 7 },
+            { invocationId: "sys-subhanallahi-adada", repetitions: 3 },
+            { invocationId: "sys-contentment", repetitions: 3 },
+            { invocationId: "sys-bismillah-ladi", repetitions: 3 },
+        ],
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-grp-evening-hizb",
+        name: "Soir Complet (Protection)",
+        description: "La citadelle du croyant pour une nuit sous protection.",
+        invocations: [
+            { invocationId: "sys-evening-praise", repetitions: 1 },
+            { invocationId: "sys-ayat-al-kursi", repetitions: 1 },
+            { invocationId: "sys-ikhlas", repetitions: 3 },
+            { invocationId: "sys-falaq", repetitions: 3 },
+            { invocationId: "sys-nas", repetitions: 3 },
+            { invocationId: "sys-protection-evil", repetitions: 3 },
+            { invocationId: "sys-bismillah-ladi", repetitions: 3 },
+            { invocationId: "sys-contentment", repetitions: 3 },
+        ],
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-grp-sleep-routine",
+        name: "Rituel du Sommeil",
+        description: "Pour un sommeil paisible et protégé des cauchemars.",
+        invocations: [
+            { invocationId: "sys-ayat-al-kursi", repetitions: 1 },
+            { invocationId: "sys-ikhlas", repetitions: 3 },
+            { invocationId: "sys-falaq", repetitions: 3 },
+            { invocationId: "sys-nas", repetitions: 3 },
+            { invocationId: "sys-before-sleep", repetitions: 1 },
+        ],
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-grp-distress-relief",
+        name: "Soulagement & Paix",
+        description: "Pack pour évacuer le stress et les angoisses.",
+        invocations: [
+            { invocationId: "sys-yunus-dua", repetitions: 10 },
+            { invocationId: "sys-protection-anxiety", repetitions: 1 },
+            { invocationId: "sys-hasbunallah", repetitions: 10 },
+            { invocationId: "sys-la-hawla", repetitions: 10 },
+        ],
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-grp-travel-kit",
+        name: "Protection Voyage",
+        description: "À réciter au moment du départ.",
+        invocations: [
+            { invocationId: "sys-travel", repetitions: 1 },
+            { invocationId: "sys-bismillah-tawakkaltu", repetitions: 1 },
+            { invocationId: "sys-la-hawla", repetitions: 1 },
+        ],
+        createdAt: "2024-01-01T00:00:00.000Z"
+    },
+    {
+        id: "sys-grp-family-blessing",
+        name: "Foyer & Famille",
+        description: "Pour la bénédiction de la maison et la protection des enfants.",
+        invocations: [
+            { invocationId: "sys-protect-children", repetitions: 1 },
+            { invocationId: "sys-dua-parents", repetitions: 1 },
+            { invocationId: "sys-barakah-food", repetitions: 1 },
         ],
         createdAt: "2024-01-01T00:00:00.000Z"
     }
