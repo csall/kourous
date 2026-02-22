@@ -5,11 +5,10 @@ import dynamic from "next/dynamic";
 import { useSessionProgress } from "@/lib/hooks/useSessionProgress";
 import { useClickSound } from "@/lib/hooks/useClickSound";
 import { useEffect, useState, Suspense, useCallback, useRef, memo } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { RefreshCw, Volume2, VolumeX, RotateCcw, Vibrate, VibrateOff, Pencil } from "lucide-react";
 import { FullscreenModal } from "@/components/ui/FullscreenModal";
-import { LibraryContent } from "@/components/library/LibraryContent";
 import { SettingsContent } from "@/components/settings/SettingsContent";
 import { CompletionView } from "@/components/session/CompletionView";
 import { useTranslation } from "@/lib/hooks/useTranslation";
@@ -351,6 +350,7 @@ BeadLayer.displayName = "BeadLayer";
 // ─────────────────────────────────────────────────────────────
 function SessionContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
   const [_hydrated, _setHydrated] = useState(false);
   const hasHydrated = useSessionStore(state => state._hasHydrated);
@@ -375,12 +375,11 @@ function SessionContent() {
 
   const { playSuccess, playFinalSuccess } = useClickSound();
 
-  const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const setIsUiOpen = useSessionStore(state => state.setIsUiOpen);
 
-  const isAnyModalOpen = isLibraryOpen || isSettingsOpen || isEditing;
+  const isAnyModalOpen = isSettingsOpen || isEditing;
   const isAnyUIOpen = isAnyModalOpen || isComplete || isStepComplete;
 
   useEffect(() => {
@@ -402,8 +401,7 @@ function SessionContent() {
     else if (invocationId && preset?.id !== invocationId) setPresetByInvocationId(invocationId);
   }, [searchParams, setPresetByGroupId, setPresetByInvocationId, preset?.id, hasHydrated]);
 
-  const openLibrary = useCallback(() => setIsLibraryOpen(true), []);
-  const closeLibrary = useCallback(() => setIsLibraryOpen(false), []);
+  const openLibrary = useCallback(() => router.push('/library'), [router]);
   const closeSettings = useCallback(() => setIsSettingsOpen(false), []);
   const progress = useSessionProgress();
   const [lastFinishedCycle, setLastFinishedCycle] = useState(-1);
@@ -493,9 +491,6 @@ function SessionContent() {
         </div>
       </div>
 
-      <FullscreenModal isOpen={isLibraryOpen} onClose={closeLibrary} title={t.library.title} hideHeader>
-        <LibraryContent onSessionStart={closeLibrary} onClose={closeLibrary} />
-      </FullscreenModal>
 
       <FullscreenModal isOpen={isSettingsOpen} onClose={closeSettings} title={t.settings.title}>
         <SettingsContent />

@@ -447,8 +447,6 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
             {invocations.length > 0 ? (
                 invocations.map((invocation: any) => {
                     const isExpanded = expandedId === invocation.id;
-                    const isDefault = invocation.id.startsWith("inv-default-");
-
                     return (
                         <motion.div
                             key={invocation.id}
@@ -529,20 +527,22 @@ function FavoriteSection({ invocations, onSessionStart, onDelete, onEdit, onTogg
                                             >
                                                 <Star size={16} fill={isFavorite(invocation.id) ? beadColor : "none"} style={{ color: isFavorite(invocation.id) ? beadColor : undefined }} className={isFavorite(invocation.id) ? "" : "text-white/20"} />
                                             </button>
-                                            <button
-                                                disabled={invocation.id.startsWith("sys-")}
-                                                onClick={(e) => { e.stopPropagation(); onEdit(invocation); }}
-                                                className={`w-10 h-10 rounded-2xl flex items-center justify-center border border-white/10 bg-white/5 text-white/30 active:scale-90 transition-all ${invocation.id.startsWith("sys-") ? "opacity-30 grayscale cursor-not-allowed" : ""}`}
-                                            >
-                                                <Pencil size={16} />
-                                            </button>
-                                            <button
-                                                disabled={invocation.id.startsWith("sys-")}
-                                                onClick={(e) => { e.stopPropagation(); onDelete(invocation.id); }}
-                                                className={`w-10 h-10 rounded-2xl flex items-center justify-center border border-red-500/20 bg-red-500/10 text-red-400 active:scale-90 transition-all ${invocation.id.startsWith("sys-") ? "opacity-30 grayscale cursor-not-allowed" : ""}`}
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
+                                            {!invocation.id.startsWith("sys-") && (
+                                                <>
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); onEdit(invocation); }}
+                                                        className="w-10 h-10 rounded-2xl flex items-center justify-center border border-white/10 bg-white/5 text-white/30 active:scale-90 transition-all"
+                                                    >
+                                                        <Pencil size={16} />
+                                                    </button>
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); onDelete(invocation.id); }}
+                                                        className="w-10 h-10 rounded-2xl flex items-center justify-center border border-red-500/20 bg-red-500/10 text-red-400 active:scale-90 transition-all"
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                </>
+                                            )}
                                         </div>
                                     </motion.div>
                                 )}
@@ -700,20 +700,22 @@ function CollectionSection({ groups, expandedId, onToggleExpand, onSessionStart,
                                         >
                                             <Star size={16} fill={isFavorite(group.id) ? beadColor : "none"} style={{ color: isFavorite(group.id) ? beadColor : undefined }} className={isFavorite(group.id) ? "" : "text-white/20"} />
                                         </button>
-                                        <button
-                                            disabled={group.id.startsWith("sys-")}
-                                            onClick={(e) => { e.stopPropagation(); onEdit(group); }}
-                                            className={`w-10 h-10 rounded-2xl flex items-center justify-center border border-white/10 bg-white/5 text-white/30 active:scale-90 transition-all ${group.id.startsWith("sys-") ? "opacity-30 grayscale cursor-not-allowed" : ""}`}
-                                        >
-                                            <Pencil size={16} />
-                                        </button>
-                                        <button
-                                            disabled={group.id.startsWith("sys-")}
-                                            onClick={(e) => { e.stopPropagation(); onDelete(group.id); }}
-                                            className={`w-10 h-10 rounded-2xl flex items-center justify-center border border-red-500/20 bg-red-500/10 text-red-400 active:scale-90 transition-all ${group.id.startsWith("sys-") ? "opacity-30 grayscale cursor-not-allowed" : ""}`}
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
+                                        {!group.id.startsWith("sys-") && (
+                                            <>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); onEdit(group); }}
+                                                    className="w-10 h-10 rounded-2xl flex items-center justify-center border border-white/10 bg-white/5 text-white/30 active:scale-90 transition-all"
+                                                >
+                                                    <Pencil size={16} />
+                                                </button>
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); onDelete(group.id); }}
+                                                    className="w-10 h-10 rounded-2xl flex items-center justify-center border border-red-500/20 bg-red-500/10 text-red-400 active:scale-90 transition-all"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </>
+                                        )}
                                     </div>
                                 </motion.div>
                             )}
