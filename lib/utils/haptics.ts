@@ -43,19 +43,32 @@ export async function hapticSuccess() {
 export async function hapticHeavy() {
     if (!isMobile() || !useSessionStore.getState().hapticsEnabled) return;
     try {
-        const { Haptics } = await import('@capacitor/haptics');
-        // Stronger vibration for cycle completion
-        await Haptics.vibrate({ duration: 300 });
+        const { Haptics, ImpactStyle } = await import('@capacitor/haptics');
+        await Haptics.impact({ style: ImpactStyle.Heavy });
     } catch {
-        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(300);
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate(200);
+    }
+}
+
+export async function hapticGravity() {
+    if (!isMobile() || !useSessionStore.getState().hapticsEnabled) return;
+    try {
+        const { Haptics, ImpactStyle } = await import('@capacitor/haptics');
+        // Initial heavy strike
+        await Haptics.impact({ style: ImpactStyle.Heavy });
+        // Sustained "gravity" feeling
+        await Haptics.vibrate({ duration: 400 });
+    } catch {
+        if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate([100, 50, 400]);
     }
 }
 
 export async function hapticCelebration() {
     if (!isMobile() || !useSessionStore.getState().hapticsEnabled) return;
     try {
-        const { Haptics } = await import('@capacitor/haptics');
-        // Very strong vibration for session completion
+        const { Haptics, ImpactStyle } = await import('@capacitor/haptics');
+        // Start with a heavy impact then the long celebration
+        await Haptics.impact({ style: ImpactStyle.Heavy });
         await Haptics.vibrate({ duration: 2000 });
     } catch {
         if (typeof navigator !== 'undefined' && navigator.vibrate) navigator.vibrate([200, 100, 200, 100, 1000]);

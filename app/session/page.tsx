@@ -13,7 +13,7 @@ import { SettingsContent } from "@/components/settings/SettingsContent";
 import { CompletionView } from "@/components/session/CompletionView";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 import confetti from "canvas-confetti";
-import { hapticLight, hapticMedium, hapticSuccess, hapticHeavy, hapticCelebration } from "@/lib/utils/haptics";
+import { hapticLight, hapticMedium, hapticSuccess, hapticHeavy, hapticCelebration, hapticGravity } from "@/lib/utils/haptics";
 
 const BeadScene = dynamic(
   () => import("@/components/session/BeadScene").then((mod) => mod.BeadScene),
@@ -372,6 +372,7 @@ function SessionContent() {
   const setPresetByGroupId = useSessionStore(state => state.setPresetByGroupId);
   const setPresetByInvocationId = useSessionStore(state => state.setPresetByInvocationId);
   const soundEnabled = useSessionStore(state => state.soundEnabled);
+  const totalCount = useSessionStore(state => state.totalCount);
 
   const { playSuccess, playFinalSuccess } = useClickSound();
 
@@ -387,11 +388,13 @@ function SessionContent() {
   }, [isAnyUIOpen, setIsUiOpen]);
 
   useEffect(() => {
-    if (isComplete || isStepComplete) {
+    if (isComplete) {
       playFinalSuccess();
       hapticCelebration();
+    } else if (isStepComplete) {
+      // Step completion sound/haptics handled in the progress watcher below
     }
-  }, [isComplete, isStepComplete, playFinalSuccess]);
+  }, [isComplete, playFinalSuccess]);
 
   useEffect(() => {
     if (!hasHydrated) return;
@@ -413,37 +416,40 @@ function SessionContent() {
     // Final completion logic is already handled in sessionStore (isComplete)
     // and triggered below.
 
-    // Intermediary Step Completion
-    if (isStepComplete && progress.cycleIndex > lastTriggeredStep.current) {
-      playSuccess();
-      hapticHeavy();
-      confetti({
-        particleCount: 40,
-        spread: 70,
-        origin: { y: 0.2 },
-        colors: [beadColor, '#ffffff']
-      });
-      lastTriggeredStep.current = progress.cycleIndex;
-    }
+    // Success Detection
+    const isFreeSession = preset.id === "free-session";
+    const currentCycle = useSessionStore.getState().currentCycle || 1;
+    const isAtZero = progress.cycleProgress === 0;
 
-    // Free Session (Loop-based) - special handling as it doesn't set isStepComplete
-    if (preset.id === "free-session") {
-      const isFullLoop = progress.cycleProgress === progress.cycleTotal;
-      const currentCycle = useSessionStore.getState().currentCycle || 1;
-
-      if (isFullLoop && lastFinishedCycle !== currentCycle) {
+    // 1. Regular Session: Trigger on isStepComplete or isComplete (when progress hits 0)
+    // isStepComplete is set when totalCount reaches the end of an intermediary step.
+    if (!isFreeSession && isStepComplete) {
+      if (progress.cycleIndex > lastTriggeredStep.current) {
         playSuccess();
-        hapticHeavy();
+        hapticGravity();
         confetti({
-          particleCount: 50,
-          spread: 80,
-          origin: { y: 0.3 },
-          colors: [beadColor, '#ffd700', '#ffffff']
+          particleCount: 40,
+          spread: 70,
+          origin: { y: 0.2 },
+          colors: [beadColor, '#ffffff']
         });
-        setLastFinishedCycle(currentCycle);
+        lastTriggeredStep.current = progress.cycleIndex;
       }
     }
-  }, [isStepComplete, progress, preset, lastFinishedCycle, beadColor, soundEnabled, playSuccess]);
+
+    // 2. Free Session: Trigger when cycleProgress hits 0 (and it's not the first bead of session)
+    if (isFreeSession && isAtZero && totalCount > 0 && currentCycle !== lastFinishedCycle) {
+      playSuccess();
+      hapticGravity();
+      confetti({
+        particleCount: 50,
+        spread: 80,
+        origin: { y: 0.3 },
+        colors: [beadColor, '#ffd700', '#ffffff']
+      });
+      setLastFinishedCycle(currentCycle);
+    }
+  }, [isStepComplete, progress, preset, lastFinishedCycle, beadColor, soundEnabled, playSuccess, totalCount]);
 
   const handleReset = useCallback(() => {
     setLastFinishedCycle(-1);

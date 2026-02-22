@@ -209,15 +209,8 @@ export const useSessionStore = create<SessionState>()(
 
         // Custom Logic for Free Session (Infinite Loop)
         if (preset.id === "free-session") {
-          let nextTotal = totalCount + 1;
-          let nextCycle = currentCycle || 1;
           const target = preset.totalBeads;
-
-          // If we exceed target, wrap around to 1 (new loop)
-          if (nextTotal > target) {
-            nextTotal = 1;
-            nextCycle += 1;
-          }
+          const nextCycle = currentCycle || 1;
 
           const updates: Partial<SessionState> = {
             totalCount: nextTotal,
@@ -225,7 +218,13 @@ export const useSessionStore = create<SessionState>()(
             currentCycle: nextCycle,
           };
 
-          // Stats update logic
+          // If we exceed target, wrap around to 1 (new loop)
+          if (nextTotal > target) {
+            updates.totalCount = 1;
+            updates.beadIndex = 1;
+            updates.currentCycle = nextCycle + 1;
+          }
+
           const today = new Date().toISOString().split('T')[0];
 
           // Only increment streak daily logic here...

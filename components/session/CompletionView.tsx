@@ -5,6 +5,7 @@ import { CircleCheck, RefreshCw, BookOpen, Sparkles } from "lucide-react";
 import { useEffect, useRef } from "react";
 import confetti from "canvas-confetti";
 import { useTranslation } from "@/lib/hooks/useTranslation";
+import { hapticGravity, hapticLight } from "@/lib/utils/haptics";
 
 interface CompletionViewProps {
     readonly onReset: () => void;
@@ -53,6 +54,23 @@ export function CompletionView({ onReset, onOpenLibrary, presetName, beadColor, 
             confettiLaunched.current = true;
         }
     }, [beadColor, isIntermediary]);
+
+    useEffect(() => {
+        // Trigger Gravity haptic for the central "jewel" reveal
+        const hapticTimer = setTimeout(() => {
+            hapticGravity();
+        }, 300);
+
+        // Subdued sparkling vibration
+        const sparkleInterval = setInterval(() => {
+            hapticLight();
+        }, 2000);
+
+        return () => {
+            clearTimeout(hapticTimer);
+            clearInterval(sparkleInterval);
+        };
+    }, []);
 
     // Isolated event handlers to prevent propagation
     const stopAllBubbles = (e: React.UIEvent) => {
