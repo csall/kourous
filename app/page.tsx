@@ -116,7 +116,7 @@ export default function HomePage() {
         </div>
 
         {/* ── CHAPELET FLOTTANT ────────────────────── */}
-        <div className="flex-1 w-full flex items-center justify-center min-h-0 relative">
+        <div className="flex-1 w-full flex flex-col items-center min-h-0 relative">
           {/* Halo indigo */}
           <motion.div
             className="absolute inset-0 pointer-events-none"
@@ -124,17 +124,36 @@ export default function HomePage() {
             animate={{ opacity: [0.4, 0.85, 0.4] }}
             transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
           />
-          {/* Halo rose (décalé) */}
+          {/* Halo rose */}
           <motion.div
             className="absolute inset-0 pointer-events-none"
             style={{ background: "radial-gradient(ellipse at 55% 45%, rgba(244,114,182,0.07) 0%, transparent 60%)" }}
             animate={{ opacity: [0.6, 1, 0.6] }}
             transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
           />
-          {/* Canvas */}
-          <div className="w-full h-full max-w-[300px] max-h-[40vh] pointer-events-none">
-            <HomeBeadScene cameraY={0} />
+
+          {/* Canvas — prend l'espace disponible */}
+          <div className="flex-1 w-full flex items-center justify-center min-h-0 pointer-events-none">
+            <div className="w-full h-full max-w-[300px] max-h-[38vh]">
+              <HomeBeadScene cameraY={0} />
+            </div>
           </div>
+
+          {/* ── Citation ── juste sous le chapelet ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 1, ease: "easeOut" }}
+            className="shrink-0 w-full text-center px-6 pb-3"
+          >
+            <div className="w-8 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent mx-auto mb-2.5" />
+            <p className="text-[12px] leading-[1.6] text-white/55 font-light italic line-clamp-2">
+              &ldquo;{resolve(dailyQuote.text)}&rdquo;
+            </p>
+            <span className="text-[8px] font-black uppercase tracking-[0.4em] text-white/20 mt-1.5 block">
+              {resolve(dailyQuote.source)}
+            </span>
+          </motion.div>
         </div>
 
         {/* ── BLOC BAS : info + actions ────────────── */}
@@ -145,7 +164,7 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.65, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="w-full rounded-[26px] px-5 pt-4 pb-5"
+            className="w-full rounded-[26px] p-4"
             style={{
               background: "rgba(255,255,255,0.03)",
               border: "1px solid rgba(255,255,255,0.07)",
@@ -185,25 +204,14 @@ export default function HomePage() {
                 </motion.button>
               </>
             ) : (
-              <div className="flex items-center gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="w-4 h-px bg-gradient-to-r from-indigo-400/50 to-transparent mb-2" />
-                  <p className="text-[12px] leading-[1.55] text-white/60 font-light italic line-clamp-2">
-                    &ldquo;{resolve(dailyQuote.text)}&rdquo;
-                  </p>
-                  <span className="text-[8px] font-black uppercase tracking-[0.4em] text-white/20 mt-1 block">
-                    {resolve(dailyQuote.source)}
-                  </span>
-                </div>
-                <motion.button
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => router.push("/library")}
-                  className="shrink-0 px-4 py-[10px] rounded-[14px] text-[10px] font-black uppercase tracking-[0.2em]"
-                  style={{ background: "rgba(99,102,241,0.16)", border: "1px solid rgba(99,102,241,0.24)", color: "#a5b4fc" }}
-                >
-                  ▶ {t.home.explorer}
-                </motion.button>
-              </div>
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={() => router.push("/library")}
+                className="w-full py-[10px] rounded-[14px] text-[10px] font-black uppercase tracking-[0.35em] text-center"
+                style={{ background: "rgba(99,102,241,0.16)", border: "1px solid rgba(99,102,241,0.24)", color: "#a5b4fc" }}
+              >
+                ▶&nbsp;&nbsp;{t.home.explorer}
+              </motion.button>
             )}
           </motion.div>
 
