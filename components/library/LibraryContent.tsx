@@ -73,7 +73,11 @@ export function LibraryContent({ onSessionStart, onClose }: LibraryContentProps)
         setIsCreateGroupModalOpen(true);
     };
 
-
+    const handleGroupSuccess = (id: string) => {
+        setSearchQuery("");
+        setActiveTab("collections");
+        setExpandedId(id);
+    };
 
     const handleCloseGroupModal = () => {
         setIsCreateGroupModalOpen(false);
@@ -85,7 +89,11 @@ export function LibraryContent({ onSessionStart, onClose }: LibraryContentProps)
         setIsCreateInvocationModalOpen(true);
     };
 
-
+    const handleInvocationSuccess = (id: string) => {
+        setSearchQuery("");
+        setActiveTab("invocations");
+        setExpandedId(id);
+    };
 
     return (
         <div className="flex flex-col w-full h-[100dvh] overflow-hidden text-white relative">
@@ -426,13 +434,13 @@ export function LibraryContent({ onSessionStart, onClose }: LibraryContentProps)
                     setEditingInvocation(null);
                 }}
                 editInvocation={editingInvocation}
-                onSuccess={() => setActiveTab("invocations")}
+                onSuccess={handleInvocationSuccess}
             />
             <CreateGroupModal
                 isOpen={isCreateGroupModalOpen}
                 onClose={handleCloseGroupModal}
                 editGroup={editingGroup}
-                onSuccess={() => setActiveTab("collections")}
+                onSuccess={handleGroupSuccess}
             />
         </div >
     );

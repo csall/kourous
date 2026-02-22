@@ -10,7 +10,7 @@ interface CreateInvocationModalProps {
     isOpen: boolean;
     onClose: () => void;
     editInvocation?: Invocation | null;
-    onSuccess?: () => void;
+    onSuccess?: (id: string) => void;
 }
 
 const quickRepetitions = [33, 99, 100];
@@ -74,12 +74,12 @@ export function CreateInvocationModal({ isOpen, onClose, editInvocation, onSucce
                 description: descData,
             });
         } else {
-            addInvocation({
+            const newId = addInvocation({
                 name: nameData,
                 repetitions: finalRepetitions,
                 description: descData,
             });
-            onSuccess?.();
+            onSuccess?.(newId);
         }
         handleClose();
     };

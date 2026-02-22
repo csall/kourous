@@ -11,7 +11,7 @@ interface CreateGroupModalProps {
     isOpen: boolean;
     onClose: () => void;
     editGroup?: InvocationGroup | null;
-    onSuccess?: () => void;
+    onSuccess?: (id: string) => void;
 }
 
 export function CreateGroupModal({ isOpen, onClose, editGroup, onSuccess }: Readonly<CreateGroupModalProps>) {
@@ -87,11 +87,11 @@ export function CreateGroupModal({ isOpen, onClose, editGroup, onSuccess }: Read
                 invocations: selectedInvocations,
             });
         } else {
-            addGroup({
+            const newId = addGroup({
                 name: nameData, description: descData,
                 invocations: selectedInvocations,
             });
-            onSuccess?.();
+            onSuccess?.(newId);
         }
         handleClose();
     };

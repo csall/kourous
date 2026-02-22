@@ -35,13 +35,13 @@ interface InvocationStoreState {
     hiddenSystemIds: string[];
 
     // Invocations CRUD
-    addInvocation: (invocation: Omit<Invocation, "id" | "createdAt">) => void;
+    addInvocation: (invocation: Omit<Invocation, "id" | "createdAt">) => string;
     updateInvocation: (id: string, updates: Partial<Omit<Invocation, "id" | "createdAt">>) => void;
     deleteInvocation: (id: string) => void;
     getInvocationById: (id: string) => Invocation | undefined;
 
     // Groups CRUD
-    addGroup: (group: Omit<InvocationGroup, "id" | "createdAt">) => void;
+    addGroup: (group: Omit<InvocationGroup, "id" | "createdAt">) => string;
     updateGroup: (id: string, updates: Partial<Omit<InvocationGroup, "id" | "createdAt">>) => void;
     deleteGroup: (id: string) => void;
     getGroupById: (id: string) => InvocationGroup | undefined;
@@ -84,15 +84,17 @@ export const useInvocationStore = create<InvocationStoreState>()(
 
             // Invocations
             addInvocation: (invocation) => {
+                const newId = `inv-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
                 const newInvocation: Invocation = {
                     ...invocation,
-                    id: `inv-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                    id: newId,
                     createdAt: new Date().toISOString(),
                 };
                 set((state) => ({
                     userInvocations: [newInvocation, ...state.userInvocations],
                 }));
                 get().refreshMergedData();
+                return newId;
             },
 
             updateInvocation: (id, updates) => {
@@ -132,15 +134,17 @@ export const useInvocationStore = create<InvocationStoreState>()(
 
             // Groups
             addGroup: (group) => {
+                const newId = `grp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
                 const newGroup: InvocationGroup = {
                     ...group,
-                    id: `grp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                    id: newId,
                     createdAt: new Date().toISOString(),
                 };
                 set((state) => ({
                     userGroups: [newGroup, ...state.userGroups],
                 }));
                 get().refreshMergedData();
+                return newId;
             },
 
             updateGroup: (id, updates) => {
