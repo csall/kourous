@@ -22,13 +22,14 @@ import { useTranslation } from "@/lib/hooks/useTranslation";
 /* ─── Greeting Logic ──────────────────────────────── */
 function getGreeting() {
   const h = new Date().getHours();
+  // Using text-white/40 for a consistent gray look as requested
   if (h >= 5 && h < 12)
-    return { key: "morning", icon: <Sunrise size={18} className="text-amber-400" />, accent: "#f59e0b", glow: "rgba(245,158,11,0.3)" };
+    return { key: "morning", icon: <Sunrise size={18} className="text-white/40" />, accent: "#94a3b8", glow: "rgba(255,255,255,0.1)" };
   if (h >= 12 && h < 18)
-    return { key: "afternoon", icon: <Sun size={18} className="text-orange-400" />, accent: "#f97316", glow: "rgba(249,115,22,0.3)" };
+    return { key: "afternoon", icon: <Sun size={18} className="text-white/40" />, accent: "#94a3b8", glow: "rgba(255,255,255,0.1)" };
   if (h >= 18 && h < 22)
-    return { key: "evening", icon: <Sunset size={18} className="text-rose-400" />, accent: "#f43f5e", glow: "rgba(244,63,94,0.3)" };
-  return { key: "night", icon: <Moon size={18} className="text-indigo-400" />, accent: "#818cf8", glow: "rgba(129,140,248,0.3)" };
+    return { key: "evening", icon: <Sunset size={18} className="text-white/40" />, accent: "#94a3b8", glow: "rgba(255,255,255,0.1)" };
+  return { key: "night", icon: <Moon size={18} className="text-white/40" />, accent: "#94a3b8", glow: "rgba(255,255,255,0.1)" };
 }
 
 /* ─── 3D Tilt Card ─────────────────────────────────── */
@@ -149,9 +150,7 @@ export default function HomePage() {
       <main className="flex-1 px-5 pt-[calc(env(safe-area-inset-top,24px)+0.75rem)] pb-[calc(env(safe-area-inset-bottom,20px)+5.5rem)] flex flex-col z-10 max-w-[420px] mx-auto w-full h-full justify-between items-center overflow-hidden">
 
         {/* ── HEADER ──────────────────────────────── */}
-        <div className="w-full shrink-0 space-y-3">
-
-          {/* Greeting row */}
+        <div className="w-full shrink-0">
           <motion.div
             initial={{ opacity: 0, y: -16 }}
             animate={{ opacity: 1, y: 0 }}
@@ -198,41 +197,12 @@ export default function HomePage() {
               </button>
             </div>
           </motion.div>
-
-          {/* Quote card */}
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.1, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
-            className="glass-premium rounded-[24px] p-4 border border-white/[0.05] relative overflow-hidden"
-          >
-            {/* Subtle top shine */}
-            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
-            <div className="flex items-start gap-3">
-              <div className="w-7 h-7 rounded-full bg-indigo-500/15 border border-indigo-400/20 flex items-center justify-center shrink-0 mt-0.5">
-                <QuoteIcon size={12} className="text-indigo-400" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[13.5px] leading-[1.65] text-white/80 font-light italic">
-                  &ldquo;{resolve(dailyQuote.text)}&rdquo;
-                </p>
-                <div className="flex items-center gap-2 mt-2.5">
-                  <div className="h-px w-5 bg-gradient-to-r from-indigo-400/30 to-transparent" />
-                  <span className="text-[9px] font-black uppercase tracking-[0.45em] text-white/18">
-                    {resolve(dailyQuote.source)}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
         </div>
 
         {/* ── HERO ────────────────────────────────── */}
-        <div className="flex-1 flex flex-col justify-center items-center w-full min-h-0 gap-4 py-2">
-
-          {/* 3D Tilt Hero */}
+        <div className="flex-1 flex flex-col justify-center items-center w-full min-h-0 py-2">
           <TiltCard
-            className="w-full aspect-square max-w-[270px] max-h-[36vh]"
+            className="w-full aspect-square max-w-[360px] max-h-[48vh]"
             delay={0.4}
             onClick={() => {
               if (hasActiveSession) router.push("/session");
@@ -241,12 +211,12 @@ export default function HomePage() {
           >
             {/* Ambient glow pulse */}
             <motion.div
-              className="absolute inset-0 rounded-full bg-indigo-500/8 blur-[70px]"
+              className="absolute inset-0 rounded-full bg-indigo-500/8 blur-[80px]"
               animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.7, 0.4] }}
               transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
             />
             <motion.div
-              className="absolute inset-0 rounded-full bg-rose-500/5 blur-[50px]"
+              className="absolute inset-0 rounded-full bg-rose-500/5 blur-[60px]"
               animate={{ scale: [1.2, 1, 1.2], opacity: [0.3, 0.6, 0.3] }}
               transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
             />
@@ -256,94 +226,93 @@ export default function HomePage() {
             <OrbitRing size="74%" duration={26} reverse dotColor="#f472b6" />
             <OrbitRing size="90%" duration={36} dotColor="#fbbf24" />
 
-            {/* Center */}
-            <div className="relative z-10 flex flex-col items-center" style={{ transform: "translateZ(24px)" }}>
+            {/* Center content */}
+            <div className="relative z-10 flex flex-col items-center px-8 text-center" style={{ transform: "translateZ(32px)" }}>
               {hasActiveSession ? (
                 <div className="flex flex-col items-center">
-                  <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/30 mb-2">
+                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 mb-3">
                     {t.home.progression}
                   </span>
                   <span
-                    className="text-7xl font-bold text-white tracking-tighter tabular-nums"
-                    style={{ textShadow: "0 0 40px rgba(255,255,255,0.2)" }}
+                    className="text-8xl font-bold text-white tracking-tighter tabular-nums"
+                    style={{ textShadow: "0 0 50px rgba(255,255,255,0.25)" }}
                   >
                     {Math.round(progress * 100)}
-                    <span className="text-2xl opacity-25 align-top mt-2">%</span>
+                    <span className="text-2xl opacity-25 align-top mt-3">%</span>
                   </span>
-                  <p className="mt-3 text-[10px] font-bold text-white/35 tracking-wide bg-white/5 px-3 py-1 rounded-full border border-white/5 italic overflow-hidden max-w-[160px] truncate">
+                  <p className="mt-4 text-[10px] font-bold text-white/35 tracking-wide bg-white/5 px-4 py-1.5 rounded-full border border-white/5 italic overflow-hidden max-w-[180px] truncate">
                     &ldquo;{resolve(preset?.name)}&rdquo;
                   </p>
                 </div>
               ) : (
-                <div className="flex flex-col items-center">
+                <div className="flex flex-col items-center gap-6">
                   <motion.div
-                    className="w-[72px] h-[72px] rounded-full bg-white flex items-center justify-center"
-                    style={{ boxShadow: "0 0 0 0 rgba(255,255,255,0.3)" }}
+                    className="w-[84px] h-[84px] rounded-full bg-white flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,0.2)]"
                     animate={{
                       boxShadow: [
                         "0 0 30px rgba(255,255,255,0.2), 0 0 60px rgba(129,140,248,0.15)",
-                        "0 0 50px rgba(255,255,255,0.35), 0 0 100px rgba(129,140,248,0.3)",
+                        "0 0 50px rgba(255,255,255,0.4), 0 0 100px rgba(129,140,248,0.35)",
                         "0 0 30px rgba(255,255,255,0.2), 0 0 60px rgba(129,140,248,0.15)",
                       ],
                     }}
                     transition={{ duration: 3.5, repeat: Infinity }}
-                    whileTap={{ scale: 0.92 }}
+                    whileTap={{ scale: 0.9 }}
                   >
-                    <Play className="text-black fill-black ml-1" size={30} />
+                    <Play className="text-black fill-black ml-1.5" size={32} />
                   </motion.div>
-                  <span className="mt-5 text-[9px] font-black uppercase tracking-[0.5em] text-white/40">
-                    {t.home.explorer}
-                  </span>
                 </div>
               )}
+
+              {/* Shared Quote inside Hero */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.8, duration: 1 }}
+                className="mt-8 flex flex-col items-center max-w-[240px]"
+              >
+                <div className="w-6 h-0.5 bg-gradient-to-r from-transparent via-white/20 to-transparent mb-4" />
+                <p className="text-[13px] leading-[1.6] text-white/60 font-light italic mb-3 line-clamp-3">
+                  &ldquo;{resolve(dailyQuote.text)}&rdquo;
+                </p>
+                <span className="text-[8px] font-black uppercase tracking-[0.4em] text-white/15">
+                  {resolve(dailyQuote.source)}
+                </span>
+              </motion.div>
             </div>
           </TiltCard>
+        </div>
 
-          {/* Quick Access Buttons */}
-          <div className="w-full grid grid-cols-2 gap-3">
-
+        {/* ── BOTTOM ACTIONS ──────────────────────── */}
+        <div className="w-full shrink-0">
+          {/* Quick Access Grid */}
+          <div className="w-full grid grid-cols-2 gap-4 pb-4">
             <motion.button
               initial={{ opacity: 0, y: 18, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: 0.6, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ delay: 0.9, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
               whileTap={{ scale: 0.94, y: 2 }}
               onClick={() => router.push("/library")}
-              className="flex flex-col items-center gap-2.5 py-5 glass-premium rounded-[28px] border border-white/[0.07] relative overflow-hidden group"
-              style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.06)" }}
+              className="flex flex-col items-center gap-3 py-5 glass-premium rounded-[30px] border border-white/[0.08] relative overflow-hidden group shadow-2xl"
             >
-              {/* Top shine */}
-              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-indigo-400/20 to-transparent" />
-              {/* Hover/tap glow */}
-              <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/8 to-transparent opacity-0 group-active:opacity-100 transition-opacity duration-150" />
-
-              <div className="w-11 h-11 rounded-2xl bg-indigo-500/15 border border-indigo-400/20 flex items-center justify-center relative">
-                <div className="absolute inset-0 rounded-2xl bg-indigo-400/10 blur-sm" />
-                <Library size={20} className="text-indigo-400 relative z-10" />
+              <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-400/20 flex items-center justify-center relative">
+                <Library size={22} className="text-indigo-400 relative z-10" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/55">{t.home.library}</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">{t.home.library}</span>
             </motion.button>
 
             <motion.button
               initial={{ opacity: 0, y: 18, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: 0.7, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ delay: 1, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
               whileTap={{ scale: 0.94, y: 2 }}
               onClick={handleStartFreeSession}
-              className="flex flex-col items-center gap-2.5 py-5 glass-premium rounded-[28px] border border-white/[0.07] relative overflow-hidden group"
-              style={{ boxShadow: "0 8px 32px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.06)" }}
+              className="flex flex-col items-center gap-3 py-5 glass-premium rounded-[30px] border border-white/[0.08] relative overflow-hidden group shadow-2xl"
             >
-              {/* Top shine */}
-              <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-rose-400/20 to-transparent" />
-              {/* Hover/tap glow */}
-              <div className="absolute inset-0 bg-gradient-to-b from-rose-500/8 to-transparent opacity-0 group-active:opacity-100 transition-opacity duration-150" />
-
-              <div className="w-11 h-11 rounded-2xl bg-rose-500/15 border border-rose-400/20 flex items-center justify-center relative">
-                <div className="absolute inset-0 rounded-2xl bg-rose-400/10 blur-sm" />
-                <InfinityIcon size={22} className="text-rose-400 relative z-10" />
+              <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-400/20 flex items-center justify-center relative">
+                <InfinityIcon size={24} className="text-rose-400 relative z-10" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/55">{t.home.free}</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">{t.home.free}</span>
             </motion.button>
-
           </div>
         </div>
 
