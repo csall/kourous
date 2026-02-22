@@ -96,7 +96,7 @@ const BioluminescentParticles = ({ count = 1200 }: { count?: number }) => {
         for (let i = 0; i < count; i++) {
             const theta = Math.random() * Math.PI * 2;
             const r = Math.pow(Math.random(), 0.6) * 16;
-            p[i * 3]     = Math.cos(theta) * r;
+            p[i * 3] = Math.cos(theta) * r;
             p[i * 3 + 1] = (Math.random() - 0.5) * 22;
             p[i * 3 + 2] = (Math.random() - 0.5) * 12;
         }
@@ -127,7 +127,7 @@ const GoldParticles = ({ count = 350 }: { count?: number }) => {
     const points = useMemo(() => {
         const p = new Float32Array(count * 3);
         for (let i = 0; i < count; i++) {
-            p[i * 3]     = (Math.random() - 0.5) * 20;
+            p[i * 3] = (Math.random() - 0.5) * 20;
             p[i * 3 + 1] = (Math.random() - 0.5) * 20;
             p[i * 3 + 2] = (Math.random() - 0.5) * 10;
         }
@@ -138,7 +138,7 @@ const GoldParticles = ({ count = 350 }: { count?: number }) => {
     useFrame((state) => {
         if (ref.current) {
             ref.current.rotation.y = -state.clock.elapsedTime * 0.022;
-            ref.current.rotation.z =  state.clock.elapsedTime * 0.007;
+            ref.current.rotation.z = state.clock.elapsedTime * 0.007;
         }
     });
 
@@ -158,7 +158,7 @@ const RoseParticles = ({ count = 250 }: { count?: number }) => {
     const points = useMemo(() => {
         const p = new Float32Array(count * 3);
         for (let i = 0; i < count; i++) {
-            p[i * 3]     = (Math.random() - 0.5) * 18;
+            p[i * 3] = (Math.random() - 0.5) * 18;
             p[i * 3 + 1] = (Math.random() - 0.5) * 18;
             p[i * 3 + 2] = (Math.random() - 0.5) * 8;
         }
@@ -216,8 +216,8 @@ const EtherealBead = ({
 /* ── Scene ────────────────────────────────────────────────── */
 const BackgroundScene = () => {
     const materialRef = useRef<THREE.ShaderMaterial>(null);
-    const lightARef   = useRef<THREE.PointLight>(null);
-    const lightBRef   = useRef<THREE.PointLight>(null);
+    const lightARef = useRef<THREE.PointLight>(null);
+    const lightBRef = useRef<THREE.PointLight>(null);
 
     useFrame((state) => {
         const t = state.clock.elapsedTime;
@@ -246,22 +246,22 @@ const BackgroundScene = () => {
             <RoseParticles count={250} />
 
             {/* Floating glass beads */}
-            <EtherealBead position={[-7, 5, -3]}   size={0.65} color="#818cf8" />
-            <EtherealBead position={[8, -5, -2]}   size={1.55} color="#f472b6" />
-            <EtherealBead position={[-4, -7, -4]}  size={0.85} color="#fbbf24" />
-            <EtherealBead position={[3, 7, -6]}    size={1.35} color="#6366f1" />
-            <EtherealBead position={[0, 0, -10]}   size={2.7}  color="#3730a3" />
-            <EtherealBead position={[10, 2, -5]}   size={0.55} color="#34d399" />
-            <EtherealBead position={[-9, -3, -7]}  size={1.0}  color="#fb923c" />
-            <EtherealBead position={[5, -9, -3]}   size={0.7}  color="#c084fc" />
+            <EtherealBead position={[-7, 5, -3]} size={0.65} color="#818cf8" />
+            <EtherealBead position={[8, -5, -2]} size={1.55} color="#f472b6" />
+            <EtherealBead position={[-4, -7, -4]} size={0.85} color="#fbbf24" />
+            <EtherealBead position={[3, 7, -6]} size={1.35} color="#6366f1" />
+            <EtherealBead position={[0, 0, -10]} size={2.7} color="#3730a3" />
+            <EtherealBead position={[10, 2, -5]} size={0.55} color="#34d399" />
+            <EtherealBead position={[-9, -3, -7]} size={1.0} color="#fb923c" />
+            <EtherealBead position={[5, -9, -3]} size={0.7} color="#c084fc" />
 
             {/* Lights */}
             <ambientLight intensity={0.45} />
-            <pointLight ref={lightARef}  intensity={5.5} distance={30} color="#818cf8" decay={2} />
-            <pointLight ref={lightBRef}  intensity={3.5} distance={22} color="#f472b6" decay={2} />
-            <pointLight position={[14, 14, 5]}  intensity={2}   color="#ffffff" />
+            <pointLight ref={lightARef} intensity={5.5} distance={30} color="#818cf8" decay={2} />
+            <pointLight ref={lightBRef} intensity={3.5} distance={22} color="#f472b6" decay={2} />
+            <pointLight position={[14, 14, 5]} intensity={2} color="#ffffff" />
             <pointLight position={[-14, -14, -5]} intensity={1.5} color="#4f46e5" />
-            <pointLight position={[0, -12, 0]}  intensity={1.2} color="#fbbf24" decay={2} />
+            <pointLight position={[0, -12, 0]} intensity={1.2} color="#fbbf24" decay={2} />
         </>
     );
 };

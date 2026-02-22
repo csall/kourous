@@ -321,13 +321,13 @@ const BeadLayer = memo(() => {
     });
   }, []);
 
-  const { playClick } = useClickSound(true);
+  const { playClick } = useClickSound();
 
   const handleAdvance = useCallback(() => {
     if (isUiOpenRef.current || isCompleteRef.current) return;
 
-    if (hapticRef.current) hapticLight();
-    if (soundRef.current) playClick();
+    hapticLight();
+    playClick();
     advance();
   }, [advance, playClick]);
 
@@ -373,7 +373,7 @@ function SessionContent() {
   const setPresetByInvocationId = useSessionStore(state => state.setPresetByInvocationId);
   const soundEnabled = useSessionStore(state => state.soundEnabled);
 
-  const { playSuccess, playFinalSuccess } = useClickSound(soundEnabled);
+  const { playSuccess, playFinalSuccess } = useClickSound();
 
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -389,10 +389,10 @@ function SessionContent() {
 
   useEffect(() => {
     if (isComplete || isStepComplete) {
-      if (soundEnabled) playFinalSuccess();
+      playFinalSuccess();
       hapticCelebration();
     }
-  }, [isComplete, isStepComplete, soundEnabled, playFinalSuccess]);
+  }, [isComplete, isStepComplete, playFinalSuccess]);
 
   useEffect(() => {
     if (!hasHydrated) return;
@@ -417,7 +417,7 @@ function SessionContent() {
 
     // Intermediary Step Completion
     if (isStepComplete && progress.cycleIndex > lastTriggeredStep.current) {
-      if (soundEnabled) playSuccess();
+      playSuccess();
       hapticHeavy();
       confetti({
         particleCount: 40,
@@ -434,7 +434,7 @@ function SessionContent() {
       const currentCycle = useSessionStore.getState().currentCycle || 1;
 
       if (isFullLoop && lastFinishedCycle !== currentCycle) {
-        if (soundEnabled) playSuccess();
+        playSuccess();
         hapticHeavy();
         confetti({
           particleCount: 50,
@@ -493,8 +493,8 @@ function SessionContent() {
         </div>
       </div>
 
-      <FullscreenModal isOpen={isLibraryOpen} onClose={closeLibrary} title={t.library.title}>
-        <LibraryContent onSessionStart={closeLibrary} />
+      <FullscreenModal isOpen={isLibraryOpen} onClose={closeLibrary} title={t.library.title} hideHeader>
+        <LibraryContent onSessionStart={closeLibrary} onClose={closeLibrary} />
       </FullscreenModal>
 
       <FullscreenModal isOpen={isSettingsOpen} onClose={closeSettings} title={t.settings.title}>

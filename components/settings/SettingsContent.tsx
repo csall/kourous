@@ -13,6 +13,7 @@ import { useSessionStore } from "@/lib/store/sessionStore";
 import { useSearchParams } from "next/navigation";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 import { HomeBackground } from "@/components/home/HomeBackground";
+import { hapticLight } from "@/lib/utils/haptics";
 
 type SettingsView = 'menu' | 'preferences';
 
@@ -164,7 +165,7 @@ function SettingsInner() {
                                             : <VolumeX size={18} className="text-white/30" />}
                                         <span className="text-[14px] font-medium text-white/78">{t.session.sound}</span>
                                     </div>
-                                    <button onClick={toggleSound}
+                                    <button onClick={() => { hapticLight(); toggleSound(); }}
                                         className="w-12 h-6 rounded-full transition-all"
                                         style={{ backgroundColor: soundEnabled ? beadColor : 'rgba(255,255,255,0.12)' }}>
                                         <div className={`w-5 h-5 rounded-full bg-white shadow-lg transform transition-transform ${soundEnabled ? 'translate-x-6' : 'translate-x-0.5'}`} />
@@ -180,7 +181,7 @@ function SettingsInner() {
                                         <Vibrate size={18} style={{ color: hapticsEnabled ? beadColor : 'rgba(255,255,255,0.3)' }} />
                                         <span className="text-[14px] font-medium text-white/78">{t.session.haptics}</span>
                                     </div>
-                                    <button onClick={toggleHaptics}
+                                    <button onClick={() => { hapticLight(); toggleHaptics(); }}
                                         className="w-12 h-6 rounded-full transition-all"
                                         style={{ backgroundColor: hapticsEnabled ? beadColor : 'rgba(255,255,255,0.12)' }}>
                                         <div className={`w-5 h-5 rounded-full bg-white shadow-lg transform transition-transform ${hapticsEnabled ? 'translate-x-6' : 'translate-x-0.5'}`} />

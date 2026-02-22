@@ -1,6 +1,7 @@
 "use client";
 
 import { Capacitor } from '@capacitor/core';
+import { useSessionStore } from '../store/sessionStore';
 
 const isNative = () => Capacitor.isNativePlatform();
 const isMobile = () => {
@@ -10,7 +11,7 @@ const isMobile = () => {
 };
 
 export async function hapticLight() {
-    if (!isMobile()) return;
+    if (!isMobile() || !useSessionStore.getState().hapticsEnabled) return;
     try {
         const { Haptics, ImpactStyle } = await import('@capacitor/haptics');
         await Haptics.impact({ style: ImpactStyle.Light });
@@ -20,7 +21,7 @@ export async function hapticLight() {
 }
 
 export async function hapticMedium() {
-    if (!isMobile()) return;
+    if (!isMobile() || !useSessionStore.getState().hapticsEnabled) return;
     try {
         const { Haptics, ImpactStyle } = await import('@capacitor/haptics');
         await Haptics.impact({ style: ImpactStyle.Medium });
@@ -30,7 +31,7 @@ export async function hapticMedium() {
 }
 
 export async function hapticSuccess() {
-    if (!isMobile()) return;
+    if (!isMobile() || !useSessionStore.getState().hapticsEnabled) return;
     try {
         const { Haptics, NotificationType } = await import('@capacitor/haptics');
         await Haptics.notification({ type: NotificationType.Success });
@@ -40,7 +41,7 @@ export async function hapticSuccess() {
 }
 
 export async function hapticHeavy() {
-    if (!isMobile()) return;
+    if (!isMobile() || !useSessionStore.getState().hapticsEnabled) return;
     try {
         const { Haptics } = await import('@capacitor/haptics');
         // Stronger vibration for cycle completion
@@ -51,7 +52,7 @@ export async function hapticHeavy() {
 }
 
 export async function hapticCelebration() {
-    if (!isMobile()) return;
+    if (!isMobile() || !useSessionStore.getState().hapticsEnabled) return;
     try {
         const { Haptics } = await import('@capacitor/haptics');
         // Very strong vibration for session completion

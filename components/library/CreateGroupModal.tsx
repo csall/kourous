@@ -123,7 +123,7 @@ export function CreateGroupModal({ isOpen, onClose, editGroup, onSuccess }: Read
                     <motion.div
                         initial={{ y: "-100%" }} animate={{ y: 0 }} exit={{ y: "-100%" }}
                         transition={{ type: "spring", damping: 32, stiffness: 320 }}
-                        className="fixed inset-x-0 top-0 z-50 bg-white dark:bg-[#1c1c1e] rounded-b-[2rem] flex flex-col shadow-2xl"
+                        className="fixed inset-x-0 top-0 z-50 bg-slate-50 dark:bg-[#1c1c1e] rounded-b-[2rem] flex flex-col shadow-2xl"
                         style={{
                             maxHeight: "90dvh",
                             paddingTop: "max(env(safe-area-inset-top), 16px)",
@@ -158,13 +158,13 @@ export function CreateGroupModal({ isOpen, onClose, editGroup, onSuccess }: Read
                             {/* Nom */}
                             <div className="space-y-1.5">
                                 <div className="flex items-center justify-between">
-                                    <label htmlFor="group-name" className="text-[9px] font-black uppercase tracking-[0.22em] text-slate-500 dark:text-white/35">
+                                    <label htmlFor="group-name" className="text-[9px] font-black uppercase tracking-[0.22em] text-slate-600/70 dark:text-white/35">
                                         Nom (Français)
                                     </label>
                                     <button
                                         type="button"
                                         onClick={() => setShowEnglish(!showEnglish)}
-                                        className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full transition-colors ${showEnglish ? 'bg-indigo-500 text-white' : 'bg-slate-100 dark:bg-white/10 text-slate-500'}`}
+                                        className={`text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full transition-colors ${showEnglish ? 'bg-indigo-500 text-white' : 'bg-slate-200/50 dark:bg-white/10 text-slate-600'}`}
                                     >
                                         + Anglais
                                     </button>
@@ -175,7 +175,7 @@ export function CreateGroupModal({ isOpen, onClose, editGroup, onSuccess }: Read
                                     value={nameFr}
                                     onChange={(e) => setNameFr(e.target.value)}
                                     placeholder="Ex: Rituel du Matin"
-                                    className="w-full px-4 py-3 bg-slate-100 dark:bg-white/[0.07] border border-slate-200 dark:border-white/10 rounded-2xl text-slate-900 dark:text-white text-[15px] placeholder:text-slate-400 dark:placeholder:text-white/20 focus:outline-none focus:border-slate-400 dark:focus:border-white/25 font-semibold"
+                                    className="w-full px-4 py-3 bg-white dark:bg-white/[0.07] border border-slate-300 dark:border-white/10 rounded-2xl text-slate-900 dark:text-white text-[15px] placeholder:text-slate-400 dark:placeholder:text-white/20 focus:outline-none focus:border-slate-400 dark:focus:border-white/25 font-semibold transition-all shadow-sm dark:shadow-none"
                                 />
                                 {errors.nameFr && <p className="text-[11px] font-bold text-rose-400 px-1">{errors.nameFr}</p>}
 
@@ -187,7 +187,7 @@ export function CreateGroupModal({ isOpen, onClose, editGroup, onSuccess }: Read
                                             exit={{ height: 0, opacity: 0 }}
                                             className="overflow-hidden space-y-1.5 pt-1"
                                         >
-                                            <label htmlFor="group-name-en" className="text-[9px] font-black uppercase tracking-[0.22em] text-slate-500 dark:text-white/35 pl-1">
+                                            <label htmlFor="group-name-en" className="text-[9px] font-black uppercase tracking-[0.22em] text-slate-600/70 dark:text-white/35 pl-1">
                                                 Name (English)
                                             </label>
                                             <input
@@ -196,7 +196,7 @@ export function CreateGroupModal({ isOpen, onClose, editGroup, onSuccess }: Read
                                                 value={nameEn}
                                                 onChange={(e) => setNameEn(e.target.value)}
                                                 placeholder="Ex: Morning Ritual"
-                                                className="w-full px-4 py-3 bg-slate-100 dark:bg-white/[0.07] border border-slate-200 dark:border-white/10 rounded-2xl text-slate-900 dark:text-white text-[15px] placeholder:text-slate-400 dark:placeholder:text-white/20 focus:outline-none focus:border-slate-400 dark:focus:border-white/25 font-semibold"
+                                                className="w-full px-4 py-3 bg-white dark:bg-white/[0.07] border border-slate-300/50 dark:border-white/10 rounded-2xl text-slate-900 dark:text-white text-[15px] placeholder:text-slate-400 dark:placeholder:text-white/20 focus:outline-none focus:border-slate-400 dark:focus:border-white/25 font-semibold transition-colors shadow-sm dark:shadow-none"
                                             />
                                         </motion.div>
                                     )}
@@ -205,7 +205,7 @@ export function CreateGroupModal({ isOpen, onClose, editGroup, onSuccess }: Read
 
                             {/* Notes */}
                             <div className="space-y-1.5">
-                                <label htmlFor="group-description" className="text-[9px] font-black uppercase tracking-[0.22em] text-slate-500 dark:text-white/35">
+                                <label htmlFor="group-description" className="text-[9px] font-black uppercase tracking-[0.22em] text-slate-600/70 dark:text-white/35">
                                     Notes (Français)
                                 </label>
                                 <textarea
@@ -214,7 +214,7 @@ export function CreateGroupModal({ isOpen, onClose, editGroup, onSuccess }: Read
                                     onChange={(e) => setDescriptionFr(e.target.value)}
                                     placeholder="Rappel ou intention pour cette collection..."
                                     rows={1}
-                                    className="w-full px-4 py-3 bg-slate-100 dark:bg-white/[0.07] border border-slate-200 dark:border-white/10 rounded-2xl text-slate-900 dark:text-white text-sm placeholder:text-slate-400 dark:placeholder:text-white/20 focus:outline-none focus:border-slate-400 dark:focus:border-white/25 font-medium resize-none"
+                                    className="w-full px-4 py-3 bg-white dark:bg-white/[0.07] border border-slate-300 dark:border-white/10 rounded-2xl text-slate-900 dark:text-white text-sm placeholder:text-slate-400 dark:placeholder:text-white/20 focus:outline-none focus:border-slate-400 dark:focus:border-white/25 font-medium resize-none transition-all shadow-sm dark:shadow-none"
                                 />
 
                                 <AnimatePresence>
@@ -225,8 +225,8 @@ export function CreateGroupModal({ isOpen, onClose, editGroup, onSuccess }: Read
                                             exit={{ height: 0, opacity: 0 }}
                                             className="overflow-hidden space-y-1.5 pt-1"
                                         >
-                                            <label htmlFor="group-description-en" className="text-[9px] font-black uppercase tracking-[0.22em] text-slate-500 dark:text-white/35 pl-1">
-                                                Notes (English)
+                                            <label htmlFor="group-description-en" className="text-[9px] font-black uppercase tracking-[0.22em] text-slate-600/70 dark:text-white/35 pl-1">
+                                                Name (English)
                                             </label>
                                             <textarea
                                                 id="group-description-en"
@@ -234,7 +234,7 @@ export function CreateGroupModal({ isOpen, onClose, editGroup, onSuccess }: Read
                                                 onChange={(e) => setDescriptionEn(e.target.value)}
                                                 placeholder="Reminder or intention..."
                                                 rows={1}
-                                                className="w-full px-4 py-3 bg-slate-100 dark:bg-white/[0.07] border border-slate-200 dark:border-white/10 rounded-2xl text-slate-900 dark:text-white text-sm placeholder:text-slate-400 dark:placeholder:text-white/20 focus:outline-none focus:border-slate-400 dark:focus:border-white/25 font-medium resize-none"
+                                                className="w-full px-4 py-3 bg-white dark:bg-white/[0.07] border border-slate-300 dark:border-white/10 rounded-2xl text-slate-900 dark:text-white text-sm placeholder:text-slate-400 dark:placeholder:text-white/20 focus:outline-none focus:border-slate-400 dark:focus:border-white/25 font-medium resize-none transition-all shadow-sm dark:shadow-none"
                                             />
                                         </motion.div>
                                     )}
@@ -243,7 +243,7 @@ export function CreateGroupModal({ isOpen, onClose, editGroup, onSuccess }: Read
 
                             {/* Header étapes */}
                             <div className="flex items-center justify-between">
-                                <span className="text-[9px] font-black uppercase tracking-[0.22em] text-slate-500 dark:text-white/35">
+                                <span className="text-[9px] font-black uppercase tracking-[0.22em] text-slate-600/70 dark:text-white/35">
                                     Étapes
                                 </span>
                                 <span
@@ -272,7 +272,7 @@ export function CreateGroupModal({ isOpen, onClose, editGroup, onSuccess }: Read
                                                 initial={{ opacity: 0, x: -12 }}
                                                 animate={{ opacity: 1, x: 0 }}
                                                 exit={{ opacity: 0, x: 12 }}
-                                                className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.07] rounded-2xl"
+                                                className="flex items-center gap-3 p-3 bg-white dark:bg-white/[0.05] border border-slate-200 dark:border-white/[0.07] rounded-2xl shadow-sm dark:shadow-none"
                                             >
                                                 <GripVertical size={13} className="text-white/20 shrink-0" />
                                                 <div className="flex-1 min-w-0">
@@ -317,7 +317,7 @@ export function CreateGroupModal({ isOpen, onClose, editGroup, onSuccess }: Read
                                         onChange={(e) => {
                                             if (e.target.value) { handleAddInvocation(e.target.value); e.target.value = ""; }
                                         }}
-                                        className="w-full appearance-none px-4 py-3 bg-slate-50 dark:bg-white/[0.04] border-2 border-dashed border-slate-300 dark:border-white/[0.12] rounded-2xl text-slate-500 dark:text-white/40 text-xs font-black focus:outline-none cursor-pointer"
+                                        className="w-full appearance-none px-4 py-3 bg-white dark:bg-white/[0.04] border-2 border-dashed border-slate-300 dark:border-white/[0.12] rounded-2xl text-slate-900/40 dark:text-white/40 text-xs font-black focus:outline-none cursor-pointer hover:bg-white/80 transition-all"
                                     >
                                         <option value="">+ AJOUTER UNE ÉTAPE</option>
                                         {availableInvocations.map((inv) => (

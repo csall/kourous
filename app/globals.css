@@ -20,6 +20,7 @@
 }
 
 @import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
 
 :root,
 .dark {

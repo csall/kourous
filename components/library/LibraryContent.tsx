@@ -18,9 +18,10 @@ const Shine = () => (
 
 interface LibraryContentProps {
     onSessionStart?: () => void;
+    onClose?: () => void;
 }
 
-export function LibraryContent({ onSessionStart }: LibraryContentProps) {
+export function LibraryContent({ onSessionStart, onClose }: LibraryContentProps) {
     const [searchQuery, setSearchQuery] = useState("");
     const [activeTab, setActiveTab] = useState<"collections" | "invocations" | "favorites">("collections");
     const [isCreateInvocationModalOpen, setIsCreateInvocationModalOpen] = useState(false);
@@ -121,7 +122,16 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                 <div className="flex items-center gap-3">
                                     <div className="w-9 h-9 rounded-[12px] flex items-center justify-center"
                                         style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                                        <Sparkles size={16} style={{ color: beadColor }} />
+                                        {onClose ? (
+                                            <button
+                                                onClick={onClose}
+                                                className="w-full h-full flex items-center justify-center text-white/50 hover:text-white transition-colors"
+                                            >
+                                                <X size={18} />
+                                            </button>
+                                        ) : (
+                                            <Sparkles size={16} style={{ color: beadColor }} />
+                                        )}
                                     </div>
                                     <div>
                                         <h2 className="text-2xl font-bold text-white tracking-tight">{t.library.title}</h2>
@@ -167,7 +177,7 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                                         animate={{ opacity: 1, scale: 1, y: 0 }}
                                                         exit={{ opacity: 0, scale: 0.9, y: -8 }}
                                                         transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-                                                        className="absolute right-0 top-full mt-1 z-50 bg-[#1C1C1E]/80 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl shadow-black/40 overflow-hidden min-w-[200px]"
+                                                        className="absolute right-0 top-full mt-1 z-50 bg-white/90 dark:bg-[#1C1C1E]/80 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl shadow-black/10 dark:shadow-black/40 overflow-hidden min-w-[200px]"
                                                         style={{ transformOrigin: "top right" }}
                                                     >
                                                         <button
@@ -179,11 +189,11 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                                             className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-white/5 active:bg-white/10 transition-colors text-left"
                                                         >
                                                             <div className="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/20 flex items-center justify-center shrink-0">
-                                                                <Sparkles size={15} className="text-emerald-400" />
+                                                                <Sparkles size={15} className="text-emerald-500 dark:text-emerald-400" />
                                                             </div>
                                                             <div>
-                                                                <p className="text-[14px] font-semibold text-white/90 leading-tight">{t.library.newCollection}</p>
-                                                                <p className="text-[11px] text-white/40 mt-0.5">{t.library.groupInvocations}</p>
+                                                                <p className="text-[14px] font-semibold text-slate-900 dark:text-white/90 leading-tight">{t.library.newCollection}</p>
+                                                                <p className="text-[11px] text-slate-500 dark:text-white/40 mt-0.5">{t.library.groupInvocations}</p>
                                                             </div>
                                                         </button>
 
@@ -198,11 +208,11 @@ export function LibraryContent({ onSessionStart }: LibraryContentProps) {
                                                             className="w-full flex items-center gap-3 px-4 py-3.5 hover:bg-white/5 active:bg-white/10 transition-colors text-left"
                                                         >
                                                             <div className="w-8 h-8 rounded-xl bg-indigo-500/15 border border-indigo-500/20 flex items-center justify-center shrink-0">
-                                                                <BookOpen size={15} className="text-indigo-400" />
+                                                                <BookOpen size={15} className="text-indigo-500 dark:text-indigo-400" />
                                                             </div>
                                                             <div>
-                                                                <p className="text-[14px] font-semibold text-white/90 leading-tight">{t.library.newInvocation}</p>
-                                                                <p className="text-[11px] text-white/40 mt-0.5">{t.library.createDhikr}</p>
+                                                                <p className="text-[14px] font-semibold text-slate-900 dark:text-white/90 leading-tight">{t.library.newInvocation}</p>
+                                                                <p className="text-[11px] text-slate-500 dark:text-white/40 mt-0.5">{t.library.createDhikr}</p>
                                                             </div>
                                                         </button>
                                                     </motion.div>

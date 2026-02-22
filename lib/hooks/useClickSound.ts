@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useCallback } from "react";
+import { useSessionStore } from "../store/sessionStore";
 
-export function useClickSound(enabled: boolean = true) {
+export function useClickSound() {
+    const enabled = useSessionStore(state => state.soundEnabled);
     const audioContextRef = useRef<AudioContext | null>(null);
 
     useEffect(() => {
