@@ -1,8 +1,8 @@
 "use client";
 
 import { useSessionStore } from "@/lib/store/sessionStore";
-import { useEffect, useState, useMemo, useRef } from "react";
-import { motion, useMotionValue, useTransform, useSpring } from "framer-motion";
+import { useEffect, useState, useMemo } from "react";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 
 import {
@@ -10,13 +10,12 @@ import {
   Sun,
   Sunrise,
   Sunset,
-  Play,
   Infinity as InfinityIcon,
   Library,
-  Quote as QuoteIcon
 } from "lucide-react";
 import { getRandomQuote } from "@/lib/data/quotes";
 import { HomeBackground } from "@/components/home/HomeBackground";
+import { HomeBeadScene } from "@/components/home/HomeBeadScene";
 import { useTranslation } from "@/lib/hooks/useTranslation";
 
 /* ─── Greeting Logic ──────────────────────────────── */
@@ -32,90 +31,7 @@ function getGreeting() {
   return { key: "night", icon: <Moon size={18} className="text-white/40" />, accent: "#94a3b8", glow: "rgba(255,255,255,0.1)" };
 }
 
-/* ─── 3D Tilt Card ─────────────────────────────────── */
-const TiltCard = ({
-  children,
-  className = "",
-  delay = 0,
-  onClick,
-  style: extraStyle = {},
-}: {
-  children: React.ReactNode;
-  className?: string;
-  delay?: number;
-  onClick?: () => void;
-  style?: React.CSSProperties;
-}) => {
-  const ref = useRef<HTMLDivElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
 
-  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [10, -10]), { stiffness: 300, damping: 30 });
-  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-10, 10]), { stiffness: 300, damping: 30 });
-  const glareX = useTransform(x, [-0.5, 0.5], [0, 100]);
-  const glareY = useTransform(y, [-0.5, 0.5], [0, 100]);
-
-  const handlePointerMove = (e: React.PointerEvent) => {
-    const rect = ref.current?.getBoundingClientRect();
-    if (!rect) return;
-    x.set((e.clientX - rect.left) / rect.width - 0.5);
-    y.set((e.clientY - rect.top) / rect.height - 0.5);
-  };
-
-  const handlePointerLeave = () => {
-    x.set(0);
-    y.set(0);
-  };
-
-  return (
-    <div style={{ perspective: "1200px" }} className={className}>
-      <motion.div
-        ref={ref}
-        initial={{ opacity: 0, scale: 0.88, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.9, delay, ease: [0.16, 1, 0.3, 1] }}
-        style={{ rotateX, rotateY, transformStyle: "preserve-3d", ...extraStyle }}
-        onPointerMove={handlePointerMove}
-        onPointerLeave={handlePointerLeave}
-        whileTap={onClick ? { scale: 0.97 } : undefined}
-        onClick={onClick}
-        className={`glass-iridescent relative overflow-hidden rounded-[38px] flex items-center justify-center w-full h-full ${onClick ? "cursor-pointer" : ""}`}
-      >
-        {/* Dynamic glare */}
-        <motion.div
-          className="absolute inset-0 pointer-events-none rounded-[38px]"
-          style={{
-            background: `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.12) 0%, transparent 65%)`,
-          }}
-        />
-        <div className="relative z-10 w-full h-full flex items-center justify-center">
-          {children}
-        </div>
-      </motion.div>
-    </div>
-  );
-};
-
-/* ─── Orbit Ring ──────────────────────────────────── */
-const OrbitRing = ({ size, duration, reverse = false, dotColor = "#818cf8" }: { size: string; duration: number; reverse?: boolean; dotColor?: string }) => (
-  <motion.div
-    className="absolute rounded-full border border-white/[0.06]"
-    style={{ width: size, height: size }}
-    animate={{ rotate: reverse ? -360 : 360 }}
-    transition={{ duration, repeat: Infinity, ease: "linear" }}
-  >
-    <div
-      className="absolute w-1.5 h-1.5 rounded-full"
-      style={{
-        top: "-3px",
-        left: "50%",
-        transform: "translateX(-50%)",
-        backgroundColor: dotColor,
-        boxShadow: `0 0 8px ${dotColor}`,
-      }}
-    />
-  </motion.div>
-);
 
 export default function HomePage() {
   const router = useRouter();
@@ -199,121 +115,129 @@ export default function HomePage() {
           </motion.div>
         </div>
 
-        {/* ── HERO ────────────────────────────────── */}
-        <div className="flex-1 flex flex-col justify-center items-center w-full min-h-0 py-2">
-          <TiltCard
-            className="w-full aspect-square max-w-[360px] max-h-[48vh]"
-            delay={0.4}
-            onClick={() => {
-              if (hasActiveSession) router.push("/session");
-              else router.push("/library");
-            }}
-          >
-            {/* Ambient glow pulse */}
-            <motion.div
-              className="absolute inset-0 rounded-full bg-indigo-500/8 blur-[80px]"
-              animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.7, 0.4] }}
-              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <motion.div
-              className="absolute inset-0 rounded-full bg-rose-500/5 blur-[60px]"
-              animate={{ scale: [1.2, 1, 1.2], opacity: [0.3, 0.6, 0.3] }}
-              transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-            />
-
-            {/* Orbit rings */}
-            <OrbitRing size="58%" duration={18} dotColor="#818cf8" />
-            <OrbitRing size="74%" duration={26} reverse dotColor="#f472b6" />
-            <OrbitRing size="90%" duration={36} dotColor="#fbbf24" />
-
-            {/* Center content */}
-            <div className="relative z-10 flex flex-col items-center px-8 text-center" style={{ transform: "translateZ(32px)" }}>
-              {hasActiveSession ? (
-                <div className="flex flex-col items-center">
-                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/30 mb-3">
-                    {t.home.progression}
-                  </span>
-                  <span
-                    className="text-8xl font-bold text-white tracking-tighter tabular-nums"
-                    style={{ textShadow: "0 0 50px rgba(255,255,255,0.25)" }}
-                  >
-                    {Math.round(progress * 100)}
-                    <span className="text-2xl opacity-25 align-top mt-3">%</span>
-                  </span>
-                  <p className="mt-4 text-[10px] font-bold text-white/35 tracking-wide bg-white/5 px-4 py-1.5 rounded-full border border-white/5 italic overflow-hidden max-w-[180px] truncate">
-                    &ldquo;{resolve(preset?.name)}&rdquo;
-                  </p>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center gap-6">
-                  <motion.div
-                    className="w-[84px] h-[84px] rounded-full bg-white flex items-center justify-center shadow-[0_0_40px_rgba(255,255,255,0.2)]"
-                    animate={{
-                      boxShadow: [
-                        "0 0 30px rgba(255,255,255,0.2), 0 0 60px rgba(129,140,248,0.15)",
-                        "0 0 50px rgba(255,255,255,0.4), 0 0 100px rgba(129,140,248,0.35)",
-                        "0 0 30px rgba(255,255,255,0.2), 0 0 60px rgba(129,140,248,0.15)",
-                      ],
-                    }}
-                    transition={{ duration: 3.5, repeat: Infinity }}
-                    whileTap={{ scale: 0.9 }}
-                  >
-                    <Play className="text-black fill-black ml-1.5" size={32} />
-                  </motion.div>
-                </div>
-              )}
-
-              {/* Shared Quote inside Hero */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.8, duration: 1 }}
-                className="mt-8 flex flex-col items-center max-w-[240px]"
-              >
-                <div className="w-6 h-0.5 bg-gradient-to-r from-transparent via-white/20 to-transparent mb-4" />
-                <p className="text-[13px] leading-[1.6] text-white/60 font-light italic mb-3 line-clamp-3">
-                  &ldquo;{resolve(dailyQuote.text)}&rdquo;
-                </p>
-                <span className="text-[8px] font-black uppercase tracking-[0.4em] text-white/15">
-                  {resolve(dailyQuote.source)}
-                </span>
-              </motion.div>
-            </div>
-          </TiltCard>
+        {/* ── CHAPELET FLOTTANT ────────────────────── */}
+        <div className="flex-1 w-full flex items-center justify-center min-h-0 relative">
+          {/* Halo indigo */}
+          <motion.div
+            className="absolute inset-0 pointer-events-none"
+            style={{ background: "radial-gradient(ellipse at 50% 50%, rgba(99,102,241,0.14) 0%, transparent 66%)" }}
+            animate={{ opacity: [0.4, 0.85, 0.4] }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          />
+          {/* Halo rose (décalé) */}
+          <motion.div
+            className="absolute inset-0 pointer-events-none"
+            style={{ background: "radial-gradient(ellipse at 55% 45%, rgba(244,114,182,0.07) 0%, transparent 60%)" }}
+            animate={{ opacity: [0.6, 1, 0.6] }}
+            transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          />
+          {/* Canvas */}
+          <div className="w-full h-full max-w-[300px] max-h-[40vh] pointer-events-none">
+            <HomeBeadScene cameraY={0} />
+          </div>
         </div>
 
-        {/* ── BOTTOM ACTIONS ──────────────────────── */}
-        <div className="w-full shrink-0">
-          {/* Quick Access Grid */}
-          <div className="w-full grid grid-cols-2 gap-4 pb-4">
+        {/* ── BLOC BAS : info + actions ────────────── */}
+        <div className="w-full shrink-0 flex flex-col gap-3 pb-4">
+
+          {/* Carte info */}
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.65, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            className="w-full rounded-[26px] px-5 pt-4 pb-5"
+            style={{
+              background: "rgba(255,255,255,0.03)",
+              border: "1px solid rgba(255,255,255,0.07)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+            }}
+          >
+            {hasActiveSession ? (
+              <>
+                <p className="text-[8px] font-black uppercase tracking-[0.45em] text-white/25 mb-1.5">
+                  {t.home.progression}
+                </p>
+                <div className="flex items-baseline gap-2 mb-3">
+                  <span className="text-3xl font-bold text-white tabular-nums leading-none">
+                    {Math.round(progress * 100)}
+                    <span className="text-sm text-white/25 ml-0.5">%</span>
+                  </span>
+                  <span className="ml-auto text-[10px] text-white/30 italic truncate max-w-[150px]">
+                    &laquo;{resolve(preset?.name)}&raquo;
+                  </span>
+                </div>
+                <div className="h-[2px] w-full bg-white/[0.07] rounded-full overflow-hidden mb-4">
+                  <motion.div
+                    className="h-full rounded-full bg-gradient-to-r from-indigo-400 to-violet-400"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress * 100}%` }}
+                    transition={{ duration: 0.9, ease: "easeOut" }}
+                  />
+                </div>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => router.push("/session")}
+                  className="w-full py-[10px] rounded-[14px] text-[10px] font-black uppercase tracking-[0.35em] text-center"
+                  style={{ background: "rgba(99,102,241,0.18)", border: "1px solid rgba(99,102,241,0.28)", color: "#a5b4fc" }}
+                >
+                  {t.common.continue} →
+                </motion.button>
+              </>
+            ) : (
+              <div className="flex items-center gap-4">
+                <div className="flex-1 min-w-0">
+                  <div className="w-4 h-px bg-gradient-to-r from-indigo-400/50 to-transparent mb-2" />
+                  <p className="text-[12px] leading-[1.55] text-white/60 font-light italic line-clamp-2">
+                    &ldquo;{resolve(dailyQuote.text)}&rdquo;
+                  </p>
+                  <span className="text-[8px] font-black uppercase tracking-[0.4em] text-white/20 mt-1 block">
+                    {resolve(dailyQuote.source)}
+                  </span>
+                </div>
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => router.push("/library")}
+                  className="shrink-0 px-4 py-[10px] rounded-[14px] text-[10px] font-black uppercase tracking-[0.2em]"
+                  style={{ background: "rgba(99,102,241,0.16)", border: "1px solid rgba(99,102,241,0.24)", color: "#a5b4fc" }}
+                >
+                  ▶ {t.home.explorer}
+                </motion.button>
+              </div>
+            )}
+          </motion.div>
+
+          {/* Boutons rapides */}
+          <div className="w-full grid grid-cols-2 gap-3">
             <motion.button
-              initial={{ opacity: 0, y: 18, scale: 0.95 }}
+              initial={{ opacity: 0, y: 14, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: 0.9, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ delay: 0.85, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
               whileTap={{ scale: 0.94, y: 2 }}
               onClick={() => router.push("/library")}
-              className="flex flex-col items-center gap-3 py-5 glass-premium rounded-[30px] border border-white/[0.08] relative overflow-hidden group shadow-2xl"
+              className="flex flex-col items-center gap-2.5 py-4 glass-premium rounded-[24px] border border-white/[0.08] relative overflow-hidden shadow-2xl"
             >
-              <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 border border-indigo-400/20 flex items-center justify-center relative">
-                <Library size={22} className="text-indigo-400 relative z-10" />
+              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-400/20 flex items-center justify-center">
+                <Library size={18} className="text-indigo-400" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">{t.home.library}</span>
+              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/40">{t.home.library}</span>
             </motion.button>
 
             <motion.button
-              initial={{ opacity: 0, y: 18, scale: 0.95 }}
+              initial={{ opacity: 0, y: 14, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: 1, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ delay: 0.95, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
               whileTap={{ scale: 0.94, y: 2 }}
               onClick={handleStartFreeSession}
-              className="flex flex-col items-center gap-3 py-5 glass-premium rounded-[30px] border border-white/[0.08] relative overflow-hidden group shadow-2xl"
+              className="flex flex-col items-center gap-2.5 py-4 glass-premium rounded-[24px] border border-white/[0.08] relative overflow-hidden shadow-2xl"
             >
-              <div className="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-400/20 flex items-center justify-center relative">
-                <InfinityIcon size={24} className="text-rose-400 relative z-10" />
+              <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-400/20 flex items-center justify-center">
+                <InfinityIcon size={20} className="text-rose-400" />
               </div>
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">{t.home.free}</span>
+              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/40">{t.home.free}</span>
             </motion.button>
           </div>
+
         </div>
 
       </main>
