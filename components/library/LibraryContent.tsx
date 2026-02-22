@@ -115,7 +115,7 @@ export function LibraryContent({ onSessionStart, onClose }: LibraryContentProps)
             </div>
 
             {/* ── FIXED HEADER ─────────────────────────── */}
-            <div className="flex-none space-y-4 pb-2 px-5 z-10">
+            <div className="flex-none space-y-4 pt-[calc(env(safe-area-inset-top,20px)+0.75rem)] pb-2 px-5 z-20 relative">
                 <AnimatePresence mode="wait">
                     {!isSearching ? (
                         <motion.div
@@ -123,7 +123,7 @@ export function LibraryContent({ onSessionStart, onClose }: LibraryContentProps)
                             initial={{ opacity: 0, y: -10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: -10 }}
-                            className="space-y-4 pt-[calc(env(safe-area-inset-top,20px)+0.5rem)]"
+                            className="space-y-4"
                         >
                             {/* Spotify-style title row formatted like Settings */}
                             <div className="flex items-center justify-between">
@@ -237,7 +237,7 @@ export function LibraryContent({ onSessionStart, onClose }: LibraryContentProps)
                             initial={{ opacity: 0, x: 20 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: 20 }}
-                            className="flex items-center gap-3"
+                            className="flex items-center gap-3 h-[44px]"
                         >
                             <div className="relative flex-1 group">
                                 <Search
