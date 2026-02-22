@@ -1,0 +1,104 @@
+"use client";
+
+import Link from "next/link";
+import { ArrowLeft, HelpCircle, Mail, Smartphone, Volume2, Sparkles, BookOpen, Palette } from "lucide-react";
+import { en } from "@/lib/translations/en";
+
+const t = en;
+
+export default function SupportPageEn() {
+    return (
+        <div className="h-[100dvh] bg-slate-50 dark:bg-slate-950 text-slate-700 dark:text-slate-300 font-sans selection:bg-cyan-500/30 overflow-hidden flex flex-col">
+            {/* Background Effects */}
+            <div className="fixed inset-0 pointer-events-none overflow-hidden opacity-0 dark:opacity-100 transition-opacity duration-500">
+                <div className="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-cyan-500/5 rounded-full blur-[120px]" />
+                <div className="absolute bottom-[-10%] left-[-5%] w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-[120px]" />
+            </div>
+
+            <div className="flex-1 overflow-y-auto no-scrollbar touch-pan-y">
+                <main className="relative max-w-3xl mx-auto px-6 pt-[calc(env(safe-area-inset-top)+2rem)] pb-32 space-y-8">
+                    <Link href="/settings" className="inline-flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors mb-8" aria-label="Back to settings">
+                        <ArrowLeft size={20} />
+                        <span>{t.common.back}</span>
+                    </Link>
+
+                    {/* Intro */}
+                    <div className="space-y-6 text-center">
+                        <div className="w-20 h-20 bg-cyan-100 dark:bg-transparent bg-gradient-to-tr from-cyan-500/20 to-blue-500/20 rounded-3xl border border-cyan-200 dark:border-white/10 flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-cyan-500/10">
+                            <HelpCircle size={32} className="text-cyan-600 dark:text-cyan-400" />
+                        </div>
+                        <div className="space-y-2">
+                            <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{t.support.title}</h1>
+                            <p className="text-lg text-slate-700 dark:text-slate-400 max-w-lg mx-auto leading-relaxed">
+                                {t.support.subtitle}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-white/10 to-transparent" />
+
+                    <div className="space-y-12">
+                        {/* Contact */}
+                        <section className="space-y-6" aria-labelledby="contact-heading">
+                            <div className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-3xl p-8 text-center max-w-sm mx-auto shadow-sm dark:shadow-none">
+                                <div className="w-12 h-12 bg-indigo-50 dark:bg-slate-900 border border-indigo-100 dark:border-white/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+                                    <Mail size={22} className="text-indigo-600 dark:text-indigo-400" />
+                                </div>
+                                <h2 id="contact-heading" className="text-xl font-bold text-slate-900 dark:text-white mb-2">{t.support.question}</h2>
+                                <p className="text-slate-600 dark:text-slate-400 text-sm mb-6 leading-relaxed">
+                                    {t.support.description}
+                                </p>
+                                <a
+                                    href="mailto:cheikh.sall@icloud.com"
+                                    aria-label="Send email to cheikh.sall@icloud.com"
+                                    className="inline-flex items-center justify-center w-full px-6 py-3 rounded-2xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-sm transition-colors shadow-lg shadow-cyan-500/20"
+                                >
+                                    cheikh.sall@icloud.com
+                                </a>
+                            </div>
+                        </section>
+
+                        <div className="w-full h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-white/10 to-transparent" />
+
+                        {/* FAQ */}
+                        <section className="space-y-6" aria-labelledby="faq-heading">
+                            <div className="text-center">
+                                <h2 id="faq-heading" className="text-xl font-bold text-slate-900 dark:text-white">{t.support.faqTitle}</h2>
+                            </div>
+                            <div className="grid gap-6">
+                                {t.support.faq.map((item, i) => {
+                                    const faqStyles = [
+                                        { bg: 'bg-emerald-100 dark:bg-emerald-500/10', text: 'text-emerald-600 dark:text-emerald-400', icon: <Sparkles size={18} /> },
+                                        { bg: 'bg-blue-100 dark:bg-blue-500/10',    text: 'text-blue-600 dark:text-blue-400',    icon: <BookOpen size={18} /> },
+                                        { bg: 'bg-purple-100 dark:bg-purple-500/10', text: 'text-purple-600 dark:text-purple-400', icon: <Smartphone size={18} /> },
+                                        { bg: 'bg-rose-100 dark:bg-rose-500/10',    text: 'text-rose-600 dark:text-rose-400',    icon: <Volume2 size={18} /> },
+                                        { bg: 'bg-amber-100 dark:bg-amber-500/10',  text: 'text-amber-600 dark:text-amber-400',  icon: <Palette size={18} /> },
+                                    ];
+                                    const style = faqStyles[i % faqStyles.length];
+                                    return (
+                                        <div key={i} className="bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/5 rounded-2xl p-6 space-y-3 shadow-sm dark:shadow-none">
+                                            <div className="flex items-center gap-3 text-slate-900 dark:text-white">
+                                                <div className={`p-2 rounded-lg ${style.bg} ${style.text}`} aria-hidden="true">
+                                                    {style.icon}
+                                                </div>
+                                                <h3 className="font-bold">{item.q}</h3>
+                                            </div>
+                                            <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed pl-[3.25rem]">
+                                                {item.a}
+                                            </p>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </section>
+                    </div>
+
+                    <div className="pt-8 flex flex-col items-center opacity-40" aria-hidden="true">
+                        <HelpCircle size={24} className="mb-4 text-cyan-600 dark:text-cyan-500" />
+                        <p className="text-xs font-black tracking-[0.3em] uppercase text-slate-400 dark:text-slate-600">Kourous</p>
+                    </div>
+                </main>
+            </div>
+        </div>
+    );
+}

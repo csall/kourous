@@ -98,15 +98,19 @@ export default function HomePage() {
             </div>
 
             {/* Language toggle */}
-            <div className="flex items-center p-1 rounded-[14px] glass-premium border border-white/10">
+            <div className="flex items-center p-1 rounded-[14px] glass-premium border border-white/10" role="group" aria-label="Language selection">
               <button
                 onClick={() => useSessionStore.getState().setLanguage('fr')}
+                aria-label="Switch to French"
+                aria-pressed={language === 'fr'}
                 className={`px-2 py-1 rounded-[10px] text-[10px] font-black transition-all ${language === 'fr' ? 'bg-white/10 text-white' : 'text-white/30 hover:text-white/60'}`}
               >
                 FR
               </button>
               <button
                 onClick={() => useSessionStore.getState().setLanguage('en')}
+                aria-label="Switch to English"
+                aria-pressed={language === 'en'}
                 className={`px-2 py-1 rounded-[10px] text-[10px] font-black transition-all ${language === 'en' ? 'bg-white/10 text-white' : 'text-white/30 hover:text-white/60'}`}
               >
                 EN
@@ -197,6 +201,7 @@ export default function HomePage() {
                 <motion.button
                   whileTap={{ scale: 0.95 }}
                   onClick={() => router.push("/session")}
+                  aria-label={`Continue session — ${Math.round(progress * 100)}% complete`}
                   className="w-full py-[10px] rounded-[14px] text-[10px] font-black uppercase tracking-[0.35em] text-center"
                   style={{ background: "rgba(99,102,241,0.18)", border: "1px solid rgba(99,102,241,0.28)", color: "#a5b4fc" }}
                 >
@@ -207,6 +212,7 @@ export default function HomePage() {
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => router.push("/library")}
+                aria-label="Explore dhikr library"
                 className="w-full py-[10px] rounded-[14px] text-[10px] font-black uppercase tracking-[0.35em] text-center"
                 style={{ background: "rgba(99,102,241,0.16)", border: "1px solid rgba(99,102,241,0.24)", color: "#a5b4fc" }}
               >
@@ -223,9 +229,10 @@ export default function HomePage() {
               transition={{ delay: 0.85, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
               whileTap={{ scale: 0.94, y: 2 }}
               onClick={() => router.push("/library")}
+              aria-label="Open dhikr library"
               className="flex flex-col items-center gap-2.5 py-4 glass-premium rounded-[24px] border border-white/[0.08] relative overflow-hidden shadow-2xl"
             >
-              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-400/20 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-400/20 flex items-center justify-center" aria-hidden="true">
                 <Library size={18} className="text-indigo-400" />
               </div>
               <span className="text-[9px] font-black uppercase tracking-[0.3em] text-white/40">{t.home.library}</span>
@@ -237,6 +244,7 @@ export default function HomePage() {
               transition={{ delay: 0.95, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
               whileTap={{ scale: 0.94, y: 2 }}
               onClick={handleStartFreeSession}
+              aria-label="Start a free dhikr session"
               className="flex flex-col items-center gap-2.5 py-4 glass-premium rounded-[24px] border border-white/[0.08] relative overflow-hidden shadow-2xl"
             >
               <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-400/20 flex items-center justify-center">

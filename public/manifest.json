@@ -1,21 +1,19 @@
 {
     "name": "Kourous",
     "short_name": "Kourous",
-    "start_url": "/session",
+    "description": "Chapelet numérique — dhikr & invocations",
+    "start_url": "/",
     "display": "standalone",
     "background_color": "#05070c",
     "theme_color": "#05070c",
+    "orientation": "portrait",
+    "lang": "fr",
     "icons": [
         {
             "src": "/icon.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "/icon.png",
-            "sizes": "512x512",
-            "type": "image/png"
+            "sizes": "1024x1024",
+            "type": "image/png",
+            "purpose": "any maskable"
         }
-    ],
-    "orientation": "portrait"
+    ]
 }
