@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { BottomNav } from "@/components/layout/BottomNav";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { SwRegister } from "@/components/SwRegister";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -54,6 +55,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} h-[100dvh] overflow-hidden bg-slate-950 text-slate-100 antialiased`}
       >
+        <SwRegister />
         <ThemeProvider />
         {children}
         <BottomNav />

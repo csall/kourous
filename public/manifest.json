@@ -8,6 +8,7 @@
     "theme_color": "#05070c",
     "orientation": "portrait",
     "lang": "fr",
+    "categories": ["lifestyle", "utilities"],
     "icons": [
         {
             "src": "/icon.png",
