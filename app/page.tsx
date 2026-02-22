@@ -156,28 +156,46 @@ export default function HomePage() {
             initial={{ opacity: 0, y: -16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="flex items-center gap-3"
+            className="flex items-center justify-between w-full"
           >
-            <motion.div
-              className="w-10 h-10 rounded-[14px] glass-premium flex items-center justify-center border border-white/10"
-              animate={{
-                boxShadow: [
-                  `0 0 12px ${greeting.glow}`,
-                  `0 0 24px ${greeting.glow}`,
-                  `0 0 12px ${greeting.glow}`,
-                ],
-              }}
-              transition={{ duration: 3, repeat: Infinity }}
-            >
-              {greeting.icon}
-            </motion.div>
-            <div>
-              <p className="text-[9px] font-black uppercase tracking-[0.5em] text-white/20 leading-none mb-0.5">
-                {t.home[`greeting_${greeting.key}` as keyof typeof t.home]}
-              </p>
-              <p className="text-sm font-light text-white/75 tracking-wide">
-                {t.home[`sub_${greeting.key}` as keyof typeof t.home]}
-              </p>
+            <div className="flex items-center gap-3">
+              <motion.div
+                className="w-10 h-10 rounded-[14px] glass-premium flex items-center justify-center border border-white/10"
+                animate={{
+                  boxShadow: [
+                    `0 0 12px ${greeting.glow}`,
+                    `0 0 24px ${greeting.glow}`,
+                    `0 0 12px ${greeting.glow}`,
+                  ],
+                }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
+                {greeting.icon}
+              </motion.div>
+              <div>
+                <p className="text-[9px] font-black uppercase tracking-[0.5em] text-white/20 leading-none mb-0.5">
+                  {t.home[`greeting_${greeting.key}` as keyof typeof t.home]}
+                </p>
+                <p className="text-sm font-light text-white/75 tracking-wide">
+                  {t.home[`sub_${greeting.key}` as keyof typeof t.home]}
+                </p>
+              </div>
+            </div>
+
+            {/* Language toggle */}
+            <div className="flex items-center p-1 rounded-[14px] glass-premium border border-white/10">
+              <button
+                onClick={() => useSessionStore.getState().setLanguage('fr')}
+                className={`px-2 py-1 rounded-[10px] text-[10px] font-black transition-all ${language === 'fr' ? 'bg-white/10 text-white' : 'text-white/30 hover:text-white/60'}`}
+              >
+                FR
+              </button>
+              <button
+                onClick={() => useSessionStore.getState().setLanguage('en')}
+                className={`px-2 py-1 rounded-[10px] text-[10px] font-black transition-all ${language === 'en' ? 'bg-white/10 text-white' : 'text-white/30 hover:text-white/60'}`}
+              >
+                EN
+              </button>
             </div>
           </motion.div>
 
