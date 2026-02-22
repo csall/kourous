@@ -188,7 +188,7 @@ export function CompletionView({ onReset, onOpenLibrary, presetName, beadColor, 
                             className="text-[10px] font-black tracking-[0.4em] uppercase opacity-70"
                             style={{ color: beadColor }}
                         >
-                            {isIntermediary ? t.session.modification : t.session.completion.sessionComplete}
+                            {isIntermediary ? t.session.stepComplete : t.session.completion.sessionComplete}
                         </span>
                     </motion.div>
 
@@ -229,7 +229,7 @@ export function CompletionView({ onReset, onOpenLibrary, presetName, beadColor, 
                             onClick={(e) => { stopAllBubbles(e); onNext?.(); }}
                             className="group flex items-center justify-center gap-3 rounded-2xl bg-white text-slate-950 px-6 py-3.5 hover:bg-white/90 active:scale-[0.98] transition-all duration-300 shadow-[0_10px_30px_rgba(255,255,255,0.1)]"
                         >
-                            <span className="font-black text-xs uppercase tracking-wider">{t.common.back}</span>
+                            <span className="font-black text-xs uppercase tracking-wider">{t.common.continue}</span>
                         </motion.button>
                     ) : (
                         <>

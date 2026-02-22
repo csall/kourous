@@ -10,6 +10,8 @@ export const en = {
         tryAnother: "Try another search",
         error: "Error",
         success: "Success",
+        next: "Next",
+        continue: "Continue",
     },
     nav: {
         home: "Home",
@@ -38,6 +40,7 @@ export const en = {
         reset: "Reset",
         edit: "Edit",
         modification: "EDITING",
+        stepComplete: "STEP COMPLETE",
         title: "TITLE",
         goal: "Target",
         loop: "LOOP",

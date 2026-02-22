@@ -23,7 +23,7 @@ export function useSessionProgress() {
             const startOfItem = accumulatedBeads; // No offset for transition dead clicks
             const endOfItem = startOfItem + item.repetitions;
 
-            if (totalCount <= endOfItem) {
+            if (totalCount < endOfItem) {
                 currentItem = item;
                 currentCycleIndex = i;
                 break;

@@ -10,6 +10,8 @@ export const fr = {
         tryAnother: "Essayez une autre recherche",
         error: "Erreur",
         success: "Succès",
+        next: "Suivant",
+        continue: "Continuer",
     },
     nav: {
         home: "Accueil",
@@ -38,6 +40,7 @@ export const fr = {
         reset: "Réinitialiser",
         edit: "Modifier",
         modification: "MODIFICATION",
+        stepComplete: "ÉTAPE TERMINÉE",
         title: "TITRE",
         goal: "Objectif",
         loop: "BOUCLE",

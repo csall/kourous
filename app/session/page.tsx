@@ -365,7 +365,9 @@ function SessionContent() {
 
   const preset = useSessionStore(state => state.preset);
   const isComplete = useSessionStore(state => state.isComplete);
+  const isStepComplete = useSessionStore(state => state.isStepComplete);
   const reset = useSessionStore(state => state.reset);
+  const continueSession = useSessionStore(state => state.continueSession);
   const beadColor = useSessionStore(state => state.beadColor);
   const setPresetByGroupId = useSessionStore(state => state.setPresetByGroupId);
   const setPresetByInvocationId = useSessionStore(state => state.setPresetByInvocationId);
@@ -379,18 +381,18 @@ function SessionContent() {
   const setIsUiOpen = useSessionStore(state => state.setIsUiOpen);
 
   const isAnyModalOpen = isLibraryOpen || isSettingsOpen || isEditing;
-  const isAnyUIOpen = isAnyModalOpen || isComplete;
+  const isAnyUIOpen = isAnyModalOpen || isComplete || isStepComplete;
 
   useEffect(() => {
     setIsUiOpen(isAnyUIOpen);
   }, [isAnyUIOpen, setIsUiOpen]);
 
   useEffect(() => {
-    if (isComplete) {
+    if (isComplete || isStepComplete) {
       if (soundEnabled) playFinalSuccess();
       hapticCelebration();
     }
-  }, [isComplete, soundEnabled, playFinalSuccess]);
+  }, [isComplete, isStepComplete, soundEnabled, playFinalSuccess]);
 
   useEffect(() => {
     if (!hasHydrated) return;
@@ -403,20 +405,34 @@ function SessionContent() {
   const openLibrary = useCallback(() => setIsLibraryOpen(true), []);
   const closeLibrary = useCallback(() => setIsLibraryOpen(false), []);
   const closeSettings = useCallback(() => setIsSettingsOpen(false), []);
-
   const progress = useSessionProgress();
   const [lastFinishedCycle, setLastFinishedCycle] = useState(-1);
+  const lastTriggeredStep = useRef(-1);
 
   useEffect(() => {
     if (!preset || !progress) return;
 
-    // Free Session (Loop-based)
+    // Final completion logic is already handled in sessionStore (isComplete)
+    // and triggered below.
+
+    // Intermediary Step Completion
+    if (isStepComplete && progress.cycleIndex > lastTriggeredStep.current) {
+      if (soundEnabled) playSuccess();
+      hapticHeavy();
+      confetti({
+        particleCount: 40,
+        spread: 70,
+        origin: { y: 0.2 },
+        colors: [beadColor, '#ffffff']
+      });
+      lastTriggeredStep.current = progress.cycleIndex;
+    }
+
+    // Free Session (Loop-based) - special handling as it doesn't set isStepComplete
     if (preset.id === "free-session") {
       const isFullLoop = progress.cycleProgress === progress.cycleTotal;
-      // Since we reset totalCount to 1, we reply on cycles.
       const currentCycle = useSessionStore.getState().currentCycle || 1;
 
-      // Celebrate when isFullLoop AND we haven't celebrated this Cycle yet
       if (isFullLoop && lastFinishedCycle !== currentCycle) {
         if (soundEnabled) playSuccess();
         hapticHeavy();
@@ -429,25 +445,11 @@ function SessionContent() {
         setLastFinishedCycle(currentCycle);
       }
     }
-    // Regular Sessions
-    else if (progress.cycleProgress === progress.cycleTotal && progress.cycleIndex > lastFinishedCycle) {
-      const isIntermediary = progress.cycleIndex < (preset.sequence.length - 1);
-      if (isIntermediary) {
-        if (soundEnabled) playSuccess();
-        hapticHeavy();
-        confetti({
-          particleCount: 40,
-          spread: 70,
-          origin: { y: 0.2 },
-          colors: [beadColor, '#ffffff']
-        });
-      }
-      setLastFinishedCycle(progress.cycleIndex);
-    }
-  }, [progress, preset, lastFinishedCycle, beadColor, soundEnabled, playSuccess]);
+  }, [isStepComplete, progress, preset, lastFinishedCycle, beadColor, soundEnabled, playSuccess]);
 
   const handleReset = useCallback(() => {
     setLastFinishedCycle(-1);
+    lastTriggeredStep.current = -1;
     reset();
   }, [reset]);
 
@@ -500,9 +502,9 @@ function SessionContent() {
       </FullscreenModal>
 
       <AnimatePresence mode="wait">
-        {isComplete && (
+        {(isComplete || isStepComplete) && (
           <motion.div
-            key="complete"
+            key={isComplete ? "complete" : "step-complete"}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -519,7 +521,9 @@ function SessionContent() {
                 handleReset();
                 openLibrary();
               }}
-              presetName={resolve(preset?.name) || "Session"}
+              onNext={continueSession}
+              isIntermediary={isStepComplete}
+              presetName={isStepComplete ? resolve(progress?.label) : (resolve(preset?.name) || "Session")}
               beadColor={beadColor}
             />
           </motion.div>

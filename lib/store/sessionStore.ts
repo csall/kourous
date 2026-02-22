@@ -9,6 +9,7 @@ export type SessionState = {
   totalCount: number; // Cumulative count
   currentCycle: number; // Current loop number (starts at 1)
   isComplete: boolean;
+  isStepComplete: boolean;
   hapticsEnabled: boolean;
   soundEnabled: boolean;
   beadColor: string;
@@ -31,6 +32,7 @@ export type SessionState = {
   setFreeSession: (target?: number) => void;
   updateFreeSession: (name: string, target: number) => void;
   advance: () => void;
+  continueSession: () => void;
   reset: () => void;
   toggleHaptics: () => void;
   toggleSound: () => void;
@@ -52,6 +54,7 @@ export const useSessionStore = create<SessionState>()(
       totalCount: 0,
       currentCycle: 1,
       isComplete: false,
+      isStepComplete: false,
       hapticsEnabled: true,
       soundEnabled: true,
       beadColor: "#10b981", // Default Emerald Green
@@ -65,7 +68,7 @@ export const useSessionStore = create<SessionState>()(
       },
 
       setPreset: (preset) =>
-        set({ preset, beadIndex: 0, totalCount: 0, isComplete: false }),
+        set({ preset, beadIndex: 0, totalCount: 0, isComplete: false, isStepComplete: false }),
 
       setPresetById: (id) => {
         // First check default presets
@@ -199,8 +202,8 @@ export const useSessionStore = create<SessionState>()(
       },
 
       advance: () => {
-        const { preset, totalCount, isComplete, stats, currentCycle } = get();
-        if (!preset || isComplete) return;
+        const { preset, totalCount, isComplete, isStepComplete, stats, currentCycle } = get();
+        if (!preset || isComplete || isStepComplete) return;
 
         const nextTotal = totalCount + 1;
 
@@ -252,10 +255,22 @@ export const useSessionStore = create<SessionState>()(
         // But usually we set isComplete = true when we finish the last bead.
         // Let's stick to existing logic but corrected.
 
+        // Check if current step is finished
+        let accumulated = 0;
+        let stepFinished = false;
+        for (let i = 0; i < preset.sequence.length; i++) {
+          accumulated += preset.sequence[i].repetitions;
+          if (nextTotal === accumulated && i < preset.sequence.length - 1) {
+            stepFinished = true;
+            break;
+          }
+        }
+
         const updates: Partial<SessionState> = {
           totalCount: nextTotal,
           beadIndex: nextTotal,
           isComplete: completed,
+          isStepComplete: stepFinished && !completed,
         };
 
         // Update stats on completion
@@ -277,7 +292,9 @@ export const useSessionStore = create<SessionState>()(
         set(updates);
       },
 
-      reset: () => set({ totalCount: 0, beadIndex: 0, currentCycle: 1, isComplete: false }),
+      continueSession: () => set({ isStepComplete: false }),
+
+      reset: () => set({ totalCount: 0, beadIndex: 0, currentCycle: 1, isComplete: false, isStepComplete: false }),
 
       toggleHaptics: () => set((state) => ({ hapticsEnabled: !state.hapticsEnabled })),
       toggleSound: () => set((state) => ({ soundEnabled: !state.soundEnabled })),
